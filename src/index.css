@@ -1,0 +1,26 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+* {
+  font-family: 'Inter', sans-serif;
+}
+/* Variables para fácil edición de colores */
+:root {
+    --color-primary: #333; /* Color principal de texto/fondo */
+    --color-accent: #A52A2A; /* Color de acento: un borgoña o rojo oscuro */
+    --color-light: #f4f4f4; /* Fondo claro */
+    --color-white: #ffffff;
+    --font-heading: 'Orbitron', sans-serif;
+    --font-text: 'Roboto', sans-serif;
+}
+
+/* -------------------- GENERAL -------------------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html{
+    scroll-behavior: smooth;
+}

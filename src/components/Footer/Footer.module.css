@@ -1,0 +1,19 @@
+/* -------------------- FOOTER -------------------- */
+footer {
+    background: var(--color-primary);
+    color: var(--color-light);
+    padding: 10px 0;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+footer p {
+    margin: 0;
+}
+footer h3 {
+    margin: 0;
+}
+footer .container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;}
