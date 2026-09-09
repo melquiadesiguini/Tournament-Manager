@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
+import playBuzzer from '../../utils/playBuzzer'
 
 export default function Timer({
   duration,
@@ -7,25 +8,47 @@ export default function Timer({
   controlTimer,
   onTimeUp,
 }) {
-  // Hook para el cronómetro
-  useEffect(() => {
-    let interval
+  // Refs para siempre llamar a la versión más reciente sin reiniciar el intervalo
+  const durationRef = useRef(duration)
+  const controlTimerRef = useRef(controlTimer)
+  const onTimeUpRef = useRef(onTimeUp)
 
-    if (timerActive && duration > 0) {
-      interval = setInterval(() => {
-        setDuration((prev) => {
-          if (prev - 1 === 0) {
-            controlTimer('pause')
-            onTimeUp?.()
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
-    }
+  useEffect(() => {
+    durationRef.current = duration
+  }, [duration])
+
+  useEffect(() => {
+    controlTimerRef.current = controlTimer
+  }, [controlTimer])
+
+  useEffect(() => {
+    onTimeUpRef.current = onTimeUp
+  }, [onTimeUp])
+
+  // Hook para el cronómetro: un único intervalo por cada activación,
+  // no se recrea en cada tick (evita drift). Los efectos secundarios
+  // (sonido, pausar, avisar que terminó) van en código imperativo normal,
+  // nunca dentro del updater de setState: React (en modo Strict, en
+  // desarrollo) puede invocar los updaters dos veces para detectar
+  // efectos secundarios impuros, lo que duplicaba el sonido.
+  useEffect(() => {
+    if (!timerActive || durationRef.current <= 0) return undefined
+
+    const interval = setInterval(() => {
+      const next = durationRef.current - 1
+      durationRef.current = next
+      setDuration(next)
+
+      if (next <= 0) {
+        clearInterval(interval)
+        controlTimerRef.current('pause')
+        playBuzzer()
+        onTimeUpRef.current?.()
+      }
+    }, 1000)
 
     return () => clearInterval(interval)
-  }, [timerActive, duration, setDuration, controlTimer, onTimeUp])
+  }, [timerActive, setDuration])
 
   const minutos = Math.floor(duration / 60)
     .toString()
