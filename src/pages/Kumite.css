@@ -146,42 +146,78 @@
 
 .timer-buttons {
   display: flex;
-  gap: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
 .btn-timer {
-  font-size: 0.625rem;
-  font-weight: bold;
-  padding: 0.375rem 0.75rem;
-  border: none;
-  border-radius: 0.375rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.55rem 1.1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, filter 0.2s ease;
   color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.btn-timer::before {
+  font-size: 0.85em;
+  line-height: 1;
+}
+
+.btn-timer:hover {
+  transform: translateY(-2px) scale(1.03);
+  filter: brightness(1.08);
+}
+
+.btn-timer:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .btn-start {
-  background-color: #16a34a;
+  background: linear-gradient(135deg, #2fb872 0%, #0f7a45 100%);
+  box-shadow: 0 3px 10px rgba(21, 128, 61, 0.45);
+}
+
+.btn-start::before {
+  content: '▶';
 }
 
 .btn-start:hover {
-  background-color: #15803d;
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.55);
 }
 
 .btn-pause {
-  background-color: #f59e0b;
+  background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%);
+  box-shadow: 0 3px 10px rgba(180, 83, 9, 0.4);
+}
+
+.btn-pause::before {
+  content: '⏸';
 }
 
 .btn-pause:hover {
-  background-color: #d97706;
+  box-shadow: 0 6px 16px rgba(180, 83, 9, 0.5);
 }
 
 .btn-reset {
-  background-color: #4b5563;
+  background: linear-gradient(135deg, #3a3a3a 0%, #111111 100%);
+  border-color: #a6332a;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.btn-reset::before {
+  content: '↺';
 }
 
 .btn-reset:hover {
-  background-color: #374151;
+  box-shadow: 0 0 0 1px #a6332a, 0 6px 16px rgba(166, 51, 42, 0.45);
 }
 
 /* Controles de Categoría y Combate */
@@ -824,6 +860,11 @@
 
   .timer-clock-sep {
     font-size: 2.75rem;
+  }
+
+  .btn-timer {
+    font-size: 0.65rem;
+    padding: 0.5rem 0.85rem;
   }
 
   .faltas-table th,
