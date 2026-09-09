@@ -1,10 +1,14 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useCountUp from '../hooks/useCountUp'
+import useFullscreen from '../hooks/useFullscreen'
 import './Kata.css'
 
 function Kata() {
+  const containerRef = useRef(null)
+  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
+
   const [judgeSystem, setJudgeSystem] = useState(null)
   const [kata, setKata] = useState('')
   const [competitor, setCompetitor] = useState('')
@@ -197,7 +201,17 @@ function Kata() {
   return (
     <>
       <Header />
-      <main className="kata-container">
+      <main className="kata-container" ref={containerRef}>
+        <button
+          type="button"
+          className="btn-fullscreen"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Ampliar a pantalla completa'}
+          title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+        >
+          {isFullscreen ? '✕' : '⛶'}
+        </button>
+
         {errors && <div className="error-message">{errors}</div>}
         {success && <div className="success-message">{success}</div>}
         

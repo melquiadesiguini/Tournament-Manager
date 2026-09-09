@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
+import useFullscreen from '../hooks/useFullscreen'
 import '../pages/Kumite.css'
 
 function Kumite() {
+  const containerRef = useRef(null)
+  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
+
   const [categoria, setCategoria] = useState('')
   const [duration, setDuration] = useState(180)
   const [timerActive, setTimerActive] = useState(false)
@@ -210,7 +214,17 @@ function Kumite() {
   return (
     <>
       <Header />
-      <main className="kumite-container">
+      <main className="kumite-container" ref={containerRef}>
+        <button
+          type="button"
+          className="btn-fullscreen"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Ampliar a pantalla completa'}
+          title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
+        >
+          {isFullscreen ? '✕' : '⛶'}
+        </button>
+
         <div className="kumite-wrapper">
           {/* Header del Kumite */}
           <div className="kumite-header">
