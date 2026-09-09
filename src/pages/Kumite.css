@@ -660,6 +660,10 @@
   background-color: #1a1a1a;
 }
 
+[data-theme='dark'] .marcador-blue .falta-celda.falta-marcada {
+  background-color: #ffffff;
+}
+
 .marcador-red .falta-celda.falta-marcada {
   background-color: #a6332a;
 }
