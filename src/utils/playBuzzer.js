@@ -1,32 +1,42 @@
-// Reproduce un timbre de "fin de tiempo" (3 pitidos cortos) usando la Web Audio API.
-// No depende de ningún archivo de audio externo.
+// Reproduce una alarma de "fin de tiempo" (tono pulsante tipo sirena, ~3s)
+// usando la Web Audio API. No depende de ningún archivo de audio externo.
 export default function playBuzzer() {
   try {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext
     const ctx = new AudioContextClass()
-    const beepStarts = [0, 0.25, 0.5]
-    const beepDuration = 0.18
 
-    beepStarts.forEach((start) => {
-      const oscillator = ctx.createOscillator()
-      const gain = ctx.createGain()
+    const totalDuration = 3 // segundos
+    const pulseOn = 0.28
+    const pulseOff = 0.12
+    const cycle = pulseOn + pulseOff
 
-      oscillator.type = 'square'
-      oscillator.frequency.value = 880
+    const masterGain = ctx.createGain()
+    masterGain.gain.value = 0.4
+    masterGain.connect(ctx.destination)
 
+    for (let start = 0; start < totalDuration; start += cycle) {
       const startTime = ctx.currentTime + start
+      const endTime = startTime + pulseOn
+
+      const oscillator = ctx.createOscillator()
+      oscillator.type = 'sawtooth'
+      // Alterna el tono dentro de cada pulso: efecto de sirena/alarma
+      oscillator.frequency.setValueAtTime(880, startTime)
+      oscillator.frequency.setValueAtTime(660, startTime + pulseOn / 2)
+
+      const gain = ctx.createGain()
       gain.gain.setValueAtTime(0.0001, startTime)
-      gain.gain.exponentialRampToValueAtTime(0.35, startTime + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, startTime + beepDuration)
+      gain.gain.exponentialRampToValueAtTime(1, startTime + 0.02)
+      gain.gain.setValueAtTime(1, endTime - 0.03)
+      gain.gain.exponentialRampToValueAtTime(0.0001, endTime)
 
       oscillator.connect(gain)
-      gain.connect(ctx.destination)
+      gain.connect(masterGain)
       oscillator.start(startTime)
-      oscillator.stop(startTime + beepDuration + 0.02)
-    })
+      oscillator.stop(endTime + 0.02)
+    }
 
-    const totalDuration = beepStarts[beepStarts.length - 1] + beepDuration + 0.3
-    setTimeout(() => ctx.close(), totalDuration * 1000)
+    setTimeout(() => ctx.close(), (totalDuration + 0.3) * 1000)
   } catch (error) {
     console.warn('No se pudo reproducir el sonido del temporizador:', error)
   }
