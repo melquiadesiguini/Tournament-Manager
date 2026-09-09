@@ -310,9 +310,17 @@ function Kata() {
             </button>
  
             {showResults && (
-              <div className="results-board">
-                <h2 className="results-title">📊 Resultado</h2>
-                
+              <div className="results-overlay" onClick={() => setShowResults(false)}>
+                <div className="results-board" onClick={(e) => e.stopPropagation()}>
+                <button
+                  type="button"
+                  className="results-close"
+                  onClick={() => setShowResults(false)}
+                  aria-label="Cerrar"
+                >
+                  &times;
+                </button>
+
                 <div className="system-badge">
                   {competitor}
                 </div>
@@ -369,6 +377,7 @@ function Kata() {
                   }}>
                     ➕ Nueva Competencia
                   </button>
+                </div>
                 </div>
               </div>
             )}

@@ -16,11 +16,21 @@
 .hero-content {
   max-width: 1200px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 3rem;
   align-items: center;
   width: 100%;
+}
+
+.hero-text {
+  flex: 1 1 400px;
+}
+
+.hero-image {
+  flex: 1 1 400px;
+  width: auto;
 }
 
 .hero-text h1 {
@@ -29,6 +39,15 @@
   margin: 0 0 1rem 0;
   line-height: 1.1;
   letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.hero-text2{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 }
 
 .hero-subtitle {
@@ -44,7 +63,7 @@
   color: #cbd5e1;
   margin: 0 0 2rem 0;
   line-height: 1.6;
-  
+  text-align: center;
 }
 
 .hero-buttons {
@@ -52,6 +71,7 @@
   gap: 1rem;
   flex-wrap: wrap;
   justify-content: space-around;
+  width: 100%;
 }
 
 .btn-primary,
@@ -236,6 +256,57 @@
   text-align: center;
 }
 
+/* ===== LIGHTBOX ===== */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+
+.lightbox-image {
+  max-width: 90vw;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.lightbox-caption {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2.5rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.lightbox-close:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 /* ===== CTA SECTION ===== */
 .cta-section {
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
@@ -288,12 +359,22 @@
   }
 
   .hero-content {
-    grid-template-columns: 1fr;
+    flex-direction: column;
     gap: 2rem;
+  }
+
+  .hero-text2 {
+    align-items: center;
+  }
+
+  .hero-subtitle,
+  .hero-description {
+    text-align: center;
   }
 
   .hero-text h1 {
     font-size: 2.5rem;
+    text-align: center;
   }
 
   .hero-subtitle {
@@ -306,6 +387,7 @@
 
   .hero-buttons {
     flex-direction: column;
+    justify-content: center;
   }
 
   .btn-primary,

@@ -4,7 +4,7 @@ import Footer from '../components/Footer/Footer'
 import HeroSection from '../components/Home/HeroSection'
 import Caracteristicas from '../components/Home/Caracteristicas'
 import Gallery from '../components/Home/Gallery'
-import '../components/Home/home.css'
+import '../components/Home/Home.css'
 
 function Home() {
   return (

@@ -1,4 +1,3 @@
-import React from 'react'
 import Style from './Footer.module.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTiktok, faInstagram, faFacebookF, faYoutube } from "@fortawesome/free-brands-svg-icons";

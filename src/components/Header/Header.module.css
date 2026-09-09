@@ -28,21 +28,30 @@ a{
 }
 .headerContent {
     display: flex;
-    justify-content: start;
+    flex-wrap: wrap;
+    justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
     margin: 10px;
 }
 .headerContent2 {
     display: flex;
-    flex-direction: column;
-    justify-content: end;
-    align-items: end;
-    width: 100%;
-    
+    justify-content: flex-end;
+    align-items: center;
+    flex: 1;
+    min-width: 180px;
 }
 .containerNav{
     flex-wrap: wrap;
     display: flex;
+    width: 100%;
+}
+.containerNav2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.5rem 1.5rem;
+    width: 100%;
 }
 .brand{
     display: flex;
@@ -63,8 +72,32 @@ a{
 nav a {
     color: var(--color-white);
     text-decoration: none;
-    margin-left: 25px;
     font-weight: 400;
+}
+
+/* -------------------- RESPONSIVE -------------------- */
+@media (max-width: 640px) {
+    .headerContent {
+        justify-content: center;
+        margin: 8px;
+    }
+    .brand {
+        gap: 0.6rem;
+    }
+    .logoImg {
+        width: 2.75rem;
+    }
+    .logo {
+        font-size: 1.05em;
+    }
+    .headerContent2 {
+        justify-content: center;
+        min-width: 100%;
+    }
+    .containerNav2 {
+        justify-content: center;
+        gap: 0.5rem 1rem;
+    }
 }
 
 .ctaButton {
