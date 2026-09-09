@@ -340,11 +340,11 @@
 }
 
 .resultado-board.marcador-blue {
-  background: linear-gradient(135deg, #334155 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
 }
 
 .resultado-board.marcador-red {
-  background: linear-gradient(135deg, #ef4444 0%, #991b1b 100%);
+  background: linear-gradient(135deg, #c4453a 0%, #7c2620 100%);
 }
 
 .resultado-close {
@@ -497,16 +497,16 @@
 }
 
 .marcador-blue .marcador-titulo {
-  background-color: #f3f4f6;
-  color: #111827;
-  border: 1px solid #9ca3af;
+  background-color: #f5f4f0;
+  color: #1a1a1a;
+  border: 1px solid #4d4d4d;
   text-align: center;
 }
 
 .marcador-red .marcador-titulo {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
+  background-color: #fbeae7;
+  color: #a6332a;
+  border: 1px solid #e3b3ac;
 }
 
 .marcador-tecnicas {
@@ -557,19 +557,19 @@
 }
 
 .btn-marcador-blue {
-  background-color: #111827;
+  background-color: #1a1a1a;
 }
 
 .btn-marcador-blue:hover {
-  background-color: #374151;
+  background-color: #3a3a3a;
 }
 
 .btn-marcador-red {
-  background-color: #dc2626;
+  background-color: #a6332a;
 }
 
 .btn-marcador-red:hover {
-  background-color: #b91c1c;
+  background-color: #7c2620;
 }
 
 .tecnica-valor {
@@ -635,11 +635,11 @@
 }
 
 .marcador-blue .falta-celda.falta-marcada {
-  background-color: #111827;
+  background-color: #1a1a1a;
 }
 
 .marcador-red .falta-celda.falta-marcada {
-  background-color: #dc2626;
+  background-color: #a6332a;
 }
 
 /* Total */
@@ -651,13 +651,13 @@
 }
 
 .marcador-blue .marcador-total {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
+  background-color: #f5f4f0;
+  border-color: #4d4d4d;
 }
 
 .marcador-red .marcador-total {
-  background-color: #fef2f2;
-  border-color: #fecaca;
+  background-color: #fbeae7;
+  border-color: #e3b3ac;
 }
 
 .total-label {
@@ -671,11 +671,11 @@
 }
 
 .marcador-blue .total-label {
-  color: #111827;
+  color: #1a1a1a;
 }
 
 .marcador-red .total-label {
-  color: #991b1b;
+  color: #a6332a;
 }
 
 .total-numero {
@@ -685,11 +685,11 @@
 }
 
 .marcador-blue .total-numero {
-  color: #111827;
+  color: #1a1a1a;
 }
 
 .marcador-red .total-numero {
-  color: #991b1b;
+  color: #a6332a;
 }
 
 /* Footer de Kumite */
