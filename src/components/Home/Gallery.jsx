@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import foto1 from '../../assets/images/foto1.jpg'
 import foto2 from '../../assets/images/foto2.jpg'
 import foto3 from '../../assets/images/foto3.jpg'
+import foto4 from '../../assets/images/foto4.jpg'
+import foto5 from '../../assets/images/foto5.jpeg'
+import foto6 from '../../assets/images/foto6.jpg'
 
 export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -21,26 +24,38 @@ export default function Gallery() {
     {
       id: 1,
       src: foto1,
-      title: 'Combate Senior',
-      alt: 'Torneo de Karate'
+      title: 'Sudamericano Chile 2025',
+      alt: 'Sudamericano Chile 2025'
     },
     {
       id: 2,
       src: foto2,
-      title: 'Kata Demostración',
-      alt: 'Kata Performance'
+      title: '3ra edición de “Karate y salud”',
+      alt: '3ra edición de “Karate y salud”'
     },
     {
       id: 3,
       src:foto3 ,
-      title: 'Entrenamiento',
-      alt: 'Entrenamientos del Dojo'
+      title: 'Torneo KYUDOKAN ARGENTINA',
+      alt: 'Torneo KYUDOKAN ARGENTINA'
     },
     {
       id: 4,
-      src: foto3,
-      title: 'Torneo Jóvenes',
-      alt: 'Categoría Júnior'
+      src: foto4,
+      title: 'Representantes en el MUNDIAL WUKF',
+      alt: 'Representantes en el MUNDIAL WUKF'
+    },
+    {
+      id: 5,
+      src: foto5,
+      title: '1° Practica de la SELEECION',
+      alt: '1° Practica de la SELEECION'
+    },
+    {
+      id: 6,
+      src: foto6,
+      title: '2da Fecha del TORNEO RANKEABLE 2024',
+      alt: '2da Fecha del TORNEO RANKEABLE 2024'
     }
   ]
 
