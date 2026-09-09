@@ -17,12 +17,6 @@
       icon: '🥋',
       title: 'Múltiples Categorías',
       description: 'Compatible con todas las categorías de karate'
-    },
-    {
-      id: 4,
-      icon: '💾',
-      title: 'Guardar Resultados',
-      description: 'Almacena y gestiona el historial de combates'
     }
   ]
 
