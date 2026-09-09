@@ -23,7 +23,7 @@
   return (
     <section className="caracteristicas">
       <div className="caracteristicas-container">
-        <h2>¿Por qué Kumite Manager?</h2>
+        <h2>¿Por qué Tournament Manager?</h2>
         <p className="section-subtitle">
           Todo lo que necesitas para administrar torneos de karate
         </p>
