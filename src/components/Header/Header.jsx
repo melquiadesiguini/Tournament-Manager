@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import logo from '../../assets/images/LOGO ZOK.PNG'
+import useTheme from '../../hooks/useTheme'
 import s from './Header.module.css'
 
 function Header() {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <header>
       <div className={`${s.headerContent}`}>
@@ -22,6 +25,15 @@ function Header() {
               <Link to="/">Home</Link>
               <Link to="/kata">Kata</Link>
               <Link to="/kumite">Kumite</Link>
+              <button
+                type="button"
+                className={s.themeToggle}
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'}
+                title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              >
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
             </div>
           </nav>
         </div>

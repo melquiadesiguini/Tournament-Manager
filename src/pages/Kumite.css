@@ -1,18 +1,20 @@
 /* Contenedor principal */
 .kumite-container {
-  background-color: #f3f4f6;
+  background-color: var(--bg-page);
   min-height: 100vh;
   padding: 1.5rem;
   flex: 1;
+  transition: background-color 0.3s ease;
 }
 
 .kumite-wrapper {
   max-width: 80rem;
   margin: 0 auto;
-  background-color: white;
+  background-color: var(--bg-surface);
   border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 15px -3px var(--shadow-color);
   overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
 /* Header del Kumite */
@@ -184,8 +186,8 @@
 
 /* Controles de Categoría y Combate */
 .kumite-controls {
-  background-color: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  background-color: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border-color);
   padding: 1rem;
   display: flex;
   align-items: flex-end;
@@ -193,6 +195,7 @@
   gap: 1.5rem;
   font-size: 0.875rem;
   flex-wrap: wrap;
+  transition: background-color 0.3s ease;
 }
 
 .kumite-controls > div {
@@ -204,15 +207,16 @@
 .kumite-controls label {
   font-size: 0.75rem;
   font-weight: bold;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .kumite-controls select,
 .kumite-controls input {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   padding: 0.5rem;
   border-radius: 0.375rem;
-  background-color: white;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 0.875rem;
 }
 
@@ -292,9 +296,10 @@
   padding: 0.6rem 0.75rem;
   font-size: 0.9rem;
   text-align: center;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
-  background-color: white;
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .marcador-nombre input:focus {
@@ -306,7 +311,9 @@
 .resultado-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.75);
+  background: var(--overlay-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -375,6 +382,7 @@
   font-weight: 900;
   margin-bottom: 1.5rem;
   word-break: break-word;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .resultado-cards {
@@ -388,6 +396,8 @@
   border-radius: 12px;
   padding: 25px 40px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.12s;
 }
 
 .resultado-card-icono {
@@ -472,17 +482,23 @@
 /* Estilos del Marcador */
 .marcador {
   padding: 1.5rem;
-  background-color: #f9fafb;
+  background-color: var(--bg-surface-2);
+  transition: background-color 0.3s ease;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .marcador:nth-child(2) {
-  border-left: 1px solid #e5e7eb;
+  animation-delay: 0.1s;
+}
+
+.marcador:nth-child(2) {
+  border-left: 1px solid var(--border-color);
 }
 
 @media (max-width: 768px) {
   .marcador:nth-child(2) {
     border-left: none;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border-color);
   }
 }
 
@@ -520,16 +536,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: white;
+  background-color: var(--bg-surface);
   padding: 0.75rem;
   border-radius: 0.5rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.tecnica-row:hover {
+  transform: translateX(2px);
 }
 
 .tecnica-nombre {
   font-weight: 500;
-  color: #4b5563;
+  color: var(--text-secondary);
 }
 
 .tecnica-controls {
@@ -577,7 +598,7 @@
   text-align: center;
   font-size: 1.25rem;
   font-weight: bold;
-  color: #1f2937;
+  color: var(--text-primary);
 }
 
 /* Faltas */
@@ -592,34 +613,35 @@
 .faltas-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
-  border: 1px solid #e5e7eb;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 0.5rem;
   overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
 .faltas-table th,
 .faltas-table td {
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   text-align: center;
   padding: 0.4rem 0.25rem;
   font-size: 0.7rem;
 }
 
 .faltas-table thead th {
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: var(--bg-surface-2);
+  color: var(--text-secondary);
   font-weight: bold;
   letter-spacing: 0.03em;
 }
 
 .faltas-table thead th:first-child {
-  background-color: #e5e7eb;
+  background-color: var(--border-color);
 }
 
 .falta-nombre {
   font-weight: 600;
-  color: #4b5563;
+  color: var(--text-secondary);
   text-align: left;
   padding-left: 0.6rem;
   white-space: nowrap;
@@ -631,7 +653,7 @@
 }
 
 .falta-celda:hover {
-  background-color: #f3f4f6;
+  background-color: var(--bg-surface-2);
 }
 
 .marcador-blue .falta-celda.falta-marcada {
@@ -667,7 +689,7 @@
   letter-spacing: 0.05em;
   display: block;
   margin-bottom: 0.5rem;
-  color: #6b7280;
+  color: var(--text-secondary);
 }
 
 .marcador-blue .total-label {

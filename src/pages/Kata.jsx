@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
+import useCountUp from '../hooks/useCountUp'
 import './Kata.css'
- 
+
 function Kata() {
   const [judgeSystem, setJudgeSystem] = useState(null)
   const [kata, setKata] = useState('')
@@ -83,6 +84,11 @@ function Kata() {
     }
   }
  
+  // Valores animados (cuentan hacia arriba/abajo cuando cambian)
+  const highestAnimado = useCountUp(showResults ? getHighest() : 0)
+  const lowestAnimado = useCountUp(showResults ? getLowest() : 0)
+  const finalScoreAnimado = useCountUp(showResults ? Number(getFinalScore()) : 0)
+
   // ✅ NUEVA: Determinar si un puntaje está incluido basándose en el puntaje
   const isScoreIncluded = (score) => {
     if (judgeSystem === 3) {
@@ -329,21 +335,21 @@ function Kata() {
                   <div className="result-card highest">
                     <div className="result-icon">📈</div>
                     <div className="result-label">Mayor Puntaje</div>
-                    <div className="result-value">{getHighest().toFixed(1)}</div>
+                    <div className="result-value">{highestAnimado.toFixed(1)}</div>
                   </div>
- 
+
                   {judgeSystem === 5 && (
                     <div className="result-card lowest">
                       <div className="result-icon">📉</div>
                       <div className="result-label">Menor Puntaje</div>
-                      <div className="result-value">{getLowest().toFixed(1)}</div>
+                      <div className="result-value">{lowestAnimado.toFixed(1)}</div>
                     </div>
                   )}
- 
+
                   <div className="result-card final">
                     <div className="result-icon">🏆</div>
                     <div className="result-label">Puntaje Final</div>
-                    <div className="result-value-final">{getFinalScore()}</div>
+                    <div className="result-value-final">{finalScoreAnimado.toFixed(2)}</div>
                   </div>
                 </div>
  

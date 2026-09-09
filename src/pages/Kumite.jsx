@@ -3,6 +3,7 @@ import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
+import useCountUp from '../hooks/useCountUp'
 import '../pages/Kumite.css'
 
 function Kumite() {
@@ -50,6 +51,11 @@ function Kumite() {
 
   // Calcular totales
   const calcularTotal = (competidor) => calcularTotalDesde(estado[competidor])
+
+  // Puntaje animado que se muestra en el cartel de ganador
+  const puntajeGanadorAnimado = useCountUp(
+    ganador && ganador !== 'empate' ? calcularTotal(ganador) : 0
+  )
 
   // Si el competidor llegó a 9 puntos, queda como ganador
   const verificarGanadorPorPuntos = (competidor, estadoCompetidor) => {
@@ -334,7 +340,7 @@ function Kumite() {
                 <div className="resultado-card">
                   <div className="resultado-card-icono">🏆</div>
                   <div className="resultado-card-label">Puntaje Final</div>
-                  <div className="resultado-card-valor">{calcularTotal(ganador)}</div>
+                  <div className="resultado-card-valor">{Math.round(puntajeGanadorAnimado)}</div>
                 </div>
               </div>
 

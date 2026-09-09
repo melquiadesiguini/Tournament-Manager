@@ -7,7 +7,8 @@
   gap: 30px;
   padding: 20px;
   min-height: calc(100vh - 100px);
-  background-color: #fafafa;
+  background-color: var(--bg-page);
+  transition: background-color 0.3s ease;
 }
 
 /* ================= SELECTOR DE SISTEMA DE JUECES ================= */
@@ -222,7 +223,9 @@
   max-width: 900px;
   border-collapse: collapse;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: white;
+  background-color: var(--bg-surface);
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: 0.1s;
 }
 
 .judges-table th,
@@ -283,7 +286,9 @@
 .results-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.75);
+  background: var(--overlay-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -368,7 +373,12 @@
   text-align: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s, box-shadow 0.3s;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+.results-grid .result-card:nth-child(1) { animation-delay: 0.1s; }
+.results-grid .result-card:nth-child(2) { animation-delay: 0.2s; }
+.results-grid .result-card:nth-child(3) { animation-delay: 0.3s; }
 
 .result-card:hover {
   transform: translateY(-5px);
@@ -449,7 +459,14 @@
   background-color: #f5f5f5;
   border-radius: 8px;
   border: 2px solid #eee;
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+.scores-breakdown .score-item:nth-child(1) { animation-delay: 0.35s; }
+.scores-breakdown .score-item:nth-child(2) { animation-delay: 0.42s; }
+.scores-breakdown .score-item:nth-child(3) { animation-delay: 0.49s; }
+.scores-breakdown .score-item:nth-child(4) { animation-delay: 0.56s; }
+.scores-breakdown .score-item:nth-child(5) { animation-delay: 0.63s; }
 
 .score-position {
   font-size: 14px;

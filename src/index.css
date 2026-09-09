@@ -12,6 +12,29 @@
     --color-white: #ffffff;
     --font-heading: 'Orbitron', sans-serif;
     --font-text: 'Roboto', sans-serif;
+
+    /* Tema (claro por defecto) */
+    --bg-page: #f3f4f6;
+    --bg-surface: #ffffff;
+    --bg-surface-2: #f8fafc;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --border-color: #e5e7eb;
+    --header-bg: rgba(28, 28, 30, 0.72);
+    --overlay-bg: rgba(15, 23, 42, 0.72);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+    --bg-page: #0d0f13;
+    --bg-surface: #181b21;
+    --bg-surface-2: #1f232b;
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --border-color: #2e333d;
+    --header-bg: rgba(10, 11, 14, 0.75);
+    --overlay-bg: rgba(0, 0, 0, 0.8);
+    --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
 /* -------------------- GENERAL -------------------- */
@@ -27,4 +50,29 @@ html{
 
 body {
     height: 100vh;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* -------------------- ANIMACIONES -------------------- */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fade-in-up {
+        animation: none;
+    }
 }

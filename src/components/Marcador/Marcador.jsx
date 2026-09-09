@@ -1,3 +1,5 @@
+import useCountUp from '../../hooks/useCountUp'
+
 function Marcador({
   titulo,
   tipo,
@@ -10,6 +12,8 @@ function Marcador({
   onNombreChange,
   color,
 }) {
+  const totalAnimado = useCountUp(total)
+
   const tecnicas = [
     { nombre: 'IPPON', puntos: 'ippon', valor: 1 },
     { nombre: 'NIBON', puntos: 'nibon', valor: 2 },
@@ -126,7 +130,7 @@ function Marcador({
 
       <div className={`marcador-total ${colorClass}`}>
         <span className="total-label">Puntaje Total</span>
-        <span className="total-numero">{total}</span>
+        <span className="total-numero">{Math.round(totalAnimado)}</span>
       </div>
     </div>
   )
