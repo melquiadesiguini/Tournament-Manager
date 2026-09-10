@@ -621,6 +621,15 @@
   background-color: #3a3a3a;
 }
 
+[data-theme='dark'] .btn-marcador-blue {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+[data-theme='dark'] .btn-marcador-blue:hover {
+  background-color: #e5e5e5;
+}
+
 .btn-marcador-red {
   background-color: #a6332a;
 }
