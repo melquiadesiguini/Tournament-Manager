@@ -409,6 +409,15 @@
   background-color: rgba(255, 255, 255, 0.15);
 }
 
+.resultado-ganador-label {
+  color: #ffd54f;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  margin-bottom: 0.5rem;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 .resultado-nombre-badge {
   background-color: rgba(255, 255, 255, 0.15);
   color: white;

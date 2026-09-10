@@ -348,6 +348,7 @@ function Kumite() {
                 &times;
               </button>
 
+              <div className="resultado-ganador-label">🏆 GANADOR</div>
               <div className="resultado-nombre-badge">{nombreDe(ganador)}</div>
 
               <div className="resultado-cards">
