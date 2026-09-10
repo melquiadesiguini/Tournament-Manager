@@ -527,6 +527,7 @@
 
 /* Estilos del Marcador */
 .marcador {
+  min-width: 0;
   padding: 1.5rem;
   background-color: var(--bg-surface-2);
   transition: background-color 0.3s ease;
@@ -659,14 +660,20 @@
 /* Faltas */
 .marcador-faltas {
   margin-bottom: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .marcador-jogai {
   margin-bottom: 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .faltas-table {
   width: 100%;
+  min-width: 340px;
+  table-layout: fixed;
   border-collapse: collapse;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
@@ -692,6 +699,11 @@
 
 .faltas-table thead th:first-child {
   background-color: var(--border-color);
+}
+
+.faltas-table th:first-child,
+.faltas-table td.falta-nombre {
+  width: 5.5rem;
 }
 
 .falta-nombre {
