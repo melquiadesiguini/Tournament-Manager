@@ -19,9 +19,9 @@ function Home() {
         <section className="cta-section">
           <div className="cta-content">
             <h2>¿Listo para tu primer combate?</h2>
-            <p>Accede al Kumite Manager y comienza a registrar combates</p>
+            <p>Accede al Tournament Manager y comienza a registrar combates</p>
             <Link to="/kumite" className="cta-button">
-              Ir a Kumite Manager
+              Ir a Tournament Manager
             </Link>
           </div>
         </section>
