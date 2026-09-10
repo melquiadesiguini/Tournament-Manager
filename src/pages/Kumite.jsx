@@ -44,7 +44,7 @@ function Kumite() {
 
   // Puntos que se le suman al RIVAL al marcar cada falta
   const PUNTOS_POR_FALTA = { KEIK: 1, 'H-CH': 2, HANS: 3, J2: 1, J3: 2, J4: 3 }
-  const esFaltaGanadora = (columna) => columna === 'HANS' || columna === 'J4'
+  const esFaltaGanadora = (columna) => columna === 'HANS' || columna === 'J4' || columna === 'SHIK'
 
   // Calcular el total a partir de un objeto de estado de competidor
   const calcularTotalDesde = (estadoCompetidor) =>
