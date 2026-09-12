@@ -109,10 +109,6 @@ function Kata() {
       setErrors('❌ Debes seleccionar el sistema de jueces')
       return false
     }
-    if (!kata.trim()) {
-      setErrors('❌ El nombre del kata es requerido')
-      return false
-    }
     if (!competitor.trim()) {
       setErrors('❌ El nombre del competidor es requerido')
       return false

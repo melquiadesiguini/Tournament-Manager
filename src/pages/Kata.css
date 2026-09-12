@@ -415,11 +415,7 @@
 }
 
 .result-card.final .result-value-final {
-  color: #ff9800;
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #0f172a;
 }
 
 .result-subtitle {
