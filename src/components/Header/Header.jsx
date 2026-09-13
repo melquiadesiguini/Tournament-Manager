@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import logo from '../../assets/images/LOGO ZOK.PNG'
 import useTheme from '../../hooks/useTheme'
+import useClock from '../../hooks/useClock'
+import formatDateTime from '../../utils/formatDateTime'
 import s from './Header.module.css'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()
+  const now = useClock()
 
   return (
     <header>
@@ -22,6 +25,7 @@ function Header() {
         <div className={`${s.headerContent2}`}>
           <nav className={s.containerNav}>
             <div className={s.containerNav2}>
+              <span className={s.clock}>{formatDateTime(now)}</span>
               <Link to="/">Home</Link>
               <Link to="/kata">Kata</Link>
               <Link to="/kumite">Kumite</Link>
