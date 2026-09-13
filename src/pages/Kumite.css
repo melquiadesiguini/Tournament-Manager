@@ -2,6 +2,7 @@
 .kumite-container {
   background-color: var(--bg-page);
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 1.5rem;
   flex: 1;
   transition: background-color 0.3s ease;
