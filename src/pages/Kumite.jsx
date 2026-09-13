@@ -5,11 +5,13 @@ import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
+import useFitToScreen from '../hooks/useFitToScreen'
 import '../pages/Kumite.css'
 
 function Kumite() {
   const containerRef = useRef(null)
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
+  const { contentRef, scale } = useFitToScreen(isFullscreen)
 
   const [categoria, setCategoria] = useState('')
   const [duration, setDuration] = useState(180)
@@ -225,7 +227,11 @@ function Kumite() {
           {isFullscreen ? '✕' : '⛶'}
         </button>
 
-        <div className="kumite-wrapper">
+        <div
+          className="kumite-wrapper"
+          ref={contentRef}
+          style={isFullscreen ? { transform: `scale(${scale})`, transformOrigin: 'top center' } : undefined}
+        >
           {/* Header del Kumite */}
           <div className="kumite-header">
 

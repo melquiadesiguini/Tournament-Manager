@@ -3,11 +3,13 @@ import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
+import useFitToScreen from '../hooks/useFitToScreen'
 import './Kata.css'
 
 function Kata() {
   const containerRef = useRef(null)
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
+  const { contentRef, scale } = useFitToScreen(isFullscreen)
 
   const [judgeSystem, setJudgeSystem] = useState(null)
   const [kata, setKata] = useState('')
@@ -208,6 +210,10 @@ function Kata() {
           {isFullscreen ? '✕' : '⛶'}
         </button>
 
+        <div
+          ref={contentRef}
+          style={isFullscreen ? { transform: `scale(${scale})`, transformOrigin: 'top center' } : undefined}
+        >
         {errors && <div className="error-message">{errors}</div>}
         {success && <div className="success-message">{success}</div>}
         
@@ -324,8 +330,11 @@ function Kata() {
             <button className="btn-finalize" onClick={handleFinalize}>
               FINALIZAR Y GUARDAR
             </button>
- 
-            {showResults && (
+          </>
+        )}
+        </div>
+
+        {showResults && (
               <div className="results-overlay" onClick={() => setShowResults(false)}>
                 <div className="results-board" onClick={(e) => e.stopPropagation()}>
                 <button
@@ -397,8 +406,6 @@ function Kata() {
                 </div>
               </div>
             )}
-          </>
-        )}
       </main>
       <Footer />
     </>
