@@ -223,6 +223,8 @@ function Kumite() {
     categoria,
     duration,
     enchoSen,
+    // el cartel de ganador se refleja en la pantalla pública mientras esté abierto
+    ganador: ganador && ganador !== 'empate' && resultadoVisible ? ganador : null,
     shiro: { nombre: nombres.shiro.trim(), total: calcularTotal('shiro'), faltas: faltas.shiro },
     aka: { nombre: nombres.aka.trim(), total: calcularTotal('aka'), faltas: faltas.aka },
   })

@@ -8,6 +8,7 @@
   padding: 2vh 2vw;
   background: #0b1020;
   color: #ffffff;
+  isolation: isolate;
   user-select: none;
   -webkit-user-select: none;
   cursor: none;
@@ -84,9 +85,8 @@
 }
 
 .pk-nombre {
-  font-weight: 700;
-  opacity: 0.85;
-  font-size: clamp(16px, 3vh, 40px);
+  font-weight: 800;
+  font-size: clamp(20px, 5vh, 64px);
   min-height: 1.2em;
   overflow: hidden;
   white-space: nowrap;
@@ -136,6 +136,87 @@
 
 .pk-faltas td:not(.pk-falta-nombre) {
   height: 2.6vh;
+}
+
+/* Cartel de ganador (cubre toda la pantalla) */
+.pk-ganador {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3vh;
+  padding: 3vh 4vw;
+  text-align: center;
+  color: #fff;
+  animation: pk-ganador-in 0.4s ease-out;
+}
+
+@keyframes pk-ganador-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.pk-ganador-shiro {
+  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+}
+
+.pk-ganador-aka {
+  background: linear-gradient(135deg, #c4453a 0%, #7c2620 100%);
+}
+
+.pk-ganador-label {
+  color: #ffd54f;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  font-size: clamp(40px, 12vh, 180px);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.pk-ganador-nombre {
+  max-width: 92vw;
+  padding: 1.5vh 3vw;
+  border-radius: 2vh;
+  background: rgba(255, 255, 255, 0.15);
+  font-weight: 800;
+  font-size: clamp(28px, 8vh, 120px);
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.pk-ganador-card {
+  background: #fff;
+  color: #0f172a;
+  border-radius: 2vh;
+  padding: 2vh 5vw;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.pk-ganador-card-label {
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  font-size: clamp(12px, 2.4vh, 32px);
+}
+
+.pk-ganador-card-valor {
+  font-weight: 900;
+  line-height: 1;
+  font-size: clamp(60px, 22vh, 320px);
+}
+
+.pk-ganador-vs {
+  opacity: 0.85;
+  font-size: clamp(16px, 3.4vh, 44px);
 }
 
 .pk-shiro .pk-falta-marcada {

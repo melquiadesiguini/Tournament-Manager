@@ -53,12 +53,32 @@ function Competidor({ lado, titulo, datos }) {
   return (
     <section className={`pk-competidor pk-${lado}`}>
       <div className="pk-titulo">{titulo}</div>
-      <div className="pk-nombre">{datos.nombre}</div>
+      <div className="pk-nombre">{datos.nombre || ' '}</div>
       <div className="pk-total">{datos.total}</div>
       <div className="pk-total-label">Puntaje total</div>
       <TablaFaltas filas={FILAS_FALTAS} columnas={COLUMNAS_FALTAS} faltas={datos.faltas} />
       <TablaFaltas filas={FILA_JOGAI} columnas={COLUMNAS_JOGAI} faltas={datos.faltas} />
     </section>
+  )
+}
+
+const NOMBRE_POR_DEFECTO = { shiro: 'SHIRO (BLANCO)', aka: 'AKA (ROJO)' }
+
+function CartelGanador({ lado, state }) {
+  const rival = lado === 'shiro' ? 'aka' : 'shiro'
+  const nombreDe = (l) => state[l].nombre || NOMBRE_POR_DEFECTO[l]
+  return (
+    <div className={`pk-ganador pk-ganador-${lado}`}>
+      <div className="pk-ganador-label">🏆 GANADOR</div>
+      <div className="pk-ganador-nombre">{nombreDe(lado)}</div>
+      <div className="pk-ganador-card">
+        <div className="pk-ganador-card-label">Puntaje final</div>
+        <div className="pk-ganador-card-valor">{state[lado].total}</div>
+      </div>
+      <div className="pk-ganador-vs">
+        vs {nombreDe(rival)}: {state[rival].total}
+      </div>
+    </div>
   )
 }
 
@@ -75,6 +95,8 @@ function PantallaKumite({ state }) {
         <Competidor lado="shiro" titulo="SHIRO (BLANCO)" datos={state.shiro} />
         <Competidor lado="aka" titulo="AKA (ROJO)" datos={state.aka} />
       </div>
+
+      {state.ganador && <CartelGanador lado={state.ganador} state={state} />}
     </div>
   )
 }
