@@ -166,7 +166,22 @@
 }
 
 .pk-ganador-shiro {
-  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ebe9e3 100%);
+  color: #1a1a1a;
+}
+
+.pk-ganador-shiro .pk-ganador-label {
+  color: #b7791f;
+  text-shadow: none;
+}
+
+.pk-ganador-shiro .pk-ganador-nombre {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.pk-ganador-shiro .pk-ganador-card {
+  background: #1a1a1a;
+  color: #ffffff;
 }
 
 .pk-ganador-aka {
