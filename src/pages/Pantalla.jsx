@@ -1,4 +1,4 @@
-import { useDisplayState } from '../hooks/usePublicDisplay'
+import { useDisplayState, usePublicTheme } from '../hooks/usePublicDisplay'
 import './Kata.css'
 import './Pantalla.css'
 
@@ -105,6 +105,7 @@ function PantallaKumite({ state }) {
 
 function Pantalla() {
   const state = useDisplayState()
+  usePublicTheme()
 
   if (!state) {
     return (

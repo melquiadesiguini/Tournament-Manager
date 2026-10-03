@@ -45,6 +45,27 @@ export function usePublishLive(payload) {
   useEffect(() => () => writeDisplay(null), [])
 }
 
+// Pantalla pública: usa el mismo tema (claro/oscuro) que el panel de control.
+// El tema se guarda en localStorage ('theme'), así que al cambiarlo en el
+// panel esta ventana se entera por el evento 'storage'.
+export function usePublicTheme() {
+  useEffect(() => {
+    const aplicar = () => {
+      const guardado = localStorage.getItem('theme')
+      const oscuro =
+        guardado === 'dark' ||
+        (guardado !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+      document.documentElement.setAttribute('data-theme', oscuro ? 'dark' : 'light')
+    }
+    const onStorage = (e) => {
+      if (e.key === 'theme' || e.key === null) aplicar()
+    }
+    aplicar()
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+}
+
 // Pantalla pública: se actualiza cuando el panel de control publica algo.
 export function useDisplayState() {
   const [state, setState] = useState(readDisplay)
