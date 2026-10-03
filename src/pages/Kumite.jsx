@@ -6,6 +6,7 @@ import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
+import { openPublicDisplay } from '../hooks/usePublicDisplay'
 import '../pages/Kumite.css'
 
 function Kumite() {
@@ -225,6 +226,15 @@ function Kumite() {
           title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
         >
           {isFullscreen ? '✕' : '⛶'}
+        </button>
+
+        <button
+          type="button"
+          className="btn-display"
+          onClick={openPublicDisplay}
+          title="Abrir la pantalla pública para el segundo monitor"
+        >
+          🖥️ Pantalla pública
         </button>
 
         <div
