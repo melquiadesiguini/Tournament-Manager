@@ -795,3 +795,22 @@
   padding: clamp(12px, 2.2vh, 28px) clamp(24px, 3vw, 56px);
   border-radius: clamp(8px, 1.4vh, 16px);
 }
+
+/* Puntaje final como protagonista del cartel */
+.results-overlay .results-grid {
+  grid-template-columns: 1fr;
+}
+
+.results-overlay .result-card.final .result-icon {
+  font-size: clamp(52px, 8vh, 120px);
+}
+
+.results-overlay .result-card.final .result-label {
+  font-size: clamp(18px, 3.4vh, 42px);
+  letter-spacing: 0.15em;
+}
+
+.results-overlay .result-card.final .result-value-final {
+  font-size: clamp(72px, min(19.5vh, 22vw), 260px);
+  line-height: 1;
+}
