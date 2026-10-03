@@ -166,29 +166,45 @@ function Kumite() {
     }
   }
 
-  // Atajos de teclado: I = iniciar, P = pausar, R = reiniciar el cronómetro.
+  // Atajos de teclado: Espacio = iniciar/pausar, R = reiniciar el cronómetro.
   // Se ignoran al escribir en un campo (nombres, categoría) y con Ctrl/Alt/Cmd
   // (por ejemplo Ctrl+R recarga la página).
-  const controlTimerRef = useRef(controlTimer)
+  const timerRef = useRef({ controlTimer, timerActive })
   useEffect(() => {
-    controlTimerRef.current = controlTimer
+    timerRef.current = { controlTimer, timerActive }
   })
   useEffect(() => {
-    const ACCIONES = { i: 'start', p: 'pause', r: 'reset' }
-    const onKeyDown = (e) => {
-      if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return
+    const escribiendoEnCampo = (e) => {
       const t = e.target
-      if (t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
-        return
-      }
-      const accion = ACCIONES[e.key.toLowerCase()]
-      if (accion) {
-        e.preventDefault()
-        controlTimerRef.current(accion)
-      }
+      return (
+        t instanceof HTMLElement &&
+        (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))
+      )
+    }
+    const atajoDe = (e) => {
+      if (e.ctrlKey || e.altKey || e.metaKey || escribiendoEnCampo(e)) return null
+      if (e.code === 'Space') return 'alternar'
+      if (e.key.toLowerCase() === 'r') return 'reset'
+      return null
+    }
+    const onKeyDown = (e) => {
+      const atajo = atajoDe(e)
+      if (!atajo) return
+      e.preventDefault() // evita el scroll de la página con Espacio
+      if (e.repeat) return
+      const { controlTimer: control, timerActive: activo } = timerRef.current
+      control(atajo === 'alternar' ? (activo ? 'pause' : 'start') : 'reset')
+    }
+    // Si un botón tiene el foco, Espacio lo "clickearía" al soltar la tecla
+    const onKeyUp = (e) => {
+      if (e.code === 'Space' && atajoDe(e)) e.preventDefault()
     }
     window.addEventListener('keydown', onKeyDown)
-    return () => window.removeEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
+    }
   }, [])
 
   const nombreResultado = (valor) => {
@@ -312,7 +328,7 @@ function Kumite() {
               <button
                 onClick={() => controlTimer(timerActive ? 'pause' : 'start')}
                 className={`btn-timer ${timerActive ? 'btn-pause' : 'btn-start'}`}
-                title={timerActive ? 'Pausar (P)' : 'Iniciar (I)'}
+                title={timerActive ? 'Pausar (Espacio)' : 'Iniciar (Espacio)'}
               >
                 {timerActive ? 'PAUSAR' : 'INICIAR'}
               </button>
