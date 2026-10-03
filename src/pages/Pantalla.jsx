@@ -1,4 +1,5 @@
 import { useDisplayState, usePublicTheme } from '../hooks/usePublicDisplay'
+import useArea, { etiquetaArea } from '../hooks/useArea'
 import './Kata.css'
 import './Pantalla.css'
 
@@ -84,11 +85,12 @@ function CartelGanador({ lado, state }) {
   )
 }
 
-function PantallaKumite({ state }) {
+function PantallaKumite({ state, area }) {
+  const titulo = [area && etiquetaArea(area), state.categoria || 'KUMITE'].filter(Boolean).join(' · ')
   return (
     <div className="pk-pantalla" onDoubleClick={toggleFullscreen}>
       <div className="pk-cabecera">
-        <div className="pk-categoria">{state.categoria || 'KUMITE'}</div>
+        <div className="pk-categoria">{titulo}</div>
         <div className="pk-reloj">{formatearTiempo(state.duration)}</div>
         {state.enchoSen && <div className="pk-encho">ENCHO-SEN</div>}
       </div>
@@ -104,11 +106,13 @@ function PantallaKumite({ state }) {
 }
 
 // Destreza en vivo: nombre del equipo y cronómetro grande
-function PantallaDestreza({ state }) {
+function PantallaDestreza({ state, area }) {
   return (
     <div className="pk-pantalla" onDoubleClick={toggleFullscreen}>
       <div className="pk-vivo">
-        <div className="pk-categoria">DESTREZA</div>
+        <div className="pk-categoria">
+          {[area && etiquetaArea(area), 'DESTREZA'].filter(Boolean).join(' · ')}
+        </div>
         <div className="pk-vivo-nombre">{state.equipo || ' '}</div>
         <div className="pk-reloj pk-reloj-grande">{formatearTiempo(state.duration)}</div>
       </div>
@@ -119,11 +123,14 @@ function PantallaDestreza({ state }) {
 function Pantalla() {
   const state = useDisplayState()
   usePublicTheme()
+  const { area } = useArea()
 
   if (!state) {
     return (
       <div className="pantalla-espera" onDoubleClick={toggleFullscreen}>
-        <div className="pantalla-espera-titulo">TOURNAMENT MANAGER</div>
+        <div className="pantalla-espera-titulo">
+          {area ? etiquetaArea(area) : 'TOURNAMENT MANAGER'}
+        </div>
         <div className="pantalla-espera-texto">Esperando resultado…</div>
         <div className="pantalla-espera-ayuda">Doble clic para pantalla completa</div>
       </div>
@@ -131,17 +138,18 @@ function Pantalla() {
   }
 
   if (state.tipo === 'kumite') {
-    return <PantallaKumite state={state} />
+    return <PantallaKumite state={state} area={area} />
   }
 
   if (state.tipo === 'destreza') {
-    return <PantallaDestreza state={state} />
+    return <PantallaDestreza state={state} area={area} />
   }
 
   return (
     <div className="results-overlay pantalla-publica" onDoubleClick={toggleFullscreen}>
       <div className="results-board">
         <div className="pantalla-modulo">
+          {area && `${etiquetaArea(area)} · `}
           {state.modulo}
           {state.duration != null && ` · ${formatearTiempo(state.duration)}`}
         </div>

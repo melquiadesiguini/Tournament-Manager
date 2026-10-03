@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import logo from '../../assets/images/LOGO ZOK.PNG'
 import useTheme from '../../hooks/useTheme'
+import useArea from '../../hooks/useArea'
 import s from './Header.module.css'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()
+  const { area, setArea } = useArea()
 
   return (
     <header>
@@ -27,6 +29,19 @@ function Header() {
               <Link to="/kumite">Kumite</Link>
               <Link to="/kobudo">Kobudo</Link>
               <Link to="/destreza">Destreza</Link>
+              <label className={s.area} title="Número de área: se muestra en la pantalla pública">
+                Área N°
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  className={s.areaInput}
+                  value={area}
+                  onChange={(e) => setArea(e.target.value)}
+                  placeholder="–"
+                  maxLength={3}
+                  aria-label="Número de área"
+                />
+              </label>
               <button
                 type="button"
                 className={s.themeToggle}
