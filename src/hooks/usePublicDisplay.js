@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'tm-display'
-const KANSA_KEY = 'tm-kansa'
 
 function writeDisplay(payload) {
   try {
@@ -44,37 +43,6 @@ export function usePublishLive(payload) {
   }, [json])
 
   useEffect(() => () => writeDisplay(null), [])
-}
-
-// Kansa -> Mesa: la ventana de Kansa envía la salida elegida (SHIKAKU, KIKEN u
-// ORDEN MÉDICA) y la ventana de la Mesa la aplica, como si la hubiera tocado ahí.
-export function enviarSalidaKansa(competidor, motivo) {
-  try {
-    localStorage.setItem(KANSA_KEY, JSON.stringify({ competidor, motivo, t: Date.now() }))
-  } catch {
-    // sin acceso a localStorage: la Mesa no se entera
-  }
-}
-
-export function useSalidasKansa(alRecibir) {
-  const alRecibirRef = useRef(alRecibir)
-  useEffect(() => {
-    alRecibirRef.current = alRecibir
-  })
-
-  useEffect(() => {
-    const onStorage = (e) => {
-      if (e.key !== KANSA_KEY || !e.newValue) return
-      try {
-        const { competidor, motivo } = JSON.parse(e.newValue)
-        alRecibirRef.current(competidor, motivo)
-      } catch {
-        // mensaje inválido: se ignora
-      }
-    }
-    window.addEventListener('storage', onStorage)
-    return () => window.removeEventListener('storage', onStorage)
-  }, [])
 }
 
 // Pantalla pública: usa el mismo tema (claro/oscuro) que el panel de control.

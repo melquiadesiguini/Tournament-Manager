@@ -1,4 +1,4 @@
-/* ===== Selección de modo de Kumite (Mesa / Kansa) y vista de Kansa ===== */
+﻿/* ===== SelecciÃ³n de modo de Kumite (Mesa / Kansa) y vista de Kansa ===== */
 .modo-container {
   background-color: var(--bg-page);
   color: var(--text-primary);
@@ -88,78 +88,14 @@
 }
 
 /* Vista de Kansa */
-.kansa-aviso {
-  max-width: 40rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  background-color: #fef3c7;
-  color: #92400e;
-  text-align: center;
-  font-weight: 600;
-}
-
-.kansa-aviso a {
-  color: inherit;
-  text-decoration: underline;
-}
-
-.kansa-ganador {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  background-color: #fef3c7;
-  color: #92400e;
-  font-weight: 800;
-  font-size: 1.25rem;
-}
-
-.kansa-columnas {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.5rem;
-  width: 100%;
-  max-width: 60rem;
-  margin-top: 1rem;
-}
-
-.kansa-lado {
-  border-radius: 0.75rem;
-}
-
-.kansa-nombre {
-  text-align: center;
-  font-weight: 700;
-  font-size: 1.25rem;
-  min-height: 1.5em;
-  margin-bottom: 0.5rem;
-}
-
-/* Botones más grandes que en el tablero de la Mesa */
-.kansa-salidas {
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-}
-
-.kansa-salidas .btn-salida {
-  padding: 1.1rem 0.5rem;
-}
-
-.kansa-salidas .btn-salida-motivo {
-  font-size: 1.1rem;
-}
-
-.kansa-salidas .btn-salida-detalle {
-  font-size: 0.85rem;
-}
-
-.btn-salida:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
+.kansa-titulo {
+  font-size: 1.75rem;
+  font-weight: 900;
+  letter-spacing: 0.2em;
 }
 
 @media (max-width: 640px) {
-  .modo-opciones,
-  .kansa-columnas {
+  .modo-opciones {
     grid-template-columns: 1fr;
   }
 }
