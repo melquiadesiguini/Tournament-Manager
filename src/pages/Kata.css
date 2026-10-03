@@ -21,6 +21,15 @@
   width: 100%;
 }
 
+/* Contenido interno (medido por useFitToScreen en Destreza) */
+.kata-content-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
 /* ================= SELECTOR DE SISTEMA DE JUECES ================= */
 .judge-system-selector {
   width: 90%;

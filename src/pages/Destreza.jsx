@@ -4,6 +4,7 @@ import Footer from '../components/Footer/Footer'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
+import useAtajosCronometro from '../hooks/useAtajosCronometro'
 import Timer from '../components/Timer/Timer'
 import { usePublishResult, openPublicDisplay } from '../hooks/usePublicDisplay'
 import './Kata.css'
@@ -12,10 +13,13 @@ import './Kumite.css' // estilos del cronómetro (compartidos con Kumite)
 // Duración inicial del cronómetro (en milisegundos); se puede editar a mano
 const DURACION_DESTREZA = 60 * 1000
 
+// Relleno vertical (arriba + abajo) del contenedor en pantalla completa
+const PADDING_PANTALLA_COMPLETA = 40
+
 function Destreza() {
   const containerRef = useRef(null)
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
-  const { contentRef, scale } = useFitToScreen(isFullscreen)
+  const { contentRef, scale } = useFitToScreen(isFullscreen, PADDING_PANTALLA_COMPLETA, true)
 
   const [judgeSystem, setJudgeSystem] = useState(null)
   const [competitor, setCompetitor] = useState('') // nombre del equipo
@@ -195,6 +199,13 @@ function Destreza() {
     }
   }
 
+  // Atajos: Espacio inicia/pausa, R reinicia (no con el cartel de resultados abierto)
+  const botonInicioRef = useAtajosCronometro({
+    controlTimer,
+    timerActive,
+    habilitado: !showResults,
+  })
+
   const resetForm = () => {
     setCompetitor('')
     controlTimer('reset')
@@ -230,7 +241,7 @@ function Destreza() {
   return (
     <>
       <Header />
-      <main className="kata-container" ref={containerRef}>
+      <main className="kata-container" ref={containerRef} style={isFullscreen ? { overflow: 'hidden' } : undefined}>
         <button
           type="button"
           className="btn-fullscreen"
@@ -250,10 +261,26 @@ function Destreza() {
           🖥️ Pantalla pública
         </button>
 
+        {/* En pantalla completa el contenido se ajusta (escala) para ocupar justo el
+            100% del ancho y del alto de la pantalla */}
         <div
           className="kata-content"
+          style={
+            isFullscreen
+              ? {
+                  width: `calc(100% / ${scale})`,
+                  minHeight: `calc((100dvh - ${PADDING_PANTALLA_COMPLETA}px) / ${scale})`,
+                  transform: `scale(${scale})`,
+                  transformOrigin: 'top left',
+                  alignSelf: 'flex-start',
+                }
+              : undefined
+          }
+        >
+        <div
+          className="kata-content-inner"
           ref={contentRef}
-          style={isFullscreen ? { transform: `scale(${scale})`, transformOrigin: 'top center' } : undefined}
+          style={isFullscreen ? { flex: 1, justifyContent: 'space-evenly' } : undefined}
         >
         {errors && <div className="error-message">{errors}</div>}
         {success && <div className="success-message">{success}</div>}
@@ -313,12 +340,18 @@ function Destreza() {
             </div>
             <div className="timer-buttons destreza-cronometro-botones">
               <button
+                ref={botonInicioRef}
                 onClick={() => controlTimer(timerActive ? 'pause' : 'start')}
                 className={`btn-timer ${timerActive ? 'btn-pause' : 'btn-start'}`}
+                title={timerActive ? 'Pausar (Espacio)' : 'Iniciar (Espacio)'}
               >
                 {timerActive ? 'PAUSAR' : 'INICIAR'}
               </button>
-              <button onClick={() => controlTimer('reset')} className="btn-timer btn-reset">
+              <button
+                onClick={() => controlTimer('reset')}
+                className="btn-timer btn-reset"
+                title="Reiniciar (R)"
+              >
                 REINICIAR
               </button>
             </div>
@@ -385,6 +418,7 @@ function Destreza() {
             </button>
           </>
         )}
+        </div>
         </div>
 
         {showResults && (
