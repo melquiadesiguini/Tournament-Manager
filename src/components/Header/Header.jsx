@@ -25,6 +25,8 @@ function Header() {
               <Link to="/">Home</Link>
               <Link to="/kata">Kata</Link>
               <Link to="/kumite">Kumite</Link>
+              <Link to="/kobudo">Kobudo</Link>
+              <Link to="/destreza">Destreza</Link>
               <button
                 type="button"
                 className={s.themeToggle}

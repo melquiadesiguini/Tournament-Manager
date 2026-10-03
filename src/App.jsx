@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Kata from './pages/Kata'
 import Kumite from './pages/Kumite'
+import Kobudo from './pages/Kobudo'
+import Destreza from './pages/Destreza'
 
 function App() {
   return (
@@ -10,6 +12,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/kata" element={<Kata />} />
         <Route path="/kumite" element={<Kumite />} />
+        <Route path="/kobudo" element={<Kobudo />} />
+        <Route path="/destreza" element={<Destreza />} />
       </Routes>
     </BrowserRouter>
   )
