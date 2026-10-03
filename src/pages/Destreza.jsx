@@ -6,7 +6,7 @@ import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
 import useAtajosCronometro from '../hooks/useAtajosCronometro'
 import Timer from '../components/Timer/Timer'
-import { usePublishResult, openPublicDisplay } from '../hooks/usePublicDisplay'
+import { usePublishLive, openPublicDisplay } from '../hooks/usePublicDisplay'
 import './Kata.css'
 import './Kumite.css' // estilos del cronómetro (compartidos con Kumite)
 
@@ -227,16 +227,25 @@ function Destreza() {
   }
  
   // Publica el resultado en la pantalla pública (segundo monitor)
-  usePublishResult(showResults, () => ({
-    modulo: 'Destreza',
-    competitor,
-    finalScore: String(getFinalScore()),
-    scores: getFilledScoresInOrder().map((item) => ({
-      label: `Juez ${(item.judgeNumber === 3 && judgeSystem === 3) || (item.judgeNumber === 5 && judgeSystem === 5) ? 'Central' : `Nº${item.judgeNumber}`}`,
-      score: item.score,
-      included: isScoreIncluded(item.judgeId),
-    })),
-  }))
+  // Mientras se califica se muestra el cronómetro en vivo con el nombre del equipo;
+  // al finalizar, el resultado (con el tiempo). Sin sistema de jueces elegido no se publica nada.
+  usePublishLive(
+    !judgeSystem
+      ? null
+      : showResults
+        ? {
+            modulo: 'Destreza',
+            competitor,
+            duration,
+            finalScore: String(getFinalScore()),
+            scores: getFilledScoresInOrder().map((item) => ({
+              label: `Juez ${(item.judgeNumber === 3 && judgeSystem === 3) || (item.judgeNumber === 5 && judgeSystem === 5) ? 'Central' : `Nº${item.judgeNumber}`}`,
+              score: item.score,
+              included: isScoreIncluded(item.judgeId),
+            })),
+          }
+        : { tipo: 'destreza', equipo: competitor.trim(), duration }
+  )
 
   return (
     <>

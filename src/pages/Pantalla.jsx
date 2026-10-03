@@ -103,6 +103,19 @@ function PantallaKumite({ state }) {
   )
 }
 
+// Destreza en vivo: nombre del equipo y cronómetro grande
+function PantallaDestreza({ state }) {
+  return (
+    <div className="pk-pantalla" onDoubleClick={toggleFullscreen}>
+      <div className="pk-vivo">
+        <div className="pk-categoria">DESTREZA</div>
+        <div className="pk-vivo-nombre">{state.equipo || ' '}</div>
+        <div className="pk-reloj pk-reloj-grande">{formatearTiempo(state.duration)}</div>
+      </div>
+    </div>
+  )
+}
+
 function Pantalla() {
   const state = useDisplayState()
   usePublicTheme()
@@ -121,10 +134,17 @@ function Pantalla() {
     return <PantallaKumite state={state} />
   }
 
+  if (state.tipo === 'destreza') {
+    return <PantallaDestreza state={state} />
+  }
+
   return (
     <div className="results-overlay pantalla-publica" onDoubleClick={toggleFullscreen}>
       <div className="results-board">
-        <div className="pantalla-modulo">{state.modulo}</div>
+        <div className="pantalla-modulo">
+          {state.modulo}
+          {state.duration != null && ` · ${formatearTiempo(state.duration)}`}
+        </div>
 
         <div className="system-badge">{state.competitor}</div>
 
