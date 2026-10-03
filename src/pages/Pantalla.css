@@ -176,12 +176,16 @@
 }
 
 .pk-ganador-shiro .pk-ganador-nombre {
-  background: rgba(0, 0, 0, 0.08);
+  background: #dcdad4;
 }
 
 .pk-ganador-shiro .pk-ganador-card {
-  background: #1a1a1a;
-  color: #ffffff;
+  background: #dcdad4;
+  color: #1a1a1a;
+}
+
+.pk-ganador-shiro .pk-ganador-card-label {
+  color: #555;
 }
 
 .pk-ganador-aka {

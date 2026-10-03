@@ -402,17 +402,21 @@
 }
 
 .resultado-board.marcador-blue .resultado-nombre-badge {
-  background-color: rgba(0, 0, 0, 0.08);
+  background-color: #dcdad4;
   color: #1a1a1a;
 }
 
 .resultado-board.marcador-blue .resultado-card {
-  background: #1a1a1a;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  background: #dcdad4;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.resultado-board.marcador-blue .resultado-card-label {
+  color: #555;
 }
 
 .resultado-board.marcador-blue .resultado-card-valor {
-  color: #ffffff;
+  color: #1a1a1a;
 }
 
 .resultado-board.marcador-blue .resultado-vs {
