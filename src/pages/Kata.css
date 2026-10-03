@@ -12,6 +12,15 @@
   transition: background-color 0.3s ease;
 }
 
+/* Contenedor del contenido (escalable en pantalla completa) */
+.kata-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
 /* ================= SELECTOR DE SISTEMA DE JUECES ================= */
 .judge-system-selector {
   width: 90%;
@@ -271,6 +280,8 @@
   cursor: pointer;
   transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(255, 107, 91, 0.3);
+  display: block;
+  margin: 30px auto;
 }
 
 .btn-finalize:hover {

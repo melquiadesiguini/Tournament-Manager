@@ -212,6 +212,7 @@ function Destreza() {
         </button>
 
         <div
+          className="kata-content"
           ref={contentRef}
           style={isFullscreen ? { transform: `scale(${scale})`, transformOrigin: 'top center' } : undefined}
         >
