@@ -32,6 +32,74 @@
   color: #ffffff;
 }
 
+/* ===== Pantalla pública de Kata / Kobudo / Destreza: sigue el tema de la app ===== */
+/* tema claro (por defecto) */
+.pantalla-publica .results-board {
+  background: #e5e7eb;
+}
+
+.pantalla-publica .pantalla-modulo {
+  color: #374151;
+}
+
+.pantalla-publica .system-badge {
+  background-color: #f5f4f0;
+  color: #111827;
+  border: 2px solid #9ca3af;
+}
+
+.pantalla-publica .result-label,
+.pantalla-publica .score-position,
+.pantalla-publica .judge-label {
+  color: #6b7280;
+}
+
+/* tema oscuro */
+[data-theme='dark'] .pantalla-publica .results-board {
+  background: #0f172a;
+}
+
+[data-theme='dark'] .pantalla-publica .pantalla-modulo {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme='dark'] .pantalla-publica .system-badge {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: transparent;
+}
+
+[data-theme='dark'] .pantalla-publica .result-card,
+[data-theme='dark'] .pantalla-publica .results-detail {
+  background: #1e293b;
+}
+
+[data-theme='dark'] .pantalla-publica .result-label,
+[data-theme='dark'] .pantalla-publica .score-position,
+[data-theme='dark'] .pantalla-publica .judge-label {
+  color: #9ca3af;
+}
+
+[data-theme='dark'] .pantalla-publica .result-card.final .result-value-final,
+[data-theme='dark'] .pantalla-publica .results-detail h3,
+[data-theme='dark'] .pantalla-publica .score-value {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .pantalla-publica .score-item {
+  background-color: #0f172a;
+  border-color: #334155;
+}
+
+[data-theme='dark'] .pantalla-publica .score-item.discarded {
+  background-color: rgba(244, 67, 54, 0.15);
+  border-color: #f44336;
+}
+
+[data-theme='dark'] .pantalla-publica .score-item.discarded .score-value {
+  color: #ff8a80;
+}
+
 .pk-cabecera {
   position: relative;
   display: flex;
