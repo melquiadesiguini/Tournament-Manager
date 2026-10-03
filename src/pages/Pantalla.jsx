@@ -1,9 +1,82 @@
 import { useDisplayState } from '../hooks/usePublicDisplay'
 import './Kata.css'
+import './Pantalla.css'
 
 function toggleFullscreen() {
   if (document.fullscreenElement) document.exitFullscreen()
   else document.documentElement.requestFullscreen?.()
+}
+
+const FILAS_FALTAS = [
+  { clave: 'chukoku', nombre: 'CHUKOKU' },
+  { clave: 'mubobi', nombre: 'MUBOBI' },
+]
+const FILA_JOGAI = [{ clave: 'jogai', nombre: 'JOGAI' }]
+const COLUMNAS_FALTAS = ['ADV', 'KEIK', 'H-CH', 'HANS', 'SHIK']
+const COLUMNAS_JOGAI = ['J1', 'J2', 'J3', 'J4']
+
+function formatearTiempo(segundos) {
+  const m = Math.floor(segundos / 60).toString().padStart(2, '0')
+  const s = (segundos % 60).toString().padStart(2, '0')
+  return `${m}:${s}`
+}
+
+function TablaFaltas({ filas, columnas, faltas }) {
+  return (
+    <table className="pk-faltas">
+      <thead>
+        <tr>
+          <th>FALTAS</th>
+          {columnas.map((c) => (
+            <th key={c}>{c}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {filas.map((fila) => (
+          <tr key={fila.clave}>
+            <td className="pk-falta-nombre">{fila.nombre}</td>
+            {columnas.map((c) => (
+              <td
+                key={c}
+                className={faltas[fila.clave].includes(c) ? 'pk-falta-marcada' : ''}
+              />
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function Competidor({ lado, titulo, datos }) {
+  return (
+    <section className={`pk-competidor pk-${lado}`}>
+      <div className="pk-titulo">{titulo}</div>
+      <div className="pk-nombre">{datos.nombre}</div>
+      <div className="pk-total">{datos.total}</div>
+      <div className="pk-total-label">Puntaje total</div>
+      <TablaFaltas filas={FILAS_FALTAS} columnas={COLUMNAS_FALTAS} faltas={datos.faltas} />
+      <TablaFaltas filas={FILA_JOGAI} columnas={COLUMNAS_JOGAI} faltas={datos.faltas} />
+    </section>
+  )
+}
+
+function PantallaKumite({ state }) {
+  return (
+    <div className="pk-pantalla" onDoubleClick={toggleFullscreen}>
+      <div className="pk-cabecera">
+        <div className="pk-categoria">{state.categoria || 'KUMITE'}</div>
+        <div className="pk-reloj">{formatearTiempo(state.duration)}</div>
+        {state.enchoSen && <div className="pk-encho">ENCHO-SEN</div>}
+      </div>
+
+      <div className="pk-columnas">
+        <Competidor lado="shiro" titulo="SHIRO (BLANCO)" datos={state.shiro} />
+        <Competidor lado="aka" titulo="AKA (ROJO)" datos={state.aka} />
+      </div>
+    </div>
+  )
 }
 
 function Pantalla() {
@@ -17,6 +90,10 @@ function Pantalla() {
         <div className="pantalla-espera-ayuda">Doble clic para pantalla completa</div>
       </div>
     )
+  }
+
+  if (state.tipo === 'kumite') {
+    return <PantallaKumite state={state} />
   }
 
   return (

@@ -6,7 +6,7 @@ import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
-import { openPublicDisplay } from '../hooks/usePublicDisplay'
+import { openPublicDisplay, usePublishLive } from '../hooks/usePublicDisplay'
 import '../pages/Kumite.css'
 
 function Kumite() {
@@ -213,6 +213,16 @@ function Kumite() {
       resetCombate()
     }
   }
+
+  // Publica el marcador en vivo para la pantalla pública (segundo monitor)
+  usePublishLive({
+    tipo: 'kumite',
+    categoria,
+    duration,
+    enchoSen,
+    shiro: { nombre: nombres.shiro.trim(), total: calcularTotal('shiro'), faltas: faltas.shiro },
+    aka: { nombre: nombres.aka.trim(), total: calcularTotal('aka'), faltas: faltas.aka },
+  })
 
   return (
     <>

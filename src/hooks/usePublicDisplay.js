@@ -33,6 +33,18 @@ export function usePublishResult(visible, buildPayload) {
   }, [visible])
 }
 
+// Panel de control (Kumite): publica el estado en vivo cada vez que cambia
+// y lo retira al salir de la página.
+export function usePublishLive(payload) {
+  const json = JSON.stringify(payload)
+
+  useEffect(() => {
+    writeDisplay(JSON.parse(json))
+  }, [json])
+
+  useEffect(() => () => writeDisplay(null), [])
+}
+
 // Pantalla pública: se actualiza cuando el panel de control publica algo.
 export function useDisplayState() {
   const [state, setState] = useState(readDisplay)

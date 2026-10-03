@@ -1,0 +1,147 @@
+/* ===== Pantalla pública de Kumite (segundo monitor) ===== */
+.pk-pantalla {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vh;
+  padding: 2vh 2vw;
+  background: #0b1020;
+  color: #ffffff;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: none;
+  overflow: hidden;
+}
+
+.pk-cabecera {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pk-categoria {
+  font-size: clamp(14px, 2.6vh, 32px);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  font-weight: 700;
+}
+
+.pk-reloj {
+  font-family: 'Courier New', monospace;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  font-size: clamp(64px, 22vh, 340px);
+}
+
+.pk-encho {
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: #dc2626;
+  padding: 0.6vh 1.6vw;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: clamp(14px, 2.6vh, 32px);
+  letter-spacing: 0.1em;
+}
+
+.pk-columnas {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2vw;
+}
+
+.pk-competidor {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 0;
+  padding: 1.5vh 1.5vw;
+  border-radius: 1.5vh;
+  text-align: center;
+}
+
+.pk-shiro {
+  background: #f5f4f0;
+  color: #1a1a1a;
+}
+
+.pk-aka {
+  background: #fbeeec;
+  color: #a6332a;
+}
+
+.pk-titulo {
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  font-size: clamp(18px, 4vh, 54px);
+}
+
+.pk-nombre {
+  font-weight: 700;
+  opacity: 0.85;
+  font-size: clamp(16px, 3vh, 40px);
+  min-height: 1.2em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pk-total {
+  font-weight: 900;
+  line-height: 1;
+  font-size: clamp(80px, 30vh, 420px);
+  margin-top: auto;
+}
+
+.pk-total-label {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  font-size: clamp(12px, 2.2vh, 28px);
+  opacity: 0.7;
+  margin-bottom: auto;
+}
+
+.pk-faltas {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1vh;
+  font-size: clamp(10px, 1.9vh, 24px);
+}
+
+.pk-faltas th,
+.pk-faltas td {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.6vh 0.3vw;
+  text-align: center;
+  font-weight: 700;
+}
+
+.pk-faltas th {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.pk-falta-nombre {
+  text-align: left !important;
+  padding-left: 0.6vw !important;
+  white-space: nowrap;
+}
+
+.pk-faltas td:not(.pk-falta-nombre) {
+  height: 2.6vh;
+}
+
+.pk-shiro .pk-falta-marcada {
+  background: #1a1a1a;
+}
+
+.pk-aka .pk-falta-marcada {
+  background: #a6332a;
+}
