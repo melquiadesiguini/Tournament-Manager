@@ -51,7 +51,11 @@ function Kumite() {
 
   // Puntos que se le suman al RIVAL al marcar cada falta
   const PUNTOS_POR_FALTA = { KEIK: 1, 'H-CH': 2, HANS: 3, J2: 1, J3: 2, J4: 3 }
-  const esFaltaGanadora = (columna) => columna === 'HANS' || columna === 'J4' || columna === 'SHIK'
+  const esFaltaGanadora = (columna) => columna === 'HANS' || columna === 'J4'
+
+  // Salida del combate (SHIKAKU / KIKEN / ORDEN MÉDICA): gana el otro competidor.
+  // null | { competidor, motivo }
+  const [salida, setSalida] = useState(null)
 
   // Calcular el total a partir de un objeto de estado de competidor
   const calcularTotalDesde = (estadoCompetidor) =>
@@ -127,6 +131,19 @@ function Kumite() {
     }
   }
 
+  // Marcar/desmarcar la salida de un competidor: el rival queda como ganador
+  const modificarSalida = (competidor, motivo) => {
+    if (salida?.competidor === competidor && salida.motivo === motivo) {
+      setSalida(null)
+      setGanador(null)
+      return
+    }
+    setSalida({ competidor, motivo })
+    setGanador(oponenteDe(competidor))
+    setResultadoVisible(true)
+    setTimerActive(false)
+  }
+
   // Al agotarse el tiempo: gana quien tenga más puntos, o empate (Encho-Sen)
   const handleTimeUp = () => {
     if (ganador) return
@@ -149,6 +166,7 @@ function Kumite() {
       aka: faltasVacias(),
     })
     setGanador(null)
+    setSalida(null)
     setEnchoSen(true)
     setTimerActive(false)
     setDuration(DURACION_ENCHO_SEN)
@@ -238,6 +256,7 @@ function Kumite() {
     })
     setNombres({ shiro: '', aka: '' })
     setGanador(null)
+    setSalida(null)
     setEnchoSen(false)
     setResultadoVisible(true)
     setTimerActive(false)
@@ -380,6 +399,8 @@ function Kumite() {
               onFalta={modificarFalta}
               nombre={nombres.shiro}
               onNombreChange={cambiarNombre}
+              salida={salida?.competidor === 'shiro' ? salida.motivo : null}
+              onSalida={modificarSalida}
               color="blue"
             />
             <Marcador
@@ -392,6 +413,8 @@ function Kumite() {
               onFalta={modificarFalta}
               nombre={nombres.aka}
               onNombreChange={cambiarNombre}
+              salida={salida?.competidor === 'aka' ? salida.motivo : null}
+              onSalida={modificarSalida}
               color="red"
             />
           </div>

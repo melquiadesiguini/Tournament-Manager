@@ -11,6 +11,8 @@ function Marcador({
   nombre,
   onNombreChange,
   color,
+  salida,
+  onSalida,
 }) {
   const totalAnimado = useCountUp(total)
 
@@ -20,7 +22,14 @@ function Marcador({
     { nombre: 'SANBON', puntos: 'sanbon', valor: 3 },
   ]
 
-  const columnasFaltas = ['ADV', 'KEIK', 'H-CH', 'HANS', 'SHIK']
+  // Salidas del combate: el rival de quien la recibe queda como ganador
+  const salidas = [
+    { motivo: 'SHIKAKU', detalle: 'expulsado' },
+    { motivo: 'KIKEN', detalle: 'renuncia' },
+    { motivo: 'ORDEN MÉDICA', detalle: 'no continúa' },
+  ]
+
+  const columnasFaltas = ['ADV', 'KEIK', 'H-CH', 'HANS']
   const filasFaltas = [
     { nombre: 'CHUKOKU', clave: 'chukoku' },
     { nombre: 'MUBOBI', clave: 'mubobi' },
@@ -131,6 +140,22 @@ function Marcador({
       <div className={`marcador-total ${colorClass}`}>
         <span className="total-label">Puntaje Total</span>
         <span className="total-numero">{Math.round(totalAnimado)}</span>
+      </div>
+
+      <div className={`marcador-salidas ${colorClass}`}>
+        {salidas.map(({ motivo, detalle }) => (
+          <button
+            key={motivo}
+            type="button"
+            className={`btn-salida ${salida === motivo ? 'btn-salida-activa' : ''}`}
+            onClick={() => onSalida(tipo, motivo)}
+            aria-pressed={salida === motivo}
+            title={`${motivo} (${detalle}): gana el otro competidor`}
+          >
+            <span className="btn-salida-motivo">{motivo}</span>
+            <span className="btn-salida-detalle">({detalle})</span>
+          </button>
+        ))}
       </div>
     </div>
   )

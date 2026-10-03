@@ -852,6 +852,87 @@
   color: #a6332a;
 }
 
+/* Salidas del combate: SHIKAKU / KIKEN / ORDEN MÉDICA */
+.marcador-salidas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-salida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.25rem;
+  border-radius: 0.5rem;
+  border: 2px solid currentColor;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-salida:hover {
+  transform: translateY(-1px);
+}
+
+.btn-salida-motivo {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.btn-salida-detalle {
+  font-size: 0.65rem;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.marcador-blue .btn-salida {
+  color: #1a1a1a;
+}
+
+.marcador-blue .btn-salida:hover {
+  background-color: rgba(0, 0, 0, 0.07);
+}
+
+.marcador-blue .btn-salida-activa,
+.marcador-blue .btn-salida-activa:hover {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+.marcador-red .btn-salida {
+  color: #a6332a;
+}
+
+.marcador-red .btn-salida:hover {
+  background-color: rgba(166, 51, 42, 0.1);
+}
+
+.marcador-red .btn-salida-activa,
+.marcador-red .btn-salida-activa:hover {
+  background-color: #a6332a;
+  color: #ffffff;
+}
+
+[data-theme='dark'] .marcador-blue .btn-salida {
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .marcador-blue .btn-salida:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .marcador-blue .btn-salida-activa,
+[data-theme='dark'] .marcador-blue .btn-salida-activa:hover {
+  background-color: #ffffff;
+  color: #111111;
+}
+
 /* Footer de Kumite */
 .kumite-footer {
   background-color: #e5e7eb;

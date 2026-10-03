@@ -12,7 +12,7 @@ const FILAS_FALTAS = [
   { clave: 'mubobi', nombre: 'MUBOBI' },
 ]
 const FILA_JOGAI = [{ clave: 'jogai', nombre: 'JOGAI' }]
-const COLUMNAS_FALTAS = ['ADV', 'KEIK', 'H-CH', 'HANS', 'SHIK']
+const COLUMNAS_FALTAS = ['ADV', 'KEIK', 'H-CH', 'HANS']
 const COLUMNAS_JOGAI = ['J1', 'J2', 'J3', 'J4']
 
 // Recibe milisegundos y devuelve MM:SS.cc (centésimas)
