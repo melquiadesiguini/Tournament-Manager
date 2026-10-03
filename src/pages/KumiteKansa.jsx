@@ -71,8 +71,12 @@ function KumiteKansa() {
     )
   }
 
+  // La confirmación va dentro de la página (el cuadro nativo de confirm() puede
+  // estar bloqueado por el navegador y entonces el botón parecería no hacer nada)
+  const [confirmandoBorrado, setConfirmandoBorrado] = useState(false)
+
   const limpiar = () => {
-    if (!confirm('¿Seguro que querés borrar todas las anotaciones?')) return
+    setConfirmandoBorrado(false)
     setEstado({ shiro: estadoVacio(), aka: estadoVacio() })
     setFaltas({ shiro: faltasVacias(), aka: faltasVacias() })
     setNombres({ shiro: '', aka: '' })
@@ -120,9 +124,21 @@ function KumiteKansa() {
           </div>
 
           <div className="kumite-footer">
-            <button onClick={limpiar} className="btn-cancelar">
-              BORRAR ANOTACIONES
-            </button>
+            {confirmandoBorrado ? (
+              <>
+                <span className="kansa-confirmar">¿Borrar todas las anotaciones?</span>
+                <button onClick={() => setConfirmandoBorrado(false)} className="btn-cancelar">
+                  NO
+                </button>
+                <button onClick={limpiar} className="btn-guardar">
+                  SÍ, BORRAR
+                </button>
+              </>
+            ) : (
+              <button onClick={() => setConfirmandoBorrado(true)} className="btn-cancelar">
+                BORRAR ANOTACIONES
+              </button>
+            )}
           </div>
         </div>
       </main>

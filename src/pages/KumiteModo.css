@@ -94,6 +94,13 @@
   letter-spacing: 0.2em;
 }
 
+.kansa-confirmar {
+  align-self: center;
+  margin-right: auto;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 @media (max-width: 640px) {
   .modo-opciones {
     grid-template-columns: 1fr;
