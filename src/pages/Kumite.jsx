@@ -169,6 +169,19 @@ function Kumite() {
   // Atajos de teclado: Espacio = iniciar/pausar, R = reiniciar el cronómetro.
   // Se ignoran al escribir en un campo (nombres, categoría) y con Ctrl/Alt/Cmd
   // (por ejemplo Ctrl+R recarga la página).
+  // El foco vive en el botón Iniciar/Pausar: al abrir la página y después de
+  // tocar cualquier otro botón (puntos, faltas, etc.) vuelve ahí.
+  const botonInicioRef = useRef(null)
+  useEffect(() => {
+    const enfocarInicio = () => botonInicioRef.current?.focus({ preventScroll: true })
+    enfocarInicio()
+    const onClick = (e) => {
+      if (e.target instanceof Element && e.target.closest('button')) enfocarInicio()
+    }
+    window.addEventListener('click', onClick)
+    return () => window.removeEventListener('click', onClick)
+  }, [])
+
   const timerRef = useRef({ controlTimer, timerActive })
   useEffect(() => {
     timerRef.current = { controlTimer, timerActive }
@@ -326,6 +339,7 @@ function Kumite() {
             <div className="timer-buttons">
               {/* Un solo botón: inicia o pausa según el estado del cronómetro */}
               <button
+                ref={botonInicioRef}
                 onClick={() => controlTimer(timerActive ? 'pause' : 'start')}
                 className={`btn-timer ${timerActive ? 'btn-pause' : 'btn-start'}`}
                 title={timerActive ? 'Pausar (Espacio)' : 'Iniciar (Espacio)'}
