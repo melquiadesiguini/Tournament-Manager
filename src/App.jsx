@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Kata from './pages/Kata'
 import Kumite from './pages/Kumite'
+import KumiteModo from './pages/KumiteModo'
+import KumiteKansa from './pages/KumiteKansa'
 import Kobudo from './pages/Kobudo'
 import Destreza from './pages/Destreza'
 import Pantalla from './pages/Pantalla'
@@ -12,7 +14,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/kata" element={<Kata />} />
-        <Route path="/kumite" element={<Kumite />} />
+        <Route path="/kumite" element={<KumiteModo />} />
+        <Route path="/kumite/mesa" element={<Kumite />} />
+        <Route path="/kumite/kansa" element={<KumiteKansa />} />
         <Route path="/kobudo" element={<Kobudo />} />
         <Route path="/destreza" element={<Destreza />} />
         <Route path="/pantalla" element={<Pantalla />} />

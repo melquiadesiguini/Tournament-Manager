@@ -6,7 +6,7 @@ import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
-import { openPublicDisplay, usePublishLive } from '../hooks/usePublicDisplay'
+import { openPublicDisplay, usePublishLive, useSalidasKansa } from '../hooks/usePublicDisplay'
 import '../pages/Kumite.css'
 
 // Duraciones del combate (en milisegundos)
@@ -299,9 +299,13 @@ function Kumite() {
     enchoSen,
     // el cartel de ganador se refleja en la pantalla pública mientras esté abierto
     ganador: ganador && ganador !== 'empate' && resultadoVisible ? ganador : null,
+    salida, // la ventana de Kansa la usa para marcar el botón elegido
     shiro: { nombre: nombres.shiro.trim(), total: calcularTotal('shiro'), faltas: faltas.shiro },
     aka: { nombre: nombres.aka.trim(), total: calcularTotal('aka'), faltas: faltas.aka },
   })
+
+  // Salidas elegidas desde la ventana de Kansa
+  useSalidasKansa(modificarSalida)
 
   return (
     <>

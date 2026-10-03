@@ -919,6 +919,20 @@
   color: #ffffff;
 }
 
+[data-theme='dark'] .marcador-red .btn-salida {
+  color: #ff8a80;
+}
+
+[data-theme='dark'] .marcador-red .btn-salida:hover {
+  background-color: rgba(255, 138, 128, 0.12);
+}
+
+[data-theme='dark'] .marcador-red .btn-salida-activa,
+[data-theme='dark'] .marcador-red .btn-salida-activa:hover {
+  background-color: #a6332a;
+  color: #ffffff;
+}
+
 [data-theme='dark'] .marcador-blue .btn-salida {
   color: #f3f4f6;
 }
