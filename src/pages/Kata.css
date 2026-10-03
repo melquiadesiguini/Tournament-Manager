@@ -814,3 +814,15 @@
   font-size: clamp(72px, min(19.5vh, 22vw), 260px);
   line-height: 1;
 }
+
+/* Puntaje descartado (mayor y menor en el sistema de 5 jueces) */
+.score-item.discarded {
+  border-color: #f44336;
+  background-color: #fdecea;
+}
+
+.score-item.discarded .score-value {
+  color: #b71c1c;
+  text-decoration: line-through;
+  text-decoration-thickness: 3px;
+}

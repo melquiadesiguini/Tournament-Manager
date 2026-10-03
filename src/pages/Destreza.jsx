@@ -94,14 +94,16 @@ function Destreza() {
   const finalScoreAnimado = useCountUp(showResults ? Number(getFinalScore()) : 0)
 
   // ✅ NUEVA: Determinar si un puntaje está incluido basándose en el puntaje
-  const isScoreIncluded = (score) => {
+  const isScoreIncluded = (judgeId) => {
     if (judgeSystem === 3) {
       return true // En sistema de 3, todos están incluidos
     }
-    
-    // En sistema de 5, si el puntaje es el max o min, está descartado
+
+    // En sistema de 5 se descartan el mayor y el menor (uno de cada uno,
+    // igual que el cálculo del puntaje final)
     const sorted = getFilledScoresSorted()
-    return !(score === sorted[0] || score === sorted[sorted.length - 1])
+    if (sorted.length < 3) return true
+    return judgeId !== sorted[0].judgeId && judgeId !== sorted[sorted.length - 1].judgeId
   }
  
   const validateForm = () => {
@@ -364,10 +366,10 @@ function Destreza() {
                     {getFilledScoresInOrder().map((item, idx) => (
                       <div 
                         key={idx} 
-                        className={`score-item ${isScoreIncluded(item.score) ? 'included' : 'discarded'}`}
+                        className={`score-item ${isScoreIncluded(item.judgeId) ? 'included' : 'discarded'}`}
                       >
                         <span className="score-position">
-                          {isScoreIncluded(item.score) ? '✅' : '🔴'}
+                          {isScoreIncluded(item.judgeId) ? '✅' : '❌'}
                         </span>
                         <span className="score-value">{item.score.toFixed(1)}</span>
                         <span className="judge-label">
