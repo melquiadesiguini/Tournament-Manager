@@ -38,6 +38,12 @@
   font-size: clamp(64px, 22vh, 340px);
 }
 
+.pk-reloj-ms {
+  font-size: 0.45em;
+  letter-spacing: 0;
+  opacity: 0.85;
+}
+
 .pk-encho {
   position: absolute;
   right: 0;

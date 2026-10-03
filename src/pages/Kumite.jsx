@@ -9,8 +9,9 @@ import useFitToScreen from '../hooks/useFitToScreen'
 import { openPublicDisplay, usePublishLive } from '../hooks/usePublicDisplay'
 import '../pages/Kumite.css'
 
-// Duración predeterminada del combate (segundos)
-const DURACION_COMBATE = 60
+// Duraciones del combate (en milisegundos)
+const DURACION_COMBATE = 60 * 1000
+const DURACION_ENCHO_SEN = 60 * 1000
 
 function Kumite() {
   const containerRef = useRef(null)
@@ -150,7 +151,7 @@ function Kumite() {
     setGanador(null)
     setEnchoSen(true)
     setTimerActive(false)
-    setDuration(60)
+    setDuration(DURACION_ENCHO_SEN)
   }
 
   // Control de cronómetro
@@ -161,7 +162,7 @@ function Kumite() {
       setTimerActive(false)
     } else if (accion === 'reset') {
       setTimerActive(false)
-      setDuration(enchoSen ? 60 : DURACION_COMBATE)
+      setDuration(enchoSen ? DURACION_ENCHO_SEN : DURACION_COMBATE)
     }
   }
 
