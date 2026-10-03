@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import Timer from '../components/Timer/Timer'
@@ -166,6 +166,31 @@ function Kumite() {
     }
   }
 
+  // Atajos de teclado: I = iniciar, P = pausar, R = reiniciar el cronómetro.
+  // Se ignoran al escribir en un campo (nombres, categoría) y con Ctrl/Alt/Cmd
+  // (por ejemplo Ctrl+R recarga la página).
+  const controlTimerRef = useRef(controlTimer)
+  useEffect(() => {
+    controlTimerRef.current = controlTimer
+  })
+  useEffect(() => {
+    const ACCIONES = { i: 'start', p: 'pause', r: 'reset' }
+    const onKeyDown = (e) => {
+      if (e.repeat || e.ctrlKey || e.altKey || e.metaKey) return
+      const t = e.target
+      if (t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) {
+        return
+      }
+      const accion = ACCIONES[e.key.toLowerCase()]
+      if (accion) {
+        e.preventDefault()
+        controlTimerRef.current(accion)
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
+
   const nombreResultado = (valor) => {
     if (valor === 'shiro') return nombreDe('shiro')
     if (valor === 'aka') return nombreDe('aka')
@@ -283,21 +308,18 @@ function Kumite() {
             </div>
 
             <div className="timer-buttons">
+              {/* Un solo botón: inicia o pausa según el estado del cronómetro */}
               <button
-                onClick={() => controlTimer('start')}
-                className="btn-timer btn-start"
+                onClick={() => controlTimer(timerActive ? 'pause' : 'start')}
+                className={`btn-timer ${timerActive ? 'btn-pause' : 'btn-start'}`}
+                title={timerActive ? 'Pausar (P)' : 'Iniciar (I)'}
               >
-                INICIAR
-              </button>
-              <button
-                onClick={() => controlTimer('pause')}
-                className="btn-timer btn-pause"
-              >
-                PAUSAR
+                {timerActive ? 'PAUSAR' : 'INICIAR'}
               </button>
               <button
                 onClick={() => controlTimer('reset')}
                 className="btn-timer btn-reset"
+                title="Reiniciar (R)"
               >
                 REINICIAR
               </button>
