@@ -4,6 +4,7 @@ import Footer from '../components/Footer/Footer'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
+import { usePublishResult, openPublicDisplay } from '../hooks/usePublicDisplay'
 import './Kata.css'
 
 function Destreza() {
@@ -197,6 +198,18 @@ function Destreza() {
     setShowResults(false)
   }
  
+  // Publica el resultado en la pantalla pública (segundo monitor)
+  usePublishResult(showResults, () => ({
+    modulo: 'Destreza',
+    competitor,
+    finalScore: String(getFinalScore()),
+    scores: getFilledScoresInOrder().map((item) => ({
+      label: `Juez ${(item.judgeNumber === 3 && judgeSystem === 3) || (item.judgeNumber === 5 && judgeSystem === 5) ? 'Central' : `Nº${item.judgeNumber}`}`,
+      score: item.score,
+      included: isScoreIncluded(item.judgeId),
+    })),
+  }))
+
   return (
     <>
       <Header />
@@ -209,6 +222,15 @@ function Destreza() {
           title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
         >
           {isFullscreen ? '✕' : '⛶'}
+        </button>
+
+        <button
+          type="button"
+          className="btn-display"
+          onClick={openPublicDisplay}
+          title="Abrir la pantalla pública para el segundo monitor"
+        >
+          🖥️ Pantalla pública
         </button>
 
         <div

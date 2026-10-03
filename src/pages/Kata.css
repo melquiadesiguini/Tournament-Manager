@@ -826,3 +826,48 @@
   text-decoration: line-through;
   text-decoration-thickness: 3px;
 }
+
+/* ================= PANTALLA PUBLICA (segundo monitor) ================= */
+.pantalla-publica {
+  cursor: none;
+  z-index: 1;
+}
+
+.pantalla-modulo {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: clamp(16px, 3.2vh, 36px);
+}
+
+.pantalla-espera {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+}
+
+.pantalla-espera-titulo {
+  font-size: clamp(2rem, 8vh, 6rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.pantalla-espera-texto {
+  font-size: clamp(1.2rem, 4vh, 3rem);
+  opacity: 0.9;
+}
+
+.pantalla-espera-ayuda {
+  font-size: clamp(0.9rem, 2vh, 1.4rem);
+  opacity: 0.6;
+  margin-top: 4vh;
+}

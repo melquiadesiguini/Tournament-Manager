@@ -128,3 +128,30 @@ body {
     overflow-y: auto;
     background-color: var(--bg-page);
 }
+/* -------------------- BOTÓN PANTALLA PÚBLICA -------------------- */
+.btn-display {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+    background: rgba(15, 15, 20, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-display:hover {
+    transform: scale(1.05);
+    background: rgba(15, 15, 20, 0.8);
+}

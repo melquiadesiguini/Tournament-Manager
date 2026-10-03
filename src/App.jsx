@@ -4,6 +4,7 @@ import Kata from './pages/Kata'
 import Kumite from './pages/Kumite'
 import Kobudo from './pages/Kobudo'
 import Destreza from './pages/Destreza'
+import Pantalla from './pages/Pantalla'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/kumite" element={<Kumite />} />
         <Route path="/kobudo" element={<Kobudo />} />
         <Route path="/destreza" element={<Destreza />} />
+        <Route path="/pantalla" element={<Pantalla />} />
       </Routes>
     </BrowserRouter>
   )
