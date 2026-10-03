@@ -9,13 +9,16 @@ import useFitToScreen from '../hooks/useFitToScreen'
 import { openPublicDisplay, usePublishLive } from '../hooks/usePublicDisplay'
 import '../pages/Kumite.css'
 
+// Duración predeterminada del combate (segundos)
+const DURACION_COMBATE = 60
+
 function Kumite() {
   const containerRef = useRef(null)
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
   const { contentRef, scale } = useFitToScreen(isFullscreen)
 
   const [categoria, setCategoria] = useState('')
-  const [duration, setDuration] = useState(180)
+  const [duration, setDuration] = useState(DURACION_COMBATE)
   const [timerActive, setTimerActive] = useState(false)
 
   const [nombres, setNombres] = useState({ shiro: '', aka: '' })
@@ -158,7 +161,7 @@ function Kumite() {
       setTimerActive(false)
     } else if (accion === 'reset') {
       setTimerActive(false)
-      setDuration(enchoSen ? 60 : 180)
+      setDuration(enchoSen ? 60 : DURACION_COMBATE)
     }
   }
 
@@ -183,7 +186,7 @@ function Kumite() {
     setEnchoSen(false)
     setResultadoVisible(true)
     setTimerActive(false)
-    setDuration(180)
+    setDuration(DURACION_COMBATE)
   }
 
   // Guardar el resultado del combate en el historial (sin reiniciar)
