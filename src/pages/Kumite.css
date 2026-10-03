@@ -384,7 +384,39 @@
 }
 
 .resultado-board.marcador-blue {
-  background: linear-gradient(135deg, #3a3a3a 0%, #1a1a1a 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #ebe9e3 100%);
+  color: #1a1a1a;
+}
+
+.resultado-board.marcador-blue .resultado-close {
+  color: #1a1a1a;
+}
+
+.resultado-board.marcador-blue .resultado-close:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.resultado-board.marcador-blue .resultado-ganador-label {
+  color: #b7791f;
+  text-shadow: none;
+}
+
+.resultado-board.marcador-blue .resultado-nombre-badge {
+  background-color: rgba(0, 0, 0, 0.08);
+  color: #1a1a1a;
+}
+
+.resultado-board.marcador-blue .resultado-card {
+  background: #1a1a1a;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.resultado-board.marcador-blue .resultado-card-valor {
+  color: #ffffff;
+}
+
+.resultado-board.marcador-blue .resultado-vs {
+  color: rgba(26, 26, 26, 0.8);
 }
 
 .resultado-board.marcador-red {
