@@ -62,8 +62,16 @@ export async function openPublicDisplay() {
       const current = details.currentScreen
       const other = details.screens.find((s) => s !== current && s.left !== current.left)
       if (other) {
-        win.moveTo(other.availLeft, other.availTop)
-        win.resizeTo(other.availWidth, other.availHeight)
+        // Chrome ignora el movimiento mientras la ventana se está creando,
+        // por eso se repite unos instantes después
+        const place = () => {
+          if (win.closed) return
+          win.moveTo(other.availLeft, other.availTop)
+          win.resizeTo(other.availWidth, other.availHeight)
+        }
+        place()
+        setTimeout(place, 300)
+        setTimeout(place, 1000)
       }
     }
   } catch {
