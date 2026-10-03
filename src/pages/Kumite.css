@@ -20,14 +20,20 @@
 
 /* Header del Kumite */
 .kumite-header {
-  background-color: #0f172a;
-  color: white;
+  background-color: #e5e7eb;
+  color: #111827;
   padding: 1rem;
   display: flex;
   justify-content: center;
-  border-bottom: 1px solid #1e293b;
+  border-bottom: 1px solid #d1d5db;
   gap: 2rem;
   flex-wrap: wrap;
+}
+
+[data-theme='dark'] .kumite-header {
+  background-color: #0f172a;
+  color: white;
+  border-bottom-color: #1e293b;
 }
 
 .kumite-branding {
@@ -113,11 +119,17 @@
   font-weight: bold;
   padding: 0.15rem 0;
   border-radius: 0.5rem;
-  border: 1px solid #475569;
-  background-color: #1e293b;
-  color: white;
+  border: 1px solid #9ca3af;
+  background-color: #f3f4f6;
+  color: #111827;
   /* Oculta las flechas del input number */
   -moz-appearance: textfield;
+}
+
+[data-theme='dark'] .timer-clock-input {
+  border-color: #475569;
+  background-color: #1e293b;
+  color: white;
 }
 
 .timer-clock-input::-webkit-outer-spin-button,
@@ -129,6 +141,10 @@
 .timer-clock-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  border-color: #d1d5db;
+}
+
+[data-theme='dark'] .timer-clock-input:disabled {
   border-color: #334155;
 }
 
@@ -142,6 +158,10 @@
   font-size: 3.75rem;
   font-family: 'Courier New', monospace;
   font-weight: bold;
+  color: #111827;
+}
+
+[data-theme='dark'] .timer-clock-sep {
   color: white;
 }
 
