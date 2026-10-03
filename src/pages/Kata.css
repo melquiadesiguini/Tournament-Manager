@@ -827,6 +827,18 @@
   text-decoration-thickness: 3px;
 }
 
+/* Cronómetro de Destreza (usa los estilos del Timer de Kumite) */
+.destreza-cronometro {
+  border-radius: 0.75rem;
+  margin: 0 auto 1rem;
+  max-width: 40rem;
+}
+
+.destreza-cronometro-botones {
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
 /* ================= PANTALLA PUBLICA (segundo monitor) ================= */
 .pantalla-publica {
   cursor: none;

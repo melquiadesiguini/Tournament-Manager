@@ -4,8 +4,13 @@ import Footer from '../components/Footer/Footer'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
+import Timer from '../components/Timer/Timer'
 import { usePublishResult, openPublicDisplay } from '../hooks/usePublicDisplay'
 import './Kata.css'
+import './Kumite.css' // estilos del cronómetro (compartidos con Kumite)
+
+// Duración inicial del cronómetro (en milisegundos); se puede editar a mano
+const DURACION_DESTREZA = 60 * 1000
 
 function Destreza() {
   const containerRef = useRef(null)
@@ -13,8 +18,9 @@ function Destreza() {
   const { contentRef, scale } = useFitToScreen(isFullscreen)
 
   const [judgeSystem, setJudgeSystem] = useState(null)
-  const [kata, setKata] = useState('')
-  const [competitor, setCompetitor] = useState('')
+  const [competitor, setCompetitor] = useState('') // nombre del equipo
+  const [duration, setDuration] = useState(DURACION_DESTREZA)
+  const [timerActive, setTimerActive] = useState(false)
   const [scores, setScores] = useState({
     judge1: '',
     judge2: '',
@@ -113,7 +119,7 @@ function Destreza() {
       return false
     }
     if (!competitor.trim()) {
-      setErrors('❌ El nombre del competidor es requerido')
+      setErrors('❌ El nombre del equipo es requerido')
       return false
     }
     
@@ -158,7 +164,6 @@ function Destreza() {
     const data = {
       judgeSystem,
       modulo: 'Destreza',
-      kata,
       competitor,
       scores,
       highest: getHighest(),
@@ -178,9 +183,21 @@ function Destreza() {
     }, 1500)
   }
  
+  // Control de cronómetro
+  const controlTimer = (accion) => {
+    if (accion === 'start') {
+      setTimerActive(true)
+    } else if (accion === 'pause') {
+      setTimerActive(false)
+    } else if (accion === 'reset') {
+      setTimerActive(false)
+      setDuration(DURACION_DESTREZA)
+    }
+  }
+
   const resetForm = () => {
-    setKata('')
     setCompetitor('')
+    controlTimer('reset')
     setScores({
       judge1: '',
       judge2: '',
@@ -275,25 +292,37 @@ function Destreza() {
  
             <div className="header-section">
               <div className="input-group">
-                <h2>Competidor</h2>
+                <h2>Equipo</h2>
                 <input
                   type="text"
                   value={competitor}
                   onChange={(e) => setCompetitor(e.target.value)}
-                  placeholder="Nombre del competidor"
-                />
-              </div>
-              <div className="input-group">
-                <h2>Destreza</h2>
-                <input
-                  type="text"
-                  value={kata}
-                  onChange={(e) => setKata(e.target.value)}
-                  placeholder="Nombre de la destreza"
+                  placeholder="Nombre del equipo"
                 />
               </div>
             </div>
- 
+
+            {/* Cronómetro */}
+            <div className="kumite-header destreza-cronometro">
+              <Timer
+                duration={duration}
+                setDuration={setDuration}
+                timerActive={timerActive}
+                controlTimer={controlTimer}
+              />
+            </div>
+            <div className="timer-buttons destreza-cronometro-botones">
+              <button
+                onClick={() => controlTimer(timerActive ? 'pause' : 'start')}
+                className={`btn-timer ${timerActive ? 'btn-pause' : 'btn-start'}`}
+              >
+                {timerActive ? 'PAUSAR' : 'INICIAR'}
+              </button>
+              <button onClick={() => controlTimer('reset')} className="btn-timer btn-reset">
+                REINICIAR
+              </button>
+            </div>
+
             <h3 className="data-entry-title">Entrada de Datos</h3>
  
             <table className="judges-table">
