@@ -86,10 +86,10 @@
 }
 
 .hero-buttons {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: space-around;
+  justify-items: center;
   width: 100%;
 }
 

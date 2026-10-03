@@ -22,6 +22,12 @@ function HeroSection() {
             <Link to="/kumite" className="btn-secondary">
               KUMITE
             </Link>
+            <Link to="/kobudo" className="btn-primary">
+              KOBUDO
+            </Link>
+            <Link to="/destreza" className="btn-secondary">
+              DESTREZA
+            </Link>
           </div>
         </div>
         <div className="hero-image">
