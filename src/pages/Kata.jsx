@@ -274,21 +274,21 @@ function Kata() {
  
             <div className="header-section">
               <div className="input-group">
-                <h2>Kata</h2>
-                <input 
-                  type="text" 
-                  value={kata}
-                  onChange={(e) => setKata(e.target.value)}
-                  placeholder="Nombre del kata"
-                />
-              </div>
-              <div className="input-group">
                 <h2>Competidor</h2>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={competitor}
                   onChange={(e) => setCompetitor(e.target.value)}
                   placeholder="Nombre del competidor"
+                />
+              </div>
+              <div className="input-group">
+                <h2>Kata</h2>
+                <input
+                  type="text"
+                  value={kata}
+                  onChange={(e) => setKata(e.target.value)}
+                  placeholder="Nombre del kata"
                 />
               </div>
             </div>
