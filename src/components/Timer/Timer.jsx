@@ -61,7 +61,9 @@ export default function Timer({
   const segundos = Math.floor((duration % 60000) / 1000)
     .toString()
     .padStart(2, '0')
-  const milisegundos = (duration % 1000).toString().padStart(3, '0')
+  const centesimas = Math.floor((duration % 1000) / 10)
+    .toString()
+    .padStart(2, '0')
 
   const handleMinutosChange = (e) => {
     const nuevosMinutos = Math.max(0, Number(e.target.value) || 0)
@@ -100,9 +102,16 @@ export default function Timer({
             aria-label="Segundos"
             className="timer-clock-input"
           />
-          <span className="timer-clock-ms" aria-label="Milisegundos">
-            .{milisegundos}
-          </span>
+          <span className="timer-clock-sep">.</span>
+          <input
+            type="text"
+            value={centesimas}
+            readOnly
+            disabled={timerActive}
+            tabIndex={-1}
+            aria-label="Centésimas"
+            className="timer-clock-input"
+          />
         </div>
       </div>
     </div>

@@ -35,13 +35,9 @@
   font-weight: 900;
   line-height: 1;
   letter-spacing: 0.04em;
-  font-size: clamp(64px, 22vh, 340px);
-}
-
-.pk-reloj-ms {
-  font-size: 0.45em;
-  letter-spacing: 0;
-  opacity: 0.85;
+  /* limitado también por el ancho para que MM:SS.cc entre en pantallas angostas */
+  font-size: clamp(48px, min(22vh, 14vw), 340px);
+  white-space: nowrap;
 }
 
 .pk-encho {

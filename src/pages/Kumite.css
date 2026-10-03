@@ -148,7 +148,12 @@
   border-color: #334155;
 }
 
-.timer-clock-input:not(:disabled):hover,
+.timer-clock-input:read-only {
+  cursor: default;
+  pointer-events: none;
+}
+
+.timer-clock-input:not(:disabled):not(:read-only):hover,
 .timer-clock-input:focus {
   outline: none;
   border-color: #60a5fa;
@@ -162,21 +167,6 @@
 }
 
 [data-theme='dark'] .timer-clock-sep {
-  color: white;
-}
-
-.timer-clock-ms {
-  align-self: flex-end;
-  margin-bottom: 0.4rem;
-  min-width: 4.5rem;
-  text-align: left;
-  font-size: 2rem;
-  font-family: 'Courier New', monospace;
-  font-weight: bold;
-  color: #111827;
-}
-
-[data-theme='dark'] .timer-clock-ms {
   color: white;
 }
 
@@ -980,12 +970,6 @@
 
   .timer-clock-sep {
     font-size: 2.75rem;
-  }
-
-  .timer-clock-ms {
-    font-size: 1.4rem;
-    min-width: 3.2rem;
-    margin-bottom: 0.3rem;
   }
 
   .btn-timer {

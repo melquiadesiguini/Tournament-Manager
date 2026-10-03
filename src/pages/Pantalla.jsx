@@ -15,12 +15,12 @@ const FILA_JOGAI = [{ clave: 'jogai', nombre: 'JOGAI' }]
 const COLUMNAS_FALTAS = ['ADV', 'KEIK', 'H-CH', 'HANS', 'SHIK']
 const COLUMNAS_JOGAI = ['J1', 'J2', 'J3', 'J4']
 
-// Recibe milisegundos y devuelve los tramos MM:SS y .mmm por separado
+// Recibe milisegundos y devuelve MM:SS.cc (centésimas)
 function formatearTiempo(ms) {
   const m = Math.floor(ms / 60000).toString().padStart(2, '0')
   const s = Math.floor((ms % 60000) / 1000).toString().padStart(2, '0')
-  const milis = (ms % 1000).toString().padStart(3, '0')
-  return { principal: `${m}:${s}`, milis }
+  const c = Math.floor((ms % 1000) / 10).toString().padStart(2, '0')
+  return `${m}:${s}.${c}`
 }
 
 function TablaFaltas({ filas, columnas, faltas }) {
@@ -85,15 +85,11 @@ function CartelGanador({ lado, state }) {
 }
 
 function PantallaKumite({ state }) {
-  const tiempo = formatearTiempo(state.duration)
   return (
     <div className="pk-pantalla" onDoubleClick={toggleFullscreen}>
       <div className="pk-cabecera">
         <div className="pk-categoria">{state.categoria || 'KUMITE'}</div>
-        <div className="pk-reloj">
-          {tiempo.principal}
-          <span className="pk-reloj-ms">.{tiempo.milis}</span>
-        </div>
+        <div className="pk-reloj">{formatearTiempo(state.duration)}</div>
         {state.enchoSen && <div className="pk-encho">ENCHO-SEN</div>}
       </div>
 
