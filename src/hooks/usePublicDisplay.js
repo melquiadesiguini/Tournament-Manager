@@ -48,23 +48,25 @@ export function useDisplayState() {
   return state
 }
 
-// Abre la pantalla pública; si hay un segundo monitor y el navegador lo
-// permite, la abre directamente ahí.
+// Abre la pantalla pública y, si hay un segundo monitor y el navegador lo
+// permite, la mueve ahí. La ventana se abre primero (de inmediato, para no
+// perder el permiso del clic) y se reubica después.
 export async function openPublicDisplay() {
   const url = `${import.meta.env.BASE_URL}pantalla`
-  let features = 'popup=yes,width=1280,height=720'
+  const win = window.open(url, 'tm-display', 'popup=yes,width=1280,height=720')
+  if (!win) return
 
   try {
     if (window.screen.isExtended && window.getScreenDetails) {
       const details = await window.getScreenDetails()
-      const other = details.screens.find((s) => !s.isPrimary)
+      const current = details.currentScreen
+      const other = details.screens.find((s) => s !== current && s.left !== current.left)
       if (other) {
-        features = `popup=yes,left=${other.availLeft},top=${other.availTop},width=${other.availWidth},height=${other.availHeight}`
+        win.moveTo(other.availLeft, other.availTop)
+        win.resizeTo(other.availWidth, other.availHeight)
       }
     }
   } catch {
-    // sin permiso para ver los monitores: se abre en la pantalla actual
+    // sin permiso para ver los monitores: queda en la pantalla actual
   }
-
-  window.open(url, 'tm-display', features)
 }

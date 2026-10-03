@@ -871,3 +871,9 @@
   opacity: 0.6;
   margin-top: 4vh;
 }
+
+.pantalla-publica,
+.pantalla-espera {
+  user-select: none;
+  -webkit-user-select: none;
+}
