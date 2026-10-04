@@ -287,6 +287,12 @@
   font-size: 0.875rem;
 }
 
+.area-field input {
+  width: 5rem;
+  text-align: center;
+  font-weight: 700;
+}
+
 .categoria-field {
   flex: 1 1 auto;
 }

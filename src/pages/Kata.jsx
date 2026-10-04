@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
+import AreaField from '../components/AreaField/AreaField'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
@@ -291,6 +292,7 @@ function Kata() {
                   placeholder="Nombre del kata"
                 />
               </div>
+              <AreaField />
             </div>
  
             <h3 className="data-entry-title">Entrada de Datos</h3>

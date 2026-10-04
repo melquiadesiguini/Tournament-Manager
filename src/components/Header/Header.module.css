@@ -96,32 +96,6 @@ nav a:hover::after {
     width: 100%;
 }
 
-.area {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-weight: 600;
-    color: var(--header-text);
-    white-space: nowrap;
-}
-
-.areaInput {
-    width: 3rem;
-    padding: 3px 6px;
-    text-align: center;
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--header-text);
-    background: rgba(128, 128, 128, 0.15);
-    border: 1px solid rgba(128, 128, 128, 0.35);
-    border-radius: 6px;
-}
-
-.areaInput:focus {
-    outline: none;
-    border-color: #60a5fa;
-}
-
 .themeToggle {
     background: rgba(128, 128, 128, 0.15);
     border: 1px solid rgba(128, 128, 128, 0.3);

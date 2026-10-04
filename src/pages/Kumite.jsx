@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
+import AreaField from '../components/AreaField/AreaField'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
@@ -351,6 +352,7 @@ function Kumite({ modoKansa = false }) {
           {/* Sección de Categoría y cronómetro (Kansa no la ve) */}
           {!modoKansa && (
           <div className="kumite-controls">
+            <AreaField variante="campo" />
             <div className="categoria-field">
               <label>CATEGORÍA</label>
               <input

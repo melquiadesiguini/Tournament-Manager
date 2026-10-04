@@ -227,6 +227,18 @@
   box-shadow: 0 0 8px rgba(255, 107, 91, 0.2);
 }
 
+/* Campo del número de área: angosto y centrado */
+.input-group-area {
+  flex: 0 0 auto;
+}
+
+.input-group-area input {
+  width: 110px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+}
+
 /* TÍTULO "Entrada de Datos" */
 .data-entry-title {
   text-align: center;
