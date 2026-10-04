@@ -11,6 +11,8 @@ const faltasVacias = () => ({ chukoku: [], mubobi: [], jogai: [] })
 // Puntos que se le suman al RIVAL al marcar cada falta (igual que en la Mesa)
 const PUNTOS_POR_FALTA = { KEIK: 1, 'H-CH': 2, HANS: 3, J2: 1, J3: 2, J4: 3 }
 
+const TITULOS = { shiro: 'SHIRO (BLANCO)', aka: 'AKA (ROJO)' }
+
 const oponenteDe = (competidor) => (competidor === 'shiro' ? 'aka' : 'shiro')
 
 const totalDe = (e) => e.ippon + e.nibon * 2 + e.sanbon * 3 + e.penalizacion
@@ -81,7 +83,44 @@ function KumiteKansa() {
     setFaltas({ shiro: faltasVacias(), aka: faltasVacias() })
     setNombres({ shiro: '', aka: '' })
     setSalida(null)
+    setCartelCerrado(null)
   }
+
+  const nombreDe = (competidor) => nombres[competidor].trim() || TITULOS[competidor]
+
+  // Quién ganó según lo anotado (solo se le muestra a Kansa; la Mesa no se entera).
+  // Prioridad: salida elegida > falta grave (HANS / J4) > llegar a 9 puntos.
+  const tieneFaltaGrave = (competidor) =>
+    [...faltas[competidor].chukoku, ...faltas[competidor].mubobi, ...faltas[competidor].jogai].some(
+      (col) => col === 'HANS' || col === 'J4'
+    )
+  const decision = (() => {
+    if (salida) {
+      return {
+        ganador: oponenteDe(salida.competidor),
+        motivo: `${salida.motivo} de ${nombreDe(salida.competidor)}`,
+      }
+    }
+    for (const c of ['shiro', 'aka']) {
+      if (tieneFaltaGrave(c)) {
+        return { ganador: oponenteDe(c), motivo: `Falta grave (HANS / J4) de ${nombreDe(c)}` }
+      }
+    }
+    const totalShiro = totalDe(estado.shiro)
+    const totalAka = totalDe(estado.aka)
+    if (Math.max(totalShiro, totalAka) >= 9 && totalShiro !== totalAka) {
+      return {
+        ganador: totalShiro > totalAka ? 'shiro' : 'aka',
+        motivo: 'Llegó a 9 o más puntos',
+      }
+    }
+    return null
+  })()
+
+  // El cartel se puede cerrar; vuelve a aparecer si cambia el ganador o el motivo
+  const [cartelCerrado, setCartelCerrado] = useState(null)
+  const claveDecision = decision ? `${decision.ganador}|${decision.motivo}` : null
+  const mostrarCartel = claveDecision !== null && cartelCerrado !== claveDecision
 
   return (
     <>
@@ -141,6 +180,48 @@ function KumiteKansa() {
             )}
           </div>
         </div>
+
+        {/* Cartel de ganador: solo para Kansa, no se envía a la Mesa ni a la pantalla pública */}
+        {mostrarCartel && (
+          <div className="resultado-overlay" onClick={() => setCartelCerrado(claveDecision)}>
+            <div
+              className={`resultado-board ${decision.ganador === 'shiro' ? 'marcador-blue' : 'marcador-red'}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                className="resultado-close"
+                onClick={() => setCartelCerrado(claveDecision)}
+                aria-label="Cerrar"
+              >
+                &times;
+              </button>
+
+              <div className="resultado-ganador-label">🏆 GANADOR</div>
+              <div className="resultado-nombre-badge">{nombreDe(decision.ganador)}</div>
+
+              <div className="resultado-cards">
+                <div className="resultado-card">
+                  <div className="resultado-card-icono">🏆</div>
+                  <div className="resultado-card-label">Puntaje Final</div>
+                  <div className="resultado-card-valor">{totalDe(estado[decision.ganador])}</div>
+                </div>
+              </div>
+
+              <p className="resultado-vs">
+                vs {nombreDe(oponenteDe(decision.ganador))}: {totalDe(estado[oponenteDe(decision.ganador)])}
+              </p>
+              <p className="resultado-vs">{decision.motivo}</p>
+              <p className="kansa-nota">Solo en tu anotación: no afecta ni se muestra en la Mesa.</p>
+
+              <div className="resultado-acciones">
+                <button className="btn-new" onClick={() => setCartelCerrado(claveDecision)}>
+                  CERRAR
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
       <Footer />
     </>
