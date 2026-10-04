@@ -87,30 +87,6 @@
   font-size: 0.95rem;
 }
 
-/* Vista de Kansa */
-.kansa-titulo {
-  font-size: 1.75rem;
-  font-weight: 900;
-  letter-spacing: 0.2em;
-}
-
-.kansa-nota {
-  margin: 0 0 1.25rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.resultado-board.marcador-blue .kansa-nota {
-  color: rgba(26, 26, 26, 0.65);
-}
-
-.kansa-confirmar {
-  align-self: center;
-  margin-right: auto;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
 @media (max-width: 640px) {
   .modo-opciones {
     grid-template-columns: 1fr;

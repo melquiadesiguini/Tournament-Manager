@@ -34,15 +34,19 @@ export function usePublishResult(visible, buildPayload) {
 }
 
 // Panel de control (Kumite): publica el estado en vivo cada vez que cambia
-// y lo retira al salir de la página.
-export function usePublishLive(payload) {
+// y lo retira al salir de la página. Con `habilitado` en false no publica ni
+// retira nada (para un tablero independiente que no debe tocar el de otra ventana).
+export function usePublishLive(payload, habilitado = true) {
   const json = JSON.stringify(payload)
 
   useEffect(() => {
-    writeDisplay(JSON.parse(json))
-  }, [json])
+    if (habilitado) writeDisplay(JSON.parse(json))
+  }, [json, habilitado])
 
-  useEffect(() => () => writeDisplay(null), [])
+  useEffect(() => {
+    if (!habilitado) return undefined
+    return () => writeDisplay(null)
+  }, [habilitado])
 }
 
 // Pantalla pública: usa el mismo tema (claro/oscuro) que el panel de control.

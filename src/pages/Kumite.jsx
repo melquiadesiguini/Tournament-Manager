@@ -13,7 +13,9 @@ import '../pages/Kumite.css'
 const DURACION_COMBATE = 60 * 1000
 const DURACION_ENCHO_SEN = 60 * 1000
 
-function Kumite() {
+// `modoKansa`: es el mismo tablero que la Mesa, pero independiente: no publica nada
+// para la pantalla pública ni toca el tablero de la Mesa (cada ventana lleva su combate).
+function Kumite({ modoKansa = false }) {
   const containerRef = useRef(null)
   const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
   const { contentRef, scale } = useFitToScreen(isFullscreen)
@@ -301,7 +303,7 @@ function Kumite() {
     ganador: ganador && ganador !== 'empate' && resultadoVisible ? ganador : null,
     shiro: { nombre: nombres.shiro.trim(), total: calcularTotal('shiro'), faltas: faltas.shiro },
     aka: { nombre: nombres.aka.trim(), total: calcularTotal('aka'), faltas: faltas.aka },
-  })
+  }, !modoKansa)
   return (
     <>
       <Header />
@@ -316,14 +318,16 @@ function Kumite() {
           {isFullscreen ? '✕' : '⛶'}
         </button>
 
-        <button
-          type="button"
-          className="btn-display"
-          onClick={openPublicDisplay}
-          title="Abrir la pantalla pública para el segundo monitor"
-        >
-          🖥️ Pantalla pública
-        </button>
+        {!modoKansa && (
+          <button
+            type="button"
+            className="btn-display"
+            onClick={openPublicDisplay}
+            title="Abrir la pantalla pública para el segundo monitor"
+          >
+            🖥️ Pantalla pública
+          </button>
+        )}
 
         <div
           className="kumite-wrapper"
@@ -332,6 +336,11 @@ function Kumite() {
         >
           {/* Header del Kumite */}
           <div className="kumite-header">
+            {modoKansa && (
+              <span className="kansa-etiqueta" title="Tablero independiente de la Mesa">
+                KANSA
+              </span>
+            )}
 
             <Timer
               duration={duration}

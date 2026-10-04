@@ -25,7 +25,7 @@ function KumiteModo() {
             <span className="modo-icono" aria-hidden="true">🚩</span>
             <span className="modo-nombre">KANSA</span>
             <span className="modo-detalle">
-              Tablero de anotación: puntos, faltas y SHIKAKU, KIKEN u ORDEN MÉDICA. No modifica la Mesa
+              Mismo tablero que la Mesa, pero independiente: no la modifica ni se ve en la pantalla pública
             </span>
           </Link>
         </div>
