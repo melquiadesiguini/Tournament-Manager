@@ -110,7 +110,7 @@ function PantallaDestreza({ state, area }) {
   return (
     <div className="pk-pantalla" onDoubleClick={toggleFullscreen}>
       <div className="pk-vivo">
-        <div className="pk-categoria">
+        <div className="pk-categoria pk-vivo-titulo">
           {[area && etiquetaArea(area), 'DESTREZA'].filter(Boolean).join(' · ')}
         </div>
         <div className="pk-vivo-nombre">{state.equipo || ' '}</div>

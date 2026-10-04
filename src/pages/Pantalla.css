@@ -192,6 +192,13 @@
   text-align: center;
 }
 
+.pk-vivo .pk-vivo-titulo {
+  font-size: clamp(28px, min(9vh, 5vw), 130px);
+  letter-spacing: 0.18em;
+  opacity: 0.9;
+  max-width: 96vw;
+}
+
 .pk-vivo-nombre {
   max-width: 94vw;
   font-weight: 900;
