@@ -13,6 +13,7 @@ function Marcador({
   color,
   salida,
   onSalida,
+  mostrarNombre = true,
 }) {
   const totalAnimado = useCountUp(total)
 
@@ -49,14 +50,16 @@ function Marcador({
         {titulo}
       </div>
 
-      <div className="marcador-nombre">
-        <input
-          type="text"
-          value={nombre}
-          onChange={(e) => onNombreChange(tipo, e.target.value)}
-          placeholder="Nombre del competidor"
-        />
-      </div>
+      {mostrarNombre && (
+        <div className="marcador-nombre">
+          <input
+            type="text"
+            value={nombre}
+            onChange={(e) => onNombreChange(tipo, e.target.value)}
+            placeholder="Nombre del competidor"
+          />
+        </div>
+      )}
 
       <div className="marcador-tecnicas">
         {tecnicas.map((tecnica) => (

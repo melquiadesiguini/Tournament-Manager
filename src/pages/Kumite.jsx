@@ -336,14 +336,8 @@ function Kumite({ modoKansa = false }) {
           style={isFullscreen ? { transform: `scale(${scale})`, transformOrigin: 'top center' } : undefined}
         >
           {/* Header del Kumite */}
-          <div className="kumite-header">
-            {modoKansa && (
-              <span className="kansa-etiqueta" title="Tablero independiente de la Mesa">
-                KANSA
-              </span>
-            )}
-
-            {!modoKansa && (
+          {!modoKansa && (
+            <div className="kumite-header">
               <Timer
                 duration={duration}
                 setDuration={setDuration}
@@ -351,8 +345,8 @@ function Kumite({ modoKansa = false }) {
                 controlTimer={controlTimer}
                 onTimeUp={handleTimeUp}
               />
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Sección de Categoría y cronómetro (Kansa no la ve) */}
           {!modoKansa && (
@@ -414,6 +408,7 @@ function Kumite({ modoKansa = false }) {
               onNombreChange={cambiarNombre}
               salida={salida?.competidor === 'shiro' ? salida.motivo : null}
               onSalida={modificarSalida}
+              mostrarNombre={!modoKansa}
               color="blue"
             />
             <Marcador
@@ -428,6 +423,7 @@ function Kumite({ modoKansa = false }) {
               onNombreChange={cambiarNombre}
               salida={salida?.competidor === 'aka' ? salida.motivo : null}
               onSalida={modificarSalida}
+              mostrarNombre={!modoKansa}
               color="red"
             />
           </div>

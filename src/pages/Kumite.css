@@ -36,18 +36,6 @@
   border-bottom-color: #1e293b;
 }
 
-/* Etiqueta del tablero de Kansa (independiente de la Mesa) */
-.kansa-etiqueta {
-  align-self: center;
-  padding: 0.35rem 0.9rem;
-  border-radius: 999px;
-  background-color: #a6332a;
-  color: #ffffff;
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  font-size: 0.85rem;
-}
-
 .kumite-branding {
   display: flex;
   align-items: center;
