@@ -207,6 +207,7 @@ function Kumite({ modoKansa = false }) {
     timerRef.current = { controlTimer, timerActive }
   })
   useEffect(() => {
+    if (modoKansa) return undefined // Kansa no tiene cronómetro
     const escribiendoEnCampo = (e) => {
       const t = e.target
       return (
@@ -238,7 +239,7 @@ function Kumite({ modoKansa = false }) {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
     }
-  }, [])
+  }, [modoKansa])
 
   const nombreResultado = (valor) => {
     if (valor === 'shiro') return nombreDe('shiro')
@@ -342,16 +343,19 @@ function Kumite({ modoKansa = false }) {
               </span>
             )}
 
-            <Timer
-              duration={duration}
-              setDuration={setDuration}
-              timerActive={timerActive}
-              controlTimer={controlTimer}
-              onTimeUp={handleTimeUp}
-            />
+            {!modoKansa && (
+              <Timer
+                duration={duration}
+                setDuration={setDuration}
+                timerActive={timerActive}
+                controlTimer={controlTimer}
+                onTimeUp={handleTimeUp}
+              />
+            )}
           </div>
 
-          {/* Sección de Categoría */}
+          {/* Sección de Categoría y cronómetro (Kansa no la ve) */}
+          {!modoKansa && (
           <div className="kumite-controls">
             <div className="categoria-field">
               <label>CATEGORÍA</label>
@@ -384,6 +388,7 @@ function Kumite({ modoKansa = false }) {
 
             {enchoSen && <div className="encho-sen-badge">ENCHO-SEN</div>}
           </div>
+          )}
 
           {/* Empate: se resuelve con un combate extra */}
           {ganador === 'empate' && (
