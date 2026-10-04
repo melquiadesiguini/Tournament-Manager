@@ -287,6 +287,9 @@
 
 .pk-faltas {
   width: 100%;
+  /* mismo ancho de columnas en las dos tablas (4 columnas iguales tras la etiqueta)
+     para que las celdas queden alineadas entre sí */
+  table-layout: fixed;
   border-collapse: collapse;
   margin-top: 1vh;
   font-size: clamp(10px, 1.9vh, 24px);
@@ -302,6 +305,11 @@
 
 .pk-faltas th {
   background: rgba(0, 0, 0, 0.08);
+}
+
+.pk-faltas th:first-child,
+.pk-faltas td:first-child {
+  width: 28%;
 }
 
 .pk-falta-nombre {
