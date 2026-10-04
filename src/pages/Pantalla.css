@@ -21,6 +21,17 @@
   color: #ffffff;
 }
 
+/* Área N° X en la pantalla de espera: lo más grande posible, para que se vea desde el público */
+.pantalla-espera .pantalla-espera-area {
+  font-size: clamp(5rem, min(34vh, 15vw), 40rem);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.pantalla-espera:has(.pantalla-espera-area) .pantalla-espera-texto {
+  font-size: clamp(1.2rem, 5vh, 4rem);
+}
+
 /* pantalla de espera: sigue el tema de la app */
 [data-theme='light'] .pantalla-espera {
   background: #e5e7eb;
