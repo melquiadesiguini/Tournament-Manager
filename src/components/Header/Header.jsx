@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom'
 import logo from '../../assets/images/LOGO ZOK.PNG'
 import useTheme from '../../hooks/useTheme'
+import useAuth from '../../hooks/useAuth'
 import s from './Header.module.css'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()
+  const { user } = useAuth()
 
   return (
     <header>
@@ -27,6 +29,10 @@ function Header() {
               <Link to="/kumite">Kumite</Link>
               <Link to="/kobudo">Kobudo</Link>
               <Link to="/destreza">Destreza</Link>
+              <Link to="/historial">Historial</Link>
+              <Link to="/cuenta" title={user ? user.email : 'Ingresar o crear cuenta'}>
+                {user ? 'Mi cuenta' : 'Ingresar'}
+              </Link>
               <button
                 type="button"
                 className={s.themeToggle}

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
+import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
@@ -283,9 +284,14 @@ function Kumite({ modoKansa = false }) {
     }
 
     console.log('Combate guardado:', payload)
-    alert(
-      `¡Combate Guardado!\n\nGanador: ${resultado}\nResultado: ${nombreDe('shiro')} ${shiroTotal} - ${nombreDe('aka')} ${akaTotal}\nCategoría: ${categoria}`
-    )
+    guardarResultado({
+      modulo: 'kumite',
+      payload: { ...payload, faltas, salida, enchoSen, duracionRestanteMs: duration },
+    }).then((r) => {
+      alert(
+        `¡Combate Guardado!\n\nGanador: ${resultado}\nResultado: ${nombreDe('shiro')} ${shiroTotal} - ${nombreDe('aka')} ${akaTotal}\nCategoría: ${categoria}\n\n${mensajeGuardado(r)}`
+      )
+    })
   }
 
   // Reiniciar combate (botón CANCELAR, con confirmación)

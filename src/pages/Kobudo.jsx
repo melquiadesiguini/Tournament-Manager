@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
+import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
@@ -173,10 +174,13 @@ function Kobudo() {
     localStorage.setItem('competitions', JSON.stringify(savedCompetitions))
     
     setSuccess('💾 ¡Competencia guardada en historial!')
-    setTimeout(() => {
-      resetForm()
-      setShowResults(false)
-    }, 1500)
+    guardarResultado({ modulo: 'kobudo', payload: data }).then((r) => {
+      setSuccess(`💾 ¡Competencia guardada en historial! ${mensajeGuardado(r)}`)
+      setTimeout(() => {
+        resetForm()
+        setShowResults(false)
+      }, 1500)
+    })
   }
  
   const resetForm = () => {
