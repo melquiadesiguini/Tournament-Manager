@@ -7,5 +7,6 @@ export const AuthContext = createContext({
   user: null,
   iniciarSesion: async () => ({ ok: false }),
   registrarse: async () => ({ ok: false }),
+  iniciarConGoogle: async () => ({ ok: false }),
   cerrarSesion: async () => {},
 })

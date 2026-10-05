@@ -11,6 +11,9 @@ function traducirError(error) {
   if (msg.includes('password should be at least')) return 'La contraseña debe tener al menos 6 caracteres.'
   if (msg.includes('rate limit')) return 'Demasiados intentos. Esperá unos minutos y volvé a probar.'
   if (msg.includes('invalid email') || msg.includes('unable to validate email')) return 'El email no es válido.'
+  if (msg.includes('provider is not enabled') || msg.includes('unsupported provider')) {
+    return 'El ingreso con Google todavía no está habilitado en este proyecto.'
+  }
   if (msg.includes('failed to fetch')) return 'No se pudo conectar. Revisá tu conexión a internet.'
   return error?.message || 'Ocurrió un error inesperado.'
 }
@@ -57,6 +60,16 @@ function AuthProvider({ children }) {
         })
         if (error) return { ok: false, mensaje: traducirError(error) }
         return { ok: true, requiereConfirmacion: !data.session }
+      },
+
+      // Redirige a Google y vuelve a la página principal de la app con la sesión iniciada.
+      // Cada cuenta nueva (también la de Google) recibe su organización automáticamente.
+      async iniciarConGoogle() {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}` },
+        })
+        return error ? { ok: false, mensaje: traducirError(error) } : { ok: true }
       },
 
       async cerrarSesion() {
