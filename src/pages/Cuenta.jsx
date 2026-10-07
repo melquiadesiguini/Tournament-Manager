@@ -166,7 +166,7 @@ function Cuenta() {
   }
 
   return (
-    <>
+    <div className="pagina-columna">
       <Header />
       <main className="cuenta-container">
         <section className="cuenta-card">
@@ -175,7 +175,7 @@ function Cuenta() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 

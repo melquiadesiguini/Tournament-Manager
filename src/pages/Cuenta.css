@@ -1,3 +1,17 @@
+/* Página en columna: el contenido ocupa el alto sobrante y el pie queda siempre
+   abajo, aunque haya poco contenido (Cuenta, Historial y selección Mesa/Kansa) */
+.pagina-columna {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-page);
+}
+
+.pagina-columna > main {
+  flex: 1;
+}
+
 /* ===== Cuenta (ingresar / crear cuenta) e Historial ===== */
 .cuenta-container {
   background-color: var(--bg-page);

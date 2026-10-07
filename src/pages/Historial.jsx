@@ -80,7 +80,7 @@ function Historial() {
   }
 
   return (
-    <>
+    <div className="pagina-columna">
       <Header />
       <main className="cuenta-container">
         <section className="cuenta-card cuenta-card-ancha">
@@ -89,7 +89,7 @@ function Historial() {
         </section>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 

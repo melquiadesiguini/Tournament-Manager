@@ -6,7 +6,7 @@ import './KumiteModo.css'
 // Pantalla previa a Kumite: se elige el rol con el que se va a usar el tablero
 function KumiteModo() {
   return (
-    <>
+    <div className="pagina-columna">
       <Header />
       <main className="modo-container">
         <h1 className="modo-titulo">Kumite</h1>
@@ -31,7 +31,7 @@ function KumiteModo() {
         </div>
       </main>
       <Footer />
-    </>
+    </div>
   )
 }
 
