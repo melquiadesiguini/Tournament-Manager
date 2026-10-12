@@ -1,5 +1,5 @@
 -- =====================================================================
--- Tournament Manager: esquema inicial (v1)
+-- IPPONIA: esquema inicial (v1)
 -- Pegar completo en Supabase > SQL Editor > New query > Run.
 -- Es seguro volver a ejecutarlo: usa "if not exists" / "or replace".
 --

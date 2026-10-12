@@ -34,11 +34,13 @@
 .judge-system-selector {
   width: 90%;
   max-width: 900px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-top: 4px solid #d7282f;
   border-radius: 16px;
   padding: 50px 30px;
   text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px var(--shadow-color);
   animation: slideUp 0.5s ease-out;
 }
 
@@ -54,10 +56,9 @@
 }
 
 .judge-system-selector h2 {
-  color: white;
+  color: var(--text-primary);
   font-size: 32px;
   margin: 0 0 40px 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .system-buttons {
@@ -68,13 +69,13 @@
 }
 
 .system-btn {
-  background: white;
-  border: none;
+  background: var(--bg-page);
+  border: 2px solid var(--border-color);
   border-radius: 12px;
   padding: 40px 30px;
   cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s;
+  box-shadow: 0 4px 12px var(--shadow-color);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -83,13 +84,16 @@
   max-width: 280px;
 }
 
-.system-btn:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+.system-btn:hover,
+.system-btn:focus-visible {
+  transform: translateY(-6px);
+  border-color: #d7282f;
+  box-shadow: 0 12px 30px var(--shadow-color);
+  outline: none;
 }
 
 .system-btn:active {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
 }
 
 .system-icon {
@@ -100,29 +104,13 @@
 .system-title {
   font-size: 24px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .system-desc {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
-}
-
-.system-btn.judges-3 {
-  border: 3px solid #4caf50;
-}
-
-.system-btn.judges-3:hover {
-  background-color: #f1f8f6;
-}
-
-.system-btn.judges-5 {
-  border: 3px solid #ff9800;
-}
-
-.system-btn.judges-5:hover {
-  background-color: #fff8f1;
 }
 
 /* BOTÓN PARA CAMBIAR SISTEMA */

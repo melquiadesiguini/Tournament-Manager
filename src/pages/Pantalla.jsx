@@ -10,7 +10,10 @@ function MarcaAgua() {
     <div className="pk-marca" aria-hidden="true">
       <img src={marcaClara} alt="" className="pk-marca-clara" />
       <img src={marcaOscura} alt="" className="pk-marca-oscura" />
-      <span>IPPONIA</span>
+      <span className="pk-marca-texto">
+        IPPONIA
+        <small>TORNEOS EN VIVO</small>
+      </span>
     </div>
   )
 }
@@ -145,6 +148,7 @@ function PantallaContenido() {
         <div className={`pantalla-espera-titulo ${area ? 'pantalla-espera-area' : ''}`}>
           {area ? etiquetaArea(area) : 'IPPONIA'}
         </div>
+        {!area && <div className="pantalla-espera-lema">TORNEOS EN VIVO</div>}
         <div className="pantalla-espera-texto">Esperando resultado…</div>
       </div>
     )
