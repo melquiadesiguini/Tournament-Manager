@@ -1,13 +1,16 @@
 import { useDisplayState, usePublicTheme } from '../hooks/usePublicDisplay'
 import useArea, { etiquetaArea } from '../hooks/useArea'
-import marca from '../assets/images/taikai-marca.png'
+import marcaClara from '../assets/images/ipponia-marca.png'
+import marcaOscura from '../assets/images/ipponia-marca-oscuro.png'
 
-// Marca discreta en una esquina: lo ve todo el público, así el producto se da a conocer
+// Marca discreta en una esquina: lo ve todo el público, así el producto se da a conocer.
+// Cinturón negro en el tema claro y blanco en el oscuro (lo elige el CSS según el tema).
 function MarcaAgua() {
   return (
     <div className="pk-marca" aria-hidden="true">
-      <img src={marca} alt="" />
-      <span>TAIKAI</span>
+      <img src={marcaClara} alt="" className="pk-marca-clara" />
+      <img src={marcaOscura} alt="" className="pk-marca-oscura" />
+      <span>IPPONIA</span>
     </div>
   )
 }
@@ -140,7 +143,7 @@ function PantallaContenido() {
     return (
       <div className="pantalla-espera" onDoubleClick={toggleFullscreen}>
         <div className={`pantalla-espera-titulo ${area ? 'pantalla-espera-area' : ''}`}>
-          {area ? etiquetaArea(area) : 'TAIKAI'}
+          {area ? etiquetaArea(area) : 'IPPONIA'}
         </div>
         <div className="pantalla-espera-texto">Esperando resultado…</div>
       </div>

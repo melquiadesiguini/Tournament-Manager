@@ -18,7 +18,7 @@ function Home() {
         <section className="cta-section">
           <div className="cta-content">
             <h2>¿Listo para tu primer combate?</h2>
-            <p>Accede a Taikai y comienza a registrar combates</p>
+            <p>Accede a Ipponia y comienza a registrar combates</p>
             {/* Vuelve al inicio de la portada, donde están los botones de cada módulo */}
             <a
               href="#inicio"
@@ -28,7 +28,7 @@ function Home() {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
             >
-              Ir a Taikai
+              Ir a Ipponia
             </a>
           </div>
         </section>

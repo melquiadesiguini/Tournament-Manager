@@ -21,7 +21,7 @@
   color: #ffffff;
 }
 
-/* Marca Taikai en la esquina superior izquierda de todas las pantallas públicas */
+/* Marca Ipponia en la esquina superior izquierda de todas las pantallas públicas */
 .pk-marca {
   position: fixed;
   top: 2vh;
@@ -46,6 +46,18 @@
 .pk-marca img {
   height: 100%;
   width: auto;
+}
+
+.pk-marca-oscura {
+  display: none;
+}
+
+[data-theme='dark'] .pk-marca-clara {
+  display: none;
+}
+
+[data-theme='dark'] .pk-marca-oscura {
+  display: block;
 }
 
 /* Área N° X en la pantalla de espera: lo más grande posible, para que se vea desde el público */

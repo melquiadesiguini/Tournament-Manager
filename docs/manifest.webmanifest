@@ -1,6 +1,6 @@
 {
-  "name": "Taikai",
-  "short_name": "Taikai",
+  "name": "Ipponia",
+  "short_name": "Ipponia",
   "description": "Gestión de torneos de artes marciales en tiempo real",
   "start_url": "./",
   "scope": "./",

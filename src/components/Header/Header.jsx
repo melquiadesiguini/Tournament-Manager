@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import logoClaro from '../../assets/images/taikai-logo.png'
-import logoOscuro from '../../assets/images/taikai-logo-oscuro.png' // con halo: el cinturón negro se ve sobre fondo oscuro
+import logoClaro from '../../assets/images/ipponia-logo.png' // cinturón negro (tema claro)
+import logoOscuro from '../../assets/images/ipponia-logo-oscuro.png' // cinturón blanco (tema oscuro)
 import useTheme from '../../hooks/useTheme'
 import useAuth from '../../hooks/useAuth'
 import s from './Header.module.css'
@@ -16,11 +16,11 @@ function Header() {
           <Link to="/">
             <img
               src={theme === 'dark' ? logoOscuro : logoClaro}
-              alt="Taikai"
+              alt="Ipponia"
               className={s.logoImg}
             />
           </Link>
-          <h1 className={s.logo}>TAIKAI</h1>
+          <h1 className={s.logo}>IPPONIA</h1>
         </div>
         <div className={`${s.headerContent2}`}>
           <nav className={s.containerNav}>
