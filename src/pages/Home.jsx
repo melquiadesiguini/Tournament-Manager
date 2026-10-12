@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import HeroSection from '../components/Home/HeroSection'
@@ -20,9 +19,17 @@ function Home() {
           <div className="cta-content">
             <h2>¿Listo para tu primer combate?</h2>
             <p>Accede a Taikai y comienza a registrar combates</p>
-            <Link to="/kumite" className="cta-button">
+            {/* Vuelve al inicio de la portada, donde están los botones de cada módulo */}
+            <a
+              href="#inicio"
+              className="cta-button"
+              onClick={(e) => {
+                e.preventDefault()
+                window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+            >
               Ir a Taikai
-            </Link>
+            </a>
           </div>
         </section>
       </main>
