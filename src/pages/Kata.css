@@ -261,6 +261,25 @@
   color: #333;
 }
 
+.judges-table th .judge-th-label {
+  display: block;
+}
+
+.judges-table th .judge-name-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 8px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  background: #fff;
+  color: #111827;
+}
+
 .judges-table td input {
   width: 100%;
   height: 45px;

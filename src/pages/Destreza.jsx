@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
+import { useJueces } from '../lib/jueces'
 import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
@@ -34,6 +35,9 @@ function Destreza() {
     judge4: '',
     judge5: ''
   })
+  // Nombres de los jueces: se conservan entre competidores (el panel de jueces suele ser el mismo)
+  const [judgeNames, setJudgeNames] = useState({ judge1: '', judge2: '', judge3: '', judge4: '', judge5: '' })
+  const { nombres: juecesGuardados, registrar: registrarJueces } = useJueces()
   const [errors, setErrors] = useState('')
   const [success, setSuccess] = useState('')
   const [showResults, setShowResults] = useState(false)
@@ -172,11 +176,18 @@ function Destreza() {
       modulo: 'Destreza',
       competitor,
       scores,
+      judgeNames,
       highest: getHighest(),
       lowest: getLowest(),
       finalScore: getFinalScore(),
       timestamp: new Date().toLocaleString('es-AR')
     }
+
+    registrarJueces(
+      Object.entries(judgeNames)
+        .filter(([id]) => Number(id.slice(5)) <= judgeSystem)
+        .map(([, nombre]) => nombre)
+    )
     
     const savedCompetitions = JSON.parse(localStorage.getItem('competitions')) || []
     savedCompetitions.push(data)
@@ -373,24 +384,35 @@ function Destreza() {
 
             <h3 className="data-entry-title">Entrada de Datos</h3>
  
+            <datalist id="lista-jueces">
+              {juecesGuardados.map((nombre) => (
+                <option key={nombre} value={nombre} />
+              ))}
+            </datalist>
+
             <table className="judges-table">
               <thead>
                 <tr>
-                  {judgeSystem === 3 ? (
-                    <>
-                      <th>Juez Nº1</th>
-                      <th>Juez Nº2</th>
-                      <th>Juez Central</th>
-                    </>
-                  ) : (
-                    <>
-                      <th>Juez Nº1</th>
-                      <th>Juez Nº2</th>
-                      <th>Juez Nº3</th>
-                      <th>Juez Nº4</th>
-                      <th>Juez Central</th>
-                    </>
-                  )}
+                  {(judgeSystem === 3
+                    ? ['judge1', 'judge2', 'judge3']
+                    : ['judge1', 'judge2', 'judge3', 'judge4', 'judge5']
+                  ).map((judgeId) => (
+                    <th key={judgeId}>
+                      <span className="judge-th-label">
+                        Juez {Number(judgeId.slice(5)) === judgeSystem ? 'Central' : `Nº${judgeId.slice(5)}`}
+                      </span>
+                      <input
+                        type="text"
+                        className="judge-name-input"
+                        list="lista-jueces"
+                        autoComplete="off"
+                        value={judgeNames[judgeId]}
+                        onChange={(e) => setJudgeNames((prev) => ({ ...prev, [judgeId]: e.target.value }))}
+                        placeholder="Nombre del juez"
+                        aria-label={`Nombre del juez ${judgeId.slice(5)}`}
+                      />
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
