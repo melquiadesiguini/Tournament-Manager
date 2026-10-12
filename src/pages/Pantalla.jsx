@@ -1,5 +1,16 @@
 import { useDisplayState, usePublicTheme } from '../hooks/usePublicDisplay'
 import useArea, { etiquetaArea } from '../hooks/useArea'
+import marca from '../assets/images/taikai-marca.png'
+
+// Marca discreta en una esquina: lo ve todo el público, así el producto se da a conocer
+function MarcaAgua() {
+  return (
+    <div className="pk-marca" aria-hidden="true">
+      <img src={marca} alt="" />
+      <span>TAIKAI</span>
+    </div>
+  )
+}
 import './Kata.css'
 import './Pantalla.css'
 
@@ -120,7 +131,7 @@ function PantallaDestreza({ state, area }) {
   )
 }
 
-function Pantalla() {
+function PantallaContenido() {
   const state = useDisplayState()
   usePublicTheme()
   const { area } = useArea()
@@ -180,6 +191,15 @@ function Pantalla() {
         </div>
       </div>
     </div>
+  )
+}
+
+function Pantalla() {
+  return (
+    <>
+      <PantallaContenido />
+      <MarcaAgua />
+    </>
   )
 }
 

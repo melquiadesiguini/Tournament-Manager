@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import logo from '../../assets/images/taikai-logo.png'
+import logoClaro from '../../assets/images/taikai-logo.png'
+import logoOscuro from '../../assets/images/taikai-logo-oscuro.png' // con halo: el cinturón negro se ve sobre fondo oscuro
 import useTheme from '../../hooks/useTheme'
 import useAuth from '../../hooks/useAuth'
 import s from './Header.module.css'
@@ -14,7 +15,7 @@ function Header() {
         <div className={s.brand}>
           <Link to="/">
             <img
-              src={logo}
+              src={theme === 'dark' ? logoOscuro : logoClaro}
               alt="Taikai"
               className={s.logoImg}
             />

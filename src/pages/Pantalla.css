@@ -21,6 +21,33 @@
   color: #ffffff;
 }
 
+/* Marca Taikai en la esquina superior izquierda de todas las pantallas públicas */
+.pk-marca {
+  position: fixed;
+  top: 2vh;
+  left: 2vw;
+  z-index: 2000;
+  height: clamp(28px, 6vh, 72px);
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  opacity: 0.85;
+  pointer-events: none;
+  color: #111318;
+  font-size: clamp(14px, 2.6vh, 30px);
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+[data-theme='dark'] .pk-marca {
+  color: #ffffff;
+}
+
+.pk-marca img {
+  height: 100%;
+  width: auto;
+}
+
 /* Área N° X en la pantalla de espera: lo más grande posible, para que se vea desde el público */
 .pantalla-espera .pantalla-espera-area {
   font-size: clamp(5rem, min(34vh, 15vw), 40rem);
