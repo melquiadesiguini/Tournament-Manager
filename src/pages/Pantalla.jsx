@@ -129,7 +129,7 @@ function Pantalla() {
     return (
       <div className="pantalla-espera" onDoubleClick={toggleFullscreen}>
         <div className={`pantalla-espera-titulo ${area ? 'pantalla-espera-area' : ''}`}>
-          {area ? etiquetaArea(area) : 'TOURNAMENT MANAGER'}
+          {area ? etiquetaArea(area) : 'TAIKAI'}
         </div>
         <div className="pantalla-espera-texto">Esperando resultado…</div>
       </div>

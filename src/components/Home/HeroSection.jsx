@@ -9,7 +9,7 @@ function HeroSection() {
       <div className="hero-content">
         <div className="hero-text">
           <div className="hero-text2">
-            <h1 className='hero-title'>TOURNAMENT MANAGER</h1>
+            <h1 className='hero-title'>TAIKAI</h1>
             <p className="hero-subtitle">Sistema de Gestión de Torneos Karate</p>
             <p className="hero-description">
               Administra combates, registra puntuaciones y controla tiempos con precisión

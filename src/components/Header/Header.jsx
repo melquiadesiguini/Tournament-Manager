@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import logo from '../../assets/images/LOGO ZOK.PNG'
+import logo from '../../assets/images/taikai-logo.png'
 import useTheme from '../../hooks/useTheme'
 import useAuth from '../../hooks/useAuth'
 import s from './Header.module.css'
@@ -15,11 +15,11 @@ function Header() {
           <Link to="/">
             <img
               src={logo}
-              alt="Logo Ikigai Dojo"
+              alt="Taikai"
               className={s.logoImg}
             />
           </Link>
-          <h1 className={s.logo}>TOURNAMENT MANAGER</h1>
+          <h1 className={s.logo}>TAIKAI</h1>
         </div>
         <div className={`${s.headerContent2}`}>
           <nav className={s.containerNav}>
