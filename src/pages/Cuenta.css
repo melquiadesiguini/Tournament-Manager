@@ -186,6 +186,16 @@
   font-size: 0.9rem;
 }
 
+/* Botones dentro del aviso amarillo: el color claro del tema se perdía sobre el fondo */
+.cuenta-aviso .config-btn {
+  color: #92400e;
+  border-color: #92400e;
+}
+
+.cuenta-aviso p {
+  margin: 0 0 0.4rem;
+}
+
 /* Historial */
 .historial-tabla-wrap {
   overflow-x: auto;

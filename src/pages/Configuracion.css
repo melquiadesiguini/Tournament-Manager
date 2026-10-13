@@ -347,7 +347,8 @@
   font-weight: 700;
   padding: 0.1rem 0.4rem;
   border-radius: 0.3rem;
-  background-color: var(--bg-page);
-  border: 1px dashed var(--border-color);
+  background-color: #fffbeb;
+  color: #78350f;
+  border: 1px dashed #d97706;
   user-select: all;
 }
