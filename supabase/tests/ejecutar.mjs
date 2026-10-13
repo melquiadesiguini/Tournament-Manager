@@ -324,5 +324,22 @@ prueba('se puede borrar una organización entera (cascada)', await (async () => 
   return Number((await uno(`select count(*) n from public.roles where organizacion_id='${orgC.id}'`)).n) === 0
 })())
 
+// ---------------------------------------------------------------- 5) Soporte de las Edge Functions
+console.log('\n5) Soporte de las Edge Functions')
+await db.exec(`insert into auth.sessions (id, user_id) values ('${id(900)}', '${U.juezB}'), ('${id(901)}', '${U.kansaB}')`)
+prueba('un usuario logueado no puede cerrar sesiones ajenas', await como(U.duenoB, () => falla(() => db.query(`select public.cerrar_sesiones_usuario('${U.juezB}')`), 'permission denied')))
+prueba('un anónimo tampoco', await comoAnonimo(() => falla(() => db.query(`select public.cerrar_sesiones_usuario('${U.juezB}')`), 'permission denied')))
+await db.exec(`set role service_role`)
+await db.exec(`select public.cerrar_sesiones_usuario('${U.juezB}')`)
+await db.exec(`reset role`)
+prueba('service_role cierra las sesiones de ese usuario y de nadie más',
+  Number((await uno(`select count(*) n from auth.sessions where user_id='${U.juezB}'`)).n) === 0 &&
+  Number((await uno(`select count(*) n from auth.sessions where user_id='${U.kansaB}'`)).n) === 1)
+// auditoría: la leen los admins de su organización; nadie puede escribirla desde la API
+await db.exec(`insert into public.auditoria (organizacion_id, actor_id, accion) values ('${orgB.id}', '${U.duenoB}', 'crear_usuario')`)
+prueba('el dueño ve la auditoría de su organización y no la de otras', (await como(U.duenoB, () => filas('select * from public.auditoria'))).length === 1 && (await como(U.superadmin, () => filas('select * from public.auditoria'))).length === 0)
+prueba('nadie escribe auditoría desde la API', await como(U.duenoB, () => falla(() => db.exec(`insert into public.auditoria (organizacion_id, actor_id, accion) values ('${orgB.id}', '${U.duenoB}', 'falsa')`), 'permission denied')))
+prueba('el juez (sin gestionar_usuarios) no ve la auditoría', (await como(U.juezB, () => filas('select * from public.auditoria'))).length === 0)
+
 console.log(`\nResultado: ${ok} pruebas correctas, ${fallos} fallidas.`)
 process.exit(fallos ? 1 : 0)

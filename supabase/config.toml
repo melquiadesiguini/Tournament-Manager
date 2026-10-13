@@ -413,3 +413,18 @@ enabled = true
 # formatted with uppercase keywords, indent 2, max width 180, trailing commas,
 # and column/key alignment. Set to "null" to emit raw, unformatted SQL.
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
+
+# --- Edge Functions de IPPONIA -------------------------------------------------------------
+# verify_jwt = true: Supabase rechaza las llamadas sin sesión antes de ejecutar la función.
+# Cada función además comprueba permisos y organización (ver functions/_shared/acciones.ts).
+[functions.crear-usuario]
+verify_jwt = true
+
+[functions.resetear-clave]
+verify_jwt = true
+
+[functions.desactivar-usuario]
+verify_jwt = true
+
+[functions.crear-organizacion]
+verify_jwt = true

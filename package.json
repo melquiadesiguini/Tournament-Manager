@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:db": "node supabase/tests/ejecutar.mjs"
+    "test:db": "node supabase/tests/ejecutar.mjs",
+    "test:functions": "npx --yes deno test --no-lock supabase/functions/_shared/acciones.test.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",

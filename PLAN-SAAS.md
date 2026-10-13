@@ -224,3 +224,14 @@ Rutas: `/ingresar`, `/restablecer`, `/:slugOrg/ingresar`, `/:slugOrg/torneos`, `
 - [x] Pruebas locales (`npm run test:db`): **94 correctas** (migración de datos, aislamiento entre organizaciones, permisos por torneo/área, plan, organización suspendida/vencida, superadmin, candados).
 - [x] **Aplicada en Supabase** (13/10/2026). Verificada: organización `ikigai-dojo` (plan estandar), 1 perfil dueño, 5 roles, 1 asignación, 1 superadmin, 12 permisos, jueces y resultados conservados, todas las tablas con RLS, sin triggers viejos. La nube del frontend viejo queda inactiva hasta la Etapa 3.
 - [x] "Allow new users to sign up" desactivado en Authentication (verificado tras recargar).
+
+## 13. Etapa 2: seguimiento (Edge Functions)
+
+- [x] Código en `supabase/functions/`: `crear-organizacion`, `crear-usuario`, `resetear-clave`, `desactivar-usuario` (+ `_shared/`).
+- [x] La lógica está separada de Supabase (`acciones.ts`) y probada con un servicio simulado: **20 pruebas** (`npm run test:functions`).
+- [x] Tipos revisados con `deno check` (incluida la conexión real a supabase-js).
+- [x] Migración `20261013130000_soporte_edge_functions.sql` (cerrar sesiones de un usuario) aplicada en Supabase. Pruebas de base de datos: **101 correctas**.
+- [x] Las 4 funciones publicadas desde el editor del panel de Supabase (no hizo falta el login del CLI) y con "Verify JWT with legacy secret" apagado: las sesiones usan claves nuevas (ES256) y cada función verifica la sesión por su cuenta.
+- [x] Prueba real con la sesión del dueño (13/10/2026): `crear-usuario` pasa perfil, organización vigente y permiso; `crear-organizacion` reconoce al superadmin; `resetear-clave` y `desactivar-usuario` consultan con la clave de servicio. Las cuatro rechazaron los datos inválidos antes de crear nada.
+- [ ] Pendiente menor: `desactivar-usuario` y `crear-organizacion` siguen en la primera versión (claves heredadas SUPABASE_ANON_KEY/SERVICE_ROLE_KEY, marcadas DEPRECATED). Funcionan; actualizarlas a SUPABASE_PUBLISHABLE_KEYS/SECRET_KEYS (ya hecho en `crear-usuario` y `resetear-clave`).
+- [ ] Configurar SMTP propio antes de usar invitaciones por email con clientes reales.
