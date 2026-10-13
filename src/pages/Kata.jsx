@@ -12,7 +12,7 @@ import './Kata.css'
 
 function Kata() {
   const containerRef = useRef(null)
-  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
+  const { isFullscreen } = useFullscreen(containerRef)
   const { contentRef, scale } = useFitToScreen(isFullscreen)
 
   const [judgeSystem, setJudgeSystem] = useState(null)
@@ -231,16 +231,6 @@ function Kata() {
       <main className="kata-container" ref={containerRef}>
         <button
           type="button"
-          className="btn-fullscreen"
-          onClick={toggleFullscreen}
-          aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Ampliar a pantalla completa'}
-          title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-        >
-          {isFullscreen ? '✕' : '⛶'}
-        </button>
-
-        <button
-          type="button"
           className="btn-display"
           onClick={openPublicDisplay}
           title="Abrir la pantalla pública para el segundo monitor"
@@ -285,7 +275,7 @@ function Kata() {
               className="btn-change-system"
               onClick={() => changeJudgeSystem(null)}
             >
-              ↩️ Cambiar Sistema de Jueces ({judgeSystem})
+              ← Volver
             </button>
  
             <div className="header-section">

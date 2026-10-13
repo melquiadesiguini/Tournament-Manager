@@ -6,21 +6,27 @@ import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
 import useCountUp from '../hooks/useCountUp'
-import useFullscreen from '../hooks/useFullscreen'
 import useFitToScreen from '../hooks/useFitToScreen'
+import useAlturaHeader from '../hooks/useAlturaHeader'
 import { openPublicDisplay, usePublishLive } from '../hooks/usePublicDisplay'
 import '../pages/Kumite.css'
 
 // Duraciones del combate (en milisegundos)
+// Relleno vertical total (arriba + abajo) de .kumite-container, en px
+const PADDING_VERTICAL_TABLERO = 24
+// Hasta cuánto se agranda el tablero en pantallas grandes para llenar el alto
+const ESCALA_MAXIMA_TABLERO = 3
+
 const DURACION_COMBATE = 60 * 1000
 const DURACION_ENCHO_SEN = 60 * 1000
 
 // `modoKansa`: es el mismo tablero que la Mesa, pero independiente: no publica nada
 // para la pantalla pública ni toca el tablero de la Mesa (cada ventana lleva su combate).
 function Kumite({ modoKansa = false }) {
-  const containerRef = useRef(null)
-  const { isFullscreen, toggleFullscreen } = useFullscreen(containerRef)
-  const { contentRef, scale } = useFitToScreen(isFullscreen)
+  // El tablero ocupa el 100 % del alto de la pantalla (debajo del encabezado), sin scroll:
+  // se achica si no entra y se agranda si sobra espacio.
+  const alturaHeader = useAlturaHeader()
+  const { contentRef, scale } = useFitToScreen(true, alturaHeader + PADDING_VERTICAL_TABLERO, false, ESCALA_MAXIMA_TABLERO)
 
   const [categoria, setCategoria] = useState('')
   const [duration, setDuration] = useState(DURACION_COMBATE)
@@ -315,17 +321,7 @@ function Kumite({ modoKansa = false }) {
   return (
     <>
       <Header />
-      <main className="kumite-container" ref={containerRef}>
-        <button
-          type="button"
-          className="btn-fullscreen"
-          onClick={toggleFullscreen}
-          aria-label={isFullscreen ? 'Salir de pantalla completa' : 'Ampliar a pantalla completa'}
-          title={isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'}
-        >
-          {isFullscreen ? '✕' : '⛶'}
-        </button>
-
+      <main className="kumite-container" style={{ height: `calc(100dvh - ${alturaHeader}px)` }}>
         {!modoKansa && (
           <button
             type="button"
@@ -340,7 +336,14 @@ function Kumite({ modoKansa = false }) {
         <div
           className="kumite-wrapper"
           ref={contentRef}
-          style={isFullscreen ? { transform: `scale(${scale})`, transformOrigin: 'top center' } : undefined}
+          style={{
+            // al achicar el tablero se ensancha lo mismo para seguir ocupando todo el ancho
+            width: `${100 / scale}%`,
+            maxWidth: 'none',
+            transform: `scale(${scale})`,
+            // si se agranda, la caja queda centrada y crece desde el centro; si se achica, ocupa todo el ancho
+            transformOrigin: scale >= 1 ? 'top center' : 'top left',
+          }}
         >
           {/* Header del Kumite */}
           {!modoKansa && (

@@ -12,7 +12,9 @@ import { useEffect, useRef, useState } from 'react'
 // - `measureChildren`: para contenedores que se estiran hasta llenar la pantalla
 //   (alto fijo, con el contenido distribuido adentro): el alto natural se mide por
 //   lo que ocupan los hijos y no por el contenedor, y se observan los hijos.
-export default function useFitToScreen(active, reservedHeight = 0, measureChildren = false) {
+// - `maxScale`: escala máxima. Con 1 (por defecto) el contenido solo se achica cuando no
+//   entra; con un valor mayor también se agranda para ocupar todo el alto disponible.
+export default function useFitToScreen(active, reservedHeight = 0, measureChildren = false, maxScale = 1) {
   const contentRef = useRef(null)
   const [scale, setScale] = useState(1)
 
@@ -34,10 +36,7 @@ export default function useFitToScreen(active, reservedHeight = 0, measureChildr
       const naturalHeight = naturalHeightOf(el)
       const availableHeight = window.innerHeight - reservedHeight
 
-      const nextScale =
-        naturalHeight > availableHeight
-          ? Math.max(0.4, availableHeight / naturalHeight)
-          : 1
+      const nextScale = Math.min(maxScale, Math.max(0.4, availableHeight / naturalHeight))
 
       setScale(nextScale)
     }
@@ -72,7 +71,7 @@ export default function useFitToScreen(active, reservedHeight = 0, measureChildr
       if (observer) observer.disconnect()
       if (mutations) mutations.disconnect()
     }
-  }, [active, reservedHeight, measureChildren])
+  }, [active, reservedHeight, measureChildren, maxScale])
 
   return { contentRef, scale }
 }
