@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:db": "node supabase/tests/ejecutar.mjs"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
@@ -22,6 +23,7 @@
     "write-excel-file": "^4.1.1"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.9",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/react": "^19.2.18",
