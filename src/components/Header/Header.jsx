@@ -33,16 +33,14 @@ function Header() {
   return (
     <header>
       <div className={`${s.headerContent}`}>
-        <div className={s.brand}>
-          <Link to="/">
-            <img
-              src={theme === 'dark' ? logoOscuro : logoClaro}
-              alt="Ipponia"
-              className={s.logoImg}
-            />
-          </Link>
+        <Link to="/" className={s.brand} aria-label="IPPONIA, ir al inicio">
+          <img
+            src={theme === 'dark' ? logoOscuro : logoClaro}
+            alt=""
+            className={s.logoImg}
+          />
           <h1 className={s.logo}>IPPONIA</h1>
-        </div>
+        </Link>
         <div className={`${s.headerContent2}`}>
           <nav className={s.containerNav}>
             <div className={s.containerNav2}>
