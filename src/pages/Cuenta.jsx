@@ -2,14 +2,14 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useAuth from '../hooks/useAuth'
-import { PERMISOS, SECCIONES_CONFIG } from '../lib/permisos'
+import { PERMISOS, seccionesVisibles } from '../lib/permisos'
 import './Cuenta.css'
 
 // Datos de la cuenta del usuario conectado (se llega con sesión iniciada: ver RutaProtegida)
 function Cuenta() {
   const { configurado, user, perfil, organizacion: org, esSuperAdmin, permisos, puede, cerrarSesion } = useAuth()
 
-  const seccionesConfig = SECCIONES_CONFIG.filter((s) => (s.permiso === 'superadmin' ? esSuperAdmin : puede(s.permiso)))
+  const seccionesConfig = seccionesVisibles({ esSuperAdmin, puede })
   const nombresPermisos = [...new Set(permisos.map((p) => p.permiso))].map((p) => PERMISOS[p] ?? p)
   const identificador = perfil?.nombre_usuario ?? user?.email
 

@@ -4,13 +4,13 @@ import logoClaro from '../../assets/images/ipponia-logo.png' // cinturón negro 
 import logoOscuro from '../../assets/images/ipponia-logo-oscuro.png' // cinturón blanco (tema oscuro)
 import useTheme from '../../hooks/useTheme'
 import useAuth from '../../hooks/useAuth'
-import { PERMISOS_MODULO, SECCIONES_CONFIG } from '../../lib/permisos'
+import { PERMISOS_MODULO, seccionesVisibles } from '../../lib/permisos'
 import s from './Header.module.css'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()
   const { user, perfil, esSuperAdmin, puede, puedeAlguno } = useAuth()
-  const seccionesConfig = SECCIONES_CONFIG.filter((s) => (s.permiso === 'superadmin' ? esSuperAdmin : puede(s.permiso)))
+  const seccionesConfig = seccionesVisibles({ esSuperAdmin, puede })
   const hayConfiguracion = seccionesConfig.length > 0
   const nombreCuenta = perfil?.nombre_visible || perfil?.nombre_usuario || user?.email
   const [menuAbierto, setMenuAbierto] = useState(false)

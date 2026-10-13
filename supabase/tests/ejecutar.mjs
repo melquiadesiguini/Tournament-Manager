@@ -354,5 +354,22 @@ prueba('con la organización suspendida no recibe nada', (await todos(U.duenoB))
 await db.exec(`update public.organizaciones set estado = 'activa' where id = '${orgB.id}'`)
 prueba('un anónimo no puede pedirlos', await comoAnonimo(() => falla(() => db.query('select * from public.mis_permisos_todos()'), 'permission denied')))
 
+// ---------------------------------------------------------------- 7) transferir_dueno
+console.log('\n7) transferir_dueno')
+const NUEVO = '00000000-0000-4000-8000-0000000000aa'
+await db.exec(`insert into auth.users (id, email, email_confirmed_at) values ('${NUEVO}', 'nuevo.dueno@fakko.org', now())`)
+prueba('la API pública no puede transferir organizaciones', await como(U.duenoB, () => falla(() => db.query(`select public.transferir_dueno('fakko', 'nuevo.dueno@fakko.org')`), 'permission denied')))
+prueba('no transfiere a una cuenta que no existe', await falla(() => db.query(`select public.transferir_dueno('fakko', 'nadie@x.org')`), 'No existe una cuenta'))
+prueba('no transfiere a una cuenta que ya está en una organización', await falla(() => db.query(`select public.transferir_dueno('fakko', 'juez1@fakko.ipponia.internal')`), 'ya pertenece'))
+prueba('no transfiere una organización inexistente', await falla(() => db.query(`select public.transferir_dueno('no-existe', 'nuevo.dueno@fakko.org')`), 'No existe la organizaci'))
+await db.exec(`select public.transferir_dueno('fakko', 'nuevo.dueno@fakko.org')`)
+const nuevoPerfil = await uno(`select es_dueno, activo, debe_cambiar_clave from public.perfiles where usuario_id='${NUEVO}'`)
+prueba('el nuevo dueño queda como dueño y debe cambiar la clave', nuevoPerfil?.es_dueno === true && nuevoPerfil.debe_cambiar_clave === true)
+prueba('el dueño anterior ya no tiene perfil ni roles', Number((await uno(`select count(*) n from public.perfiles where usuario_id='${U.duenoB}'`)).n) === 0 && Number((await uno(`select count(*) n from public.asignaciones where usuario_id='${U.duenoB}'`)).n) === 0)
+prueba('el nuevo dueño tiene los 12 permisos a nivel organización', (await todos(NUEVO)).length === 12)
+prueba('la organización conserva a sus demás usuarios', Number((await uno(`select count(*) n from public.perfiles where organizacion_id='${orgB.id}'`)).n) === 4)
+prueba('los candados del dueño siguen activos tras transferir', await falla(() => db.exec(`update public.perfiles set activo = false where usuario_id='${NUEVO}'`), 'no se puede desactivar'))
+prueba('el Admin permanente del nuevo dueño sigue protegido', await falla(() => db.exec(`delete from public.asignaciones where usuario_id='${NUEVO}'`), 'Admin permanente'))
+
 console.log(`\nResultado: ${ok} pruebas correctas, ${fallos} fallidas.`)
 process.exit(fallos ? 1 : 0)

@@ -36,3 +36,10 @@ export const SECCIONES_CONFIG = [
   { a: '/configuracion/historial', texto: 'Historial', permiso: 'ver_historial' },
   { a: '/configuracion/organizaciones', texto: 'Organizaciones', permiso: 'superadmin' },
 ]
+
+// ¿Puede el usuario ver esta sección de Configuración? El superadmin de la plataforma ve solo
+// "Organizaciones": la gestión de usuarios, torneos, jueces, etc. es de los administradores de cada organización.
+export const puedeVerSeccion = (permiso, { esSuperAdmin, puede }) =>
+  permiso === 'superadmin' ? esSuperAdmin : !esSuperAdmin && puede(permiso)
+
+export const seccionesVisibles = (auth) => SECCIONES_CONFIG.filter((s) => puedeVerSeccion(s.permiso, auth))

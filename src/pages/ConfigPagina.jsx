@@ -2,7 +2,7 @@ import { Link, NavLink } from 'react-router-dom'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useAuth from '../hooks/useAuth'
-import { SECCIONES_CONFIG } from '../lib/permisos'
+import { puedeVerSeccion, seccionesVisibles } from '../lib/permisos'
 import './Cuenta.css'
 import './Configuracion.css'
 
@@ -11,9 +11,8 @@ import './Configuracion.css'
 // puede ver. Muestra el contenido (children) cuando corresponde, o el aviso que haga falta.
 function ConfigPagina({ titulo, permiso, children }) {
   const { configurado, cargando, user, esSuperAdmin, perfilCargado, puede } = useAuth()
-  const tiene = (p) => (p === 'superadmin' ? esSuperAdmin : puede(p))
-  const permitido = tiene(permiso)
-  const visibles = SECCIONES_CONFIG.filter((s) => tiene(s.permiso))
+  const permitido = puedeVerSeccion(permiso, { esSuperAdmin, puede })
+  const visibles = seccionesVisibles({ esSuperAdmin, puede })
 
   let contenido
   if (!configurado) {
