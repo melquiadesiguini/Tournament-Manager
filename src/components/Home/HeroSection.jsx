@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import  hero  from '../../assets/images/hero.jpg'
 import '../Home/Home.css'
 
 
@@ -29,13 +28,6 @@ function HeroSection() {
               DESTREZA
             </Link>
           </div>
-        </div>
-        <div className="hero-image">
-          <img 
-            src={hero} 
-            alt="Karate Tournament"
-            className="hero-img"
-          />
         </div>
       </div>
     </section>
