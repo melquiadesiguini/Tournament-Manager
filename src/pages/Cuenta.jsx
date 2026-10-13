@@ -177,7 +177,9 @@ function Cuenta({ registro = false }) {
             ) : (
               <>
                 <span>¿Todavía no sos cliente?</span>
-                <a href={URL_SOLICITUD}>Solicitar acceso</a>
+                <a href={URL_SOLICITUD} target="_blank" rel="noopener noreferrer">
+                  Solicitar acceso
+                </a>
               </>
             )}
           </div>

@@ -1,19 +1,24 @@
 // Contacto comercial de IPPONIA: a dónde llegan las solicitudes de acceso.
-// Para cambiarlo (por ejemplo a WhatsApp) alcanza con modificar este archivo.
+
+// Número de WhatsApp en formato internacional, solo dígitos y sin "+".
+// Argentina (celular): 549 + código de área sin 0 + número sin 15. Ej.: 5491122334455
+export const WHATSAPP_NUMERO = '5491157462523'
+
+// Mientras no haya número de WhatsApp, las solicitudes llegan por email
 export const CONTACTO_EMAIL = 'melquiades.iguini@gmail.com'
 
-const ASUNTO = 'Solicitud de acceso a IPPONIA'
-const CUERPO = [
-  'Hola, quiero usar IPPONIA.',
+const MENSAJE = [
+  'Hola! Te escribo desde la página de IPPONIA y quiero contratar el servicio.',
   '',
-  'Nombre de la organización (dojo, club, federación):',
-  'Nombre y apellido de contacto:',
-  'Teléfono:',
-  'Módulos que necesitan (Kata, Kumite, Kobudo, Destreza):',
+  'Organización (dojo, club o federación):',
+  'Nombre y apellido:',
+  'Módulos que necesitamos (Kata, Kumite, Kobudo, Destreza):',
   'Fecha estimada del primer torneo:',
 ].join('\n')
 
-export const URL_SOLICITUD = `mailto:${CONTACTO_EMAIL}?subject=${encodeURIComponent(ASUNTO)}&body=${encodeURIComponent(CUERPO)}`
+export const URL_SOLICITUD = WHATSAPP_NUMERO
+  ? `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(MENSAJE)}`
+  : `mailto:${CONTACTO_EMAIL}?subject=${encodeURIComponent('Quiero contratar IPPONIA')}&body=${encodeURIComponent(MENSAJE)}`
 
 // Enlace para que una persona invitada cree su cuenta (no aparece en la pantalla de ingreso)
 export const urlRegistro = () => `${window.location.origin}${import.meta.env.BASE_URL}registro`
