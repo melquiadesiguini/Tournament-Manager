@@ -1,64 +1,17 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useAuth from '../hooks/useAuth'
-import LoginFondo from '../components/LoginFondo'
-import useTheme from '../hooks/useTheme'
-import { ETIQUETA_ROL } from '../lib/roles'
-import { URL_SOLICITUD } from '../lib/contacto'
-import logoClaro from '../assets/images/ipponia-logo.png' // cinturón negro (tema claro)
-import logoOscuro from '../assets/images/ipponia-logo-oscuro.png' // cinturón blanco (tema oscuro)
+import { PERMISOS, SECCIONES_CONFIG } from '../lib/permisos'
 import './Cuenta.css'
-import './Login.css'
 
-// Ingresar, crear cuenta y ver los datos de la cuenta
-function Cuenta({ registro = false }) {
-  const {
-    configurado,
-    cargando,
-    user,
-    rol,
-    esSuperAdmin,
-    esAdmin,
-    puedeVerHistorial,
-    perfilCargado,
-    organizacion: org,
-    iniciarSesion,
-    registrarse,
-    cerrarSesion,
-  } = useAuth()
-  const { theme, toggleTheme } = useTheme()
+// Datos de la cuenta del usuario conectado (se llega con sesión iniciada: ver RutaProtegida)
+function Cuenta() {
+  const { configurado, user, perfil, organizacion: org, esSuperAdmin, permisos, puede, cerrarSesion } = useAuth()
 
-  // 'ingresar' en la pantalla de ingreso; 'registrar' solo en /registro (para quienes recibieron invitación)
-  const [modo, setModo] = useState(registro ? 'registrar' : 'ingresar')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [enviando, setEnviando] = useState(false)
-  const [error, setError] = useState('')
-  const [aviso, setAviso] = useState('')
-
-  const enviar = async (e) => {
-    e.preventDefault()
-    setError('')
-    setAviso('')
-    setEnviando(true)
-    const r =
-      modo === 'ingresar'
-        ? await iniciarSesion(email.trim(), password)
-        : await registrarse(email.trim(), password)
-    setEnviando(false)
-
-    if (!r.ok) {
-      setError(r.mensaje)
-      return
-    }
-    if (r.requiereConfirmacion) {
-      setAviso('Te enviamos un email para confirmar la cuenta. Después de confirmarlo, ingresá acá.')
-      setModo('ingresar')
-    }
-    setPassword('')
-  }
+  const seccionesConfig = SECCIONES_CONFIG.filter((s) => (s.permiso === 'superadmin' ? esSuperAdmin : puede(s.permiso)))
+  const nombresPermisos = [...new Set(permisos.map((p) => p.permiso))].map((p) => PERMISOS[p] ?? p)
+  const identificador = perfil?.nombre_usuario ?? user?.email
 
   let contenido
   if (!configurado) {
@@ -68,123 +21,52 @@ function Cuenta({ registro = false }) {
         disponibles. Los resultados se guardan solo en este navegador.
       </p>
     )
-  } else if (cargando) {
-    contenido = <p className="cuenta-nota">Cargando…</p>
-  } else if (user) {
+  } else {
     contenido = (
       <>
         <p className="cuenta-dato">
-          Sesión iniciada como <strong>{user.email}</strong>
+          Sesión iniciada como <strong>{perfil?.nombre_visible || identificador}</strong>
+          {perfil?.nombre_visible && perfil?.nombre_usuario ? ` (${perfil.nombre_usuario})` : ''}
         </p>
-        <p className="cuenta-dato">
-          Rol: <strong>{esSuperAdmin ? 'Superadministrador' : (ETIQUETA_ROL[rol] ?? '—')}</strong>
-        </p>
+        {esSuperAdmin && (
+          <p className="cuenta-dato">
+            Rol en la plataforma: <strong>Superadministrador</strong>
+          </p>
+        )}
         {org && (
           <p className="cuenta-dato">
             Organización: <strong>{org.nombre}</strong> · Plan: <strong>{org.plan}</strong>
             {org.vence_el ? ` · vence el ${new Date(`${org.vence_el}T00:00:00`).toLocaleDateString('es-AR')}` : ''}
           </p>
         )}
-        {perfilCargado && !rol && !esSuperAdmin && (
-          <div className="cuenta-error">
-            Tu usuario no tiene acceso: puede estar bloqueado, o el plan de tu organización está vencido o
-            suspendido. Consultá con el administrador o con el proveedor del servicio.
+        {nombresPermisos.length > 0 && (
+          <div className="cuenta-dato">
+            Lo que podés hacer:
+            <ul className="cuenta-lista">
+              {nombresPermisos.map((n) => (
+                <li key={n}>{n}</li>
+              ))}
+            </ul>
           </div>
+        )}
+        {org && nombresPermisos.length === 0 && (
+          <p className="cuenta-nota">Todavía no tenés permisos asignados. Pedile al administrador que te asigne un rol.</p>
         )}
         <p className="cuenta-nota">Los resultados que guardes se almacenan en la nube, en tu organización.</p>
         <div className="cuenta-acciones">
-          {(esAdmin || puedeVerHistorial) && (
+          {seccionesConfig.length > 0 && (
             <Link to="/configuracion" className="cuenta-boton cuenta-boton-primario">
               Configuración
             </Link>
           )}
+          <Link to="/cambiar-clave" className="cuenta-boton">
+            Cambiar contraseña
+          </Link>
           <button type="button" className="cuenta-boton" onClick={cerrarSesion}>
             Cerrar sesión
           </button>
         </div>
       </>
-    )
-  } else {
-    contenido = (
-      <>
-        {modo === 'registrar' && <h2 className="login-subtitulo">Crear mi cuenta</h2>}
-
-        <form className="cuenta-form" onSubmit={enviar}>
-          {modo === 'registrar' && (
-            <p className="cuenta-nota">
-              Registrate con el mismo email al que te invitaron. Si no recibiste una invitación, solicitá acceso.
-            </p>
-          )}
-          <label>
-            Email
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-            />
-          </label>
-          <label>
-            Contraseña
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete={modo === 'ingresar' ? 'current-password' : 'new-password'}
-            />
-          </label>
-
-          {error && <div className="cuenta-error">{error}</div>}
-          {aviso && <div className="cuenta-aviso">{aviso}</div>}
-
-          <button type="submit" className="cuenta-boton cuenta-boton-primario" disabled={enviando}>
-            {enviando ? 'Un momento…' : modo === 'ingresar' ? 'Ingresar' : 'Crear mi cuenta'}
-          </button>
-        </form>
-      </>
-    )
-  }
-
-  // Sin sesión: pantalla de ingreso completa, con el fondo de la marca
-  if (configurado && !cargando && !user) {
-    return (
-      <div className="login-pantalla">
-        <LoginFondo />
-        <button
-          type="button"
-          className="login-tema"
-          onClick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'}
-          title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
-        >
-          {theme === 'dark' ? '☀️' : '🌙'}
-        </button>
-        <section className="login-card">
-          <div className="login-logo">
-            <img src={theme === 'dark' ? logoOscuro : logoClaro} alt="" />
-            <div className="login-logo-texto">
-              <span className="login-logo-nombre">IPPONIA</span>
-              <span className="login-logo-lema">TORNEOS EN VIVO</span>
-            </div>
-          </div>
-          {contenido}
-          <div className="login-pie">
-            {registro ? (
-              <Link to="/cuenta">¿Ya tenés cuenta? Ingresar</Link>
-            ) : (
-              <>
-                <span>¿Todavía no sos cliente?</span>
-                <a href={URL_SOLICITUD} target="_blank" rel="noopener noreferrer">
-                  Solicitar acceso
-                </a>
-              </>
-            )}
-          </div>
-        </section>
-      </div>
     )
   }
 

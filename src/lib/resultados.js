@@ -11,15 +11,15 @@ export async function guardarResultado({ modulo, payload }) {
   } = await supabase.auth.getSession()
   if (!session) return { ok: false, motivo: 'sin-sesion' }
 
-  const { data: orgId, error: errorMiembro } = await supabase.rpc('mi_org_id')
+  const { data: orgId, error: errorMiembro } = await supabase.rpc('mi_organizacion')
   if (errorMiembro || !orgId) {
     return { ok: false, motivo: 'sin-organizacion', error: errorMiembro }
   }
 
   const area = localStorage.getItem('tm-area') || null
   const { error } = await supabase
-    .from('results')
-    .insert({ org_id: orgId, modulo, area, payload })
+    .from('resultados')
+    .insert({ organizacion_id: orgId, creado_por: session.user.id, modulo, area, payload })
   return error ? { ok: false, motivo: 'error', error } : { ok: true }
 }
 
@@ -27,9 +27,9 @@ export async function guardarResultado({ modulo, payload }) {
 export async function listarResultados(limite = 200) {
   if (!supabase) return { ok: false, resultados: [] }
   const { data, error } = await supabase
-    .from('results')
-    .select('id, modulo, area, payload, created_at')
-    .order('created_at', { ascending: false })
+    .from('resultados')
+    .select('id, modulo, area, payload, creado_en')
+    .order('creado_en', { ascending: false })
     .limit(limite)
   return error ? { ok: false, resultados: [], error } : { ok: true, resultados: data }
 }

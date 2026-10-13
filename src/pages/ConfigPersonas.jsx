@@ -20,8 +20,9 @@ const mostrar = (campo, valor) => (campo.tipo === 'booleano' ? (valor ? 'SÍ' : 
 
 // Lista administrable de jueces o competidores (tabla: 'jueces' | 'competidores'): buscar,
 // filtrar por estado, agregar, editar, activar/desactivar, borrar e importar desde Excel.
-function ConfigPersonas({ tabla, titulo }) {
-  const { user, esAdmin } = useAuth()
+function ConfigPersonas({ tabla, titulo, permiso }) {
+  const { user, puede } = useAuth()
+  const permitido = puede(permiso)
   const config = CAMPOS_PERSONAS[tabla]
   const { campos, singular, plural } = config
   const cantidad = (n) => `${n} ${n === 1 ? singular : plural}`
@@ -42,7 +43,7 @@ function ConfigPersonas({ tabla, titulo }) {
   const recargar = () => listarPersonas(tabla).then((r) => setFilas(r.filas))
 
   useEffect(() => {
-    if (!user || !esAdmin) return undefined
+    if (!user || !permitido) return undefined
     let activo = true
     listarPersonas(tabla).then((r) => {
       if (!activo) return
@@ -52,7 +53,7 @@ function ConfigPersonas({ tabla, titulo }) {
     return () => {
       activo = false
     }
-  }, [user, esAdmin, tabla])
+  }, [user, permitido, tabla])
 
   const visibles = useMemo(() => {
     const q = busqueda.trim().toLowerCase()
@@ -140,7 +141,7 @@ function ConfigPersonas({ tabla, titulo }) {
   const nombreCompleto = (f) => [f.nombre, f.apellido].filter(Boolean).join(' ')
 
   return (
-    <ConfigPagina titulo={titulo}>
+    <ConfigPagina titulo={titulo} permiso={permiso}>
       <div className="config-barra">
         <input
           type="search"

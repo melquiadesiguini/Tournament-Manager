@@ -415,16 +415,16 @@ enabled = true
 # format_options = "{\"keywordCase\":\"upper\",\"indent\":2,\"maxWidth\":180,\"commaStyle\":\"trailing\"}"
 
 # --- Edge Functions de IPPONIA -------------------------------------------------------------
-# verify_jwt = true: Supabase rechaza las llamadas sin sesión antes de ejecutar la función.
+# verify_jwt = false: las sesiones usan claves nuevas (ES256) que la verificación heredada no reconoce; cada función valida la sesión con auth.getUser (ver _shared/servicio.ts).
 # Cada función además comprueba permisos y organización (ver functions/_shared/acciones.ts).
 [functions.crear-usuario]
-verify_jwt = true
+verify_jwt = false
 
 [functions.resetear-clave]
-verify_jwt = true
+verify_jwt = false
 
 [functions.desactivar-usuario]
-verify_jwt = true
+verify_jwt = false
 
 [functions.crear-organizacion]
-verify_jwt = true
+verify_jwt = false

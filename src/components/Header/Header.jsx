@@ -4,12 +4,15 @@ import logoClaro from '../../assets/images/ipponia-logo.png' // cinturón negro 
 import logoOscuro from '../../assets/images/ipponia-logo-oscuro.png' // cinturón blanco (tema oscuro)
 import useTheme from '../../hooks/useTheme'
 import useAuth from '../../hooks/useAuth'
+import { PERMISOS_MODULO, SECCIONES_CONFIG } from '../../lib/permisos'
 import s from './Header.module.css'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()
-  const { user, esAdmin, esSuperAdmin, puedeVerHistorial } = useAuth()
-  const hayConfiguracion = esAdmin || puedeVerHistorial
+  const { user, perfil, esSuperAdmin, puede, puedeAlguno } = useAuth()
+  const seccionesConfig = SECCIONES_CONFIG.filter((s) => (s.permiso === 'superadmin' ? esSuperAdmin : puede(s.permiso)))
+  const hayConfiguracion = seccionesConfig.length > 0
+  const nombreCuenta = perfil?.nombre_visible || perfil?.nombre_usuario || user?.email
   const [menuAbierto, setMenuAbierto] = useState(false)
   const menuRef = useRef(null)
 
@@ -44,10 +47,10 @@ function Header() {
           <nav className={s.containerNav}>
             <div className={s.containerNav2}>
               <Link to="/">Home</Link>
-              <Link to="/kata">Kata</Link>
-              <Link to="/kumite">Kumite</Link>
-              <Link to="/kobudo">Kobudo</Link>
-              <Link to="/destreza">Destreza</Link>
+              {puedeAlguno(PERMISOS_MODULO.kata) && <Link to="/kata">Kata</Link>}
+              {puedeAlguno(PERMISOS_MODULO.kumite) && <Link to="/kumite">Kumite</Link>}
+              {puedeAlguno(PERMISOS_MODULO.kobudo) && <Link to="/kobudo">Kobudo</Link>}
+              {puedeAlguno(PERMISOS_MODULO.destreza) && <Link to="/destreza">Destreza</Link>}
               {user ? (
                 <div
                   className={s.menuConfig}
@@ -55,42 +58,24 @@ function Header() {
                   onMouseEnter={() => setMenuAbierto(true)}
                   onMouseLeave={() => setMenuAbierto(false)}
                 >
-                  <Link to="/cuenta" title={user.email} aria-haspopup={hayConfiguracion ? 'menu' : undefined}>
-                    Mi cuenta{hayConfiguracion }
+                  <Link to="/cuenta" title={nombreCuenta} aria-haspopup={hayConfiguracion ? 'menu' : undefined}>
+                    Mi cuenta
                   </Link>
                   {menuAbierto && hayConfiguracion && (
                     <div className={s.menuConfigLista} role="menu" onClick={() => setMenuAbierto(false)}>
                       <div className={s.menuConfigCaja}>
                         <span className={s.menuConfigTitulo}>Configuración</span>
-                        {esAdmin && (
-                          <>
-                            <Link to="/configuracion/usuarios" role="menuitem">
-                              Usuarios
-                            </Link>
-                            <Link to="/configuracion/jueces" role="menuitem">
-                              Jueces
-                            </Link>
-                            <Link to="/configuracion/competidores" role="menuitem">
-                              Competidores
-                            </Link>
-                          </>
-                        )}
-                        {puedeVerHistorial && (
-                          <Link to="/configuracion/historial" role="menuitem">
-                            Historial
+                        {seccionesConfig.map((sec) => (
+                          <Link key={sec.a} to={sec.a} role="menuitem">
+                            {sec.texto}
                           </Link>
-                        )}
-                        {esSuperAdmin && (
-                          <Link to="/configuracion/organizaciones" role="menuitem">
-                            Organizaciones
-                          </Link>
-                        )}
+                        ))}
                       </div>
                     </div>
                   )}
                 </div>
               ) : (
-                <Link to="/cuenta" title="Ingresar o crear cuenta">
+                <Link to="/ingresar" title="Ingresar">
                   Ingresar
                 </Link>
               )}

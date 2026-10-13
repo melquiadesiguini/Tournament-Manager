@@ -54,7 +54,7 @@ function ConfigHistorial() {
           <tbody>
             {estado.resultados.map((r) => (
               <tr key={r.id}>
-                <td>{new Date(r.created_at).toLocaleString('es-AR')}</td>
+                <td>{new Date(r.creado_en).toLocaleString('es-AR')}</td>
                 <td>{NOMBRES_MODULO[r.modulo] || r.modulo}</td>
                 <td>{r.area || '—'}</td>
                 <td>{resumen(r)}</td>
@@ -67,7 +67,7 @@ function ConfigHistorial() {
   }
 
   return (
-    <ConfigPagina titulo="Historial" permiso="historial">
+    <ConfigPagina titulo="Historial" permiso="ver_historial">
       {contenido}
     </ConfigPagina>
   )

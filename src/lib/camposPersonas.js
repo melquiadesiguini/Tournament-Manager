@@ -9,7 +9,7 @@ export const CAMPOS_PERSONAS = {
     singular: 'juez',
     plural: 'jueces',
     orden: ['apellido', 'nombre'],
-    conflicto: 'org_id,apellido,nombre',
+    conflicto: 'organizacion_id,apellido,nombre',
     claveUnica: ['apellido', 'nombre'],
     campos: [
       { clave: 'apellido', etiqueta: 'Apellido', tipo: 'texto', encabezado: /apellido/i },
@@ -36,7 +36,7 @@ export const CAMPOS_PERSONAS = {
     singular: 'competidor',
     plural: 'competidores',
     orden: ['nombre'],
-    conflicto: 'org_id,nombre',
+    conflicto: 'organizacion_id,nombre',
     claveUnica: ['nombre'],
     campos: [
       { clave: 'nombre', etiqueta: 'Nombre', tipo: 'texto', requerido: true, encabezado: /nombre|apellido|competidor/i },

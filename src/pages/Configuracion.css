@@ -283,3 +283,71 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+/* Roles: una tarjeta por rol con su lista de permisos */
+.roles-tarjeta {
+  margin-bottom: 0.9rem;
+}
+
+.roles-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+
+.roles-cabecera h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.roles-permisos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.4rem 1rem;
+}
+
+.roles-permisos .config-check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+
+/* Usuarios: roles asignados y panel de asignaciones */
+.usuarios-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.usuarios-rol {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.usuarios-panel td {
+  background-color: var(--bg-page);
+}
+
+.usuarios-asignacion {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.88rem;
+}
+
+.config-credencial {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 0.3rem;
+  background-color: var(--bg-page);
+  border: 1px dashed var(--border-color);
+  user-select: all;
+}

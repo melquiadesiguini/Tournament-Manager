@@ -2,26 +2,18 @@ import { Link, NavLink } from 'react-router-dom'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useAuth from '../hooks/useAuth'
+import { SECCIONES_CONFIG } from '../lib/permisos'
 import './Cuenta.css'
 import './Configuracion.css'
 
-// permiso: 'admin' (administradores), 'historial' (quienes pueden ver resultados) o 'superadmin'
-const SECCIONES = [
-  { a: '/configuracion/usuarios', texto: 'Usuarios', permiso: 'admin' },
-  { a: '/configuracion/jueces', texto: 'Jueces', permiso: 'admin' },
-  { a: '/configuracion/competidores', texto: 'Competidores', permiso: 'admin' },
-  { a: '/configuracion/historial', texto: 'Historial', permiso: 'historial' },
-  { a: '/configuracion/organizaciones', texto: 'Organizaciones', permiso: 'superadmin' },
-]
-
-// Marco común de la sección Configuración (dentro de Mi cuenta). Cada pantalla pide un permiso;
-// las pestañas muestran solo lo que el rol del usuario puede ver.
-// Muestra el contenido (children) cuando corresponde, o el aviso que haga falta.
-function ConfigPagina({ titulo, permiso = 'admin', children }) {
-  const { configurado, cargando, user, esAdmin, esSuperAdmin, perfilCargado, puedeVerHistorial } = useAuth()
-  const tiene = { admin: esAdmin, historial: puedeVerHistorial, superadmin: esSuperAdmin }
-  const permitido = tiene[permiso]
-  const visibles = SECCIONES.filter((s) => tiene[s.permiso])
+// Marco común de la sección Configuración (dentro de Mi cuenta). Cada pantalla pide un permiso
+// (el nombre de un permiso de la base, o 'superadmin'); las pestañas muestran solo lo que el usuario
+// puede ver. Muestra el contenido (children) cuando corresponde, o el aviso que haga falta.
+function ConfigPagina({ titulo, permiso, children }) {
+  const { configurado, cargando, user, esSuperAdmin, perfilCargado, puede } = useAuth()
+  const tiene = (p) => (p === 'superadmin' ? esSuperAdmin : puede(p))
+  const permitido = tiene(permiso)
+  const visibles = SECCIONES_CONFIG.filter((s) => tiene(s.permiso))
 
   let contenido
   if (!configurado) {
@@ -31,17 +23,15 @@ function ConfigPagina({ titulo, permiso = 'admin', children }) {
   } else if (!user) {
     contenido = (
       <p className="cuenta-nota">
-        Tenés que <Link to="/cuenta">iniciar sesión</Link> para entrar a Configuración.
+        Tenés que <Link to="/ingresar">iniciar sesión</Link> para entrar a Configuración.
       </p>
     )
   } else if (!permitido) {
     contenido = (
       <p className="cuenta-nota">
-        {permiso === 'historial'
-          ? 'Tu rol no tiene acceso al historial de resultados.'
-          : permiso === 'superadmin'
-            ? 'Esta sección es solo para el superadministrador de la plataforma.'
-            : 'Solo el administrador de la organización puede entrar a esta sección.'}
+        {permiso === 'superadmin'
+          ? 'Esta sección es solo para el superadministrador de la plataforma.'
+          : 'Tu usuario no tiene permiso para entrar a esta sección. Pedíselo al administrador.'}
       </p>
     )
   } else {

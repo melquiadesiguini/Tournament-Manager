@@ -1,53 +1,60 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase, supabaseConfigurado } from '../lib/supabase'
+import { emailInterno, recordarOrganizacion } from '../lib/ingreso'
 import { AuthContext } from './auth-context'
 
 // Mensajes de Supabase traducidos para mostrar al usuario
-function traducirError(error) {
+function traducirError(error, credenciales = 'Email o contraseña incorrectos.') {
   const msg = (error?.message || '').toLowerCase()
-  if (msg.includes('invalid login credentials')) return 'Email o contraseña incorrectos.'
+  if (msg.includes('invalid login credentials')) return credenciales
+  if (msg.includes('banned')) return 'Tu usuario está desactivado. Consultá con el administrador de tu organización.'
   if (msg.includes('email not confirmed')) return 'Falta confirmar tu email: revisá tu bandeja de entrada.'
-  if (msg.includes('already registered')) return 'Ya existe una cuenta con ese email.'
-  if (msg.includes('password should be at least')) return 'La contraseña debe tener al menos 6 caracteres.'
-  if (msg.includes('rate limit')) return 'Demasiados intentos. Esperá unos minutos y volvé a probar.'
-  if (msg.includes('invalid email') || msg.includes('unable to validate email')) return 'El email no es válido.'
-  if (msg.includes('database error saving new user') || msg.includes('registro está cerrado')) {
-    return 'El registro está cerrado: solo pueden crear cuenta quienes recibieron una invitación. Solicitá acceso.'
+  if (msg.includes('password should be at least') || msg.includes('weak_password')) {
+    return 'La contraseña es demasiado débil: usá al menos 8 caracteres.'
   }
+  if (msg.includes('same_password') || msg.includes('different from the old')) return 'La contraseña nueva tiene que ser distinta de la actual.'
+  if (msg.includes('rate limit') || msg.includes('too many')) return 'Demasiados intentos. Esperá unos minutos y volvé a probar.'
+  if (msg.includes('invalid email') || msg.includes('unable to validate email')) return 'El email no es válido.'
   if (msg.includes('failed to fetch')) return 'No se pudo conectar. Revisá tu conexión a internet.'
+  if (msg.includes('session') && msg.includes('missing')) return 'El enlace venció. Pedí uno nuevo.'
   return error?.message || 'Ocurrió un error inesperado.'
 }
 
-// Roles de organización. Los nombres viejos (owner, kansa, viewer) se tratan como los nuevos
-// por si la base todavía no tiene aplicada la migración supabase/roles.sql.
-const ROL_EQUIVALENTE = { owner: 'administrador', kansa: 'mesa', viewer: 'supervisor' }
+const hoy = () => new Date().toLocaleDateString('en-CA') // AAAA-MM-DD en hora local
 
-async function cargarPerfil(userId) {
-  const [{ data: orgId }, { data: superadmin }] = await Promise.all([
-    supabase.rpc('mi_org_id'),
-    supabase.from('platform_admins').select('user_id').eq('user_id', userId).maybeSingle(),
+// Datos del usuario conectado: su perfil (con la organización), si es superadmin y sus permisos.
+// Todo se lee con RLS: cada uno ve solo lo suyo.
+async function cargarDatos(userId) {
+  const [perfilRes, superRes, permisosRes] = await Promise.all([
+    supabase
+      .from('perfiles')
+      .select(
+        'nombre_usuario, nombre_visible, es_dueno, activo, debe_cambiar_clave, organizaciones(id, slug, nombre, plan, estado, vence_el)'
+      )
+      .eq('usuario_id', userId)
+      .maybeSingle(),
+    supabase.rpc('es_superadmin'),
+    supabase.rpc('mis_permisos_todos'),
   ])
-  let rol = null
-  let organizacion = null
-  if (orgId) {
-    const { data: o } = await supabase.from('organizations').select('name, plan, estado, vence_el').eq('id', orgId).maybeSingle()
-    if (o) organizacion = { nombre: o.name, plan: o.plan, estado: o.estado, vence_el: o.vence_el }
-    const { data: miembro } = await supabase
-      .from('members')
-      .select('role')
-      .eq('org_id', orgId)
-      .eq('user_id', userId)
-      .maybeSingle()
-    rol = miembro ? (ROL_EQUIVALENTE[miembro.role] ?? miembro.role) : null
+  if (perfilRes.error || superRes.error || permisosRes.error) return { error: true }
+
+  const { organizaciones: organizacion = null, ...perfil } = perfilRes.data ?? {}
+  return {
+    error: false,
+    perfil: perfilRes.data ? perfil : null,
+    organizacion,
+    esSuperAdmin: superRes.data === true,
+    permisos: permisosRes.data ?? [],
   }
-  return { rol, esSuperAdmin: Boolean(superadmin), organizacion }
 }
 
-// Mantiene la sesión del usuario (Supabase Auth) disponible para toda la app
+const SIN_DATOS = { userId: null, error: false, perfil: null, organizacion: null, esSuperAdmin: false, permisos: [] }
+
+// Mantiene la sesión del usuario (Supabase Auth) y sus permisos disponibles para toda la app
 function AuthProvider({ children }) {
   const [session, setSession] = useState(null)
   const [cargando, setCargando] = useState(supabaseConfigurado)
-  const [perfil, setPerfil] = useState({ rol: null, esSuperAdmin: false, organizacion: null, userId: null })
+  const [datos, setDatos] = useState(SIN_DATOS)
 
   useEffect(() => {
     if (!supabase) return undefined
@@ -67,50 +74,95 @@ function AuthProvider({ children }) {
   }, [])
 
   const userId = session?.user?.id ?? null
+
+  const aplicar = useCallback(
+    (d) => {
+      setDatos({ ...SIN_DATOS, ...d, userId })
+      if (d.organizacion?.slug) recordarOrganizacion(d.organizacion.slug)
+    },
+    [userId]
+  )
+
+  const recargar = useCallback(async () => {
+    if (supabase && userId) aplicar(await cargarDatos(userId))
+  }, [userId, aplicar])
+
+  // Se piden una vez al iniciar sesión; "cargado" se deriva de `datos.userId` (ver más abajo)
   useEffect(() => {
     if (!supabase || !userId) return undefined
     let activo = true
-    cargarPerfil(userId).then((p) => activo && setPerfil({ ...p, userId }))
+    cargarDatos(userId).then((d) => activo && aplicar(d))
     return () => {
       activo = false
     }
-  }, [userId])
+  }, [userId, aplicar])
 
   const value = useMemo(() => {
-    // El perfil solo vale si corresponde al usuario actual (evita mostrar el de una sesión anterior)
-    const vigente = userId && perfil.userId === userId
-    const rol = vigente ? perfil.rol : null
-    const esSuperAdmin = vigente ? perfil.esSuperAdmin : false
-    const organizacion = vigente ? perfil.organizacion : null
-    const esAdmin = esSuperAdmin || rol === 'administrador'
+    // Los datos solo valen si corresponden al usuario actual (evita mostrar los de una sesión anterior)
+    const vigente = Boolean(userId) && datos.userId === userId
+    const d = vigente ? datos : SIN_DATOS
+    const permisos = d.permisos
+    const conjunto = new Set(permisos.map((p) => p.permiso))
+    const puede = (permiso) => !supabaseConfigurado || conjunto.has(permiso)
+    const puedeAlguno = (lista) => lista.some(puede)
+
+    const org = d.organizacion
+    const organizacionVigente = Boolean(org) && ['prueba', 'activa'].includes(org.estado) && (!org.vence_el || org.vence_el >= hoy())
+
     return {
       configurado: supabaseConfigurado,
       cargando,
       user: session?.user ?? null,
-      rol,
-      organizacion,
-      esSuperAdmin,
-      esAdmin,
-      perfilCargado: Boolean(vigente),
-      puedeVerHistorial: esSuperAdmin || ['administrador', 'supervisor', 'mesa'].includes(rol),
+      perfil: d.perfil,
+      organizacion: org,
+      organizacionVigente,
+      esSuperAdmin: d.esSuperAdmin,
+      permisos,
+      perfilCargado: vigente,
+      errorCarga: vigente && d.error,
+      puede,
+      puedeAlguno,
+      puedeVerHistorial: puede('ver_historial'),
+      esAdmin: puede('gestionar_usuarios'),
+      recargar,
 
-      async iniciarSesion(email, password) {
+      // Usuario interno: nombre de usuario + contraseña; la organización la da la dirección
+      async iniciarSesionUsuario(slug, usuario, password) {
+        const email = emailInterno(usuario, slug)
         const { error } = await supabase.auth.signInWithPassword({ email, password })
+        if (error) return { ok: false, mensaje: traducirError(error, 'Usuario o contraseña incorrectos.') }
+        recordarOrganizacion(slug.trim().toLowerCase())
+        return { ok: true }
+      },
+
+      // Dueño de la organización y superadmin: entran con su email real
+      async iniciarSesionEmail(email, password) {
+        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
         return error ? { ok: false, mensaje: traducirError(error) } : { ok: true }
       },
 
-      // Si el proyecto exige confirmar el email, no hay sesión hasta confirmarlo
-      async registrarse(email, password) {
-        const { data, error } = await supabase.auth.signUp({ email, password })
+      // Envía el email para elegir una contraseña nueva (solo cuentas con email real)
+      async pedirRecuperacion(email) {
+        const redirectTo = `${window.location.origin}${import.meta.env.BASE_URL}restablecer`
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo })
+        return error ? { ok: false, mensaje: traducirError(error) } : { ok: true }
+      },
+
+      // Cambia la contraseña del usuario conectado (también sirve para el cambio obligatorio inicial)
+      async cambiarClave(nueva) {
+        const { error } = await supabase.auth.updateUser({ password: nueva })
         if (error) return { ok: false, mensaje: traducirError(error) }
-        return { ok: true, requiereConfirmacion: !data.session }
+        const { error: errorMarca } = await supabase.rpc('marcar_clave_cambiada')
+        if (errorMarca) return { ok: false, mensaje: 'Se cambió la contraseña, pero no se pudo actualizar tu cuenta. Volvé a ingresar.' }
+        await recargar()
+        return { ok: true }
       },
 
       async cerrarSesion() {
         await supabase.auth.signOut()
       },
     }
-  }, [session, cargando, perfil, userId])
+  }, [session, cargando, datos, userId, recargar])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

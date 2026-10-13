@@ -235,3 +235,40 @@ Rutas: `/ingresar`, `/restablecer`, `/:slugOrg/ingresar`, `/:slugOrg/torneos`, `
 - [x] Prueba real con la sesión del dueño (13/10/2026): `crear-usuario` pasa perfil, organización vigente y permiso; `crear-organizacion` reconoce al superadmin; `resetear-clave` y `desactivar-usuario` consultan con la clave de servicio. Las cuatro rechazaron los datos inválidos antes de crear nada.
 - [ ] Pendiente menor: `desactivar-usuario` y `crear-organizacion` siguen en la primera versión (claves heredadas SUPABASE_ANON_KEY/SERVICE_ROLE_KEY, marcadas DEPRECATED). Funcionan; actualizarlas a SUPABASE_PUBLISHABLE_KEYS/SECRET_KEYS (ya hecho en `crear-usuario` y `resetear-clave`).
 - [ ] Configurar SMTP propio antes de usar invitaciones por email con clientes reales.
+
+## 14. Etapa 3: seguimiento (frontend)
+
+Sub-etapas: **3a** sesión, permisos, ingreso por organización · **3b** Usuarios, Roles/Asignaciones, Torneos · **3c** panel del superadmin · **3d** limpieza y publicación.
+
+### 3a (hecha en el código, falta probar con una cuenta real)
+- [x] Migración `20261013140000_mis_permisos_todos.sql` aplicada en Supabase (la función `mis_permisos_todos()` devuelve todos los permisos del usuario con torneo y área). Pruebas de base de datos: **107 correctas**.
+- [x] `AuthProvider` reescrito: perfil + organización (`perfiles` con `organizaciones`), `es_superadmin`, permisos; ayudantes `puede()` / `puedeAlguno()`; ingreso por usuario o por email; recuperación y cambio de contraseña.
+- [x] Rutas: `/:slugOrg/ingresar` (usuario + contraseña), `/ingresar` (email: dueño y superadmin), `/restablecer`, `/cambiar-clave` (obligatorio la primera vez), `/cuenta`. Se recuerda la última organización para redirigir. `/registro` eliminado.
+- [x] `RutaProtegida`: sin sesión → ingreso; cuenta sin organización, usuario desactivado, organización suspendida/vencida y cambio de contraseña pendiente muestran su aviso.
+- [x] `RequierePermiso` en cada módulo (Kata, Kumite mesa/kansa, Kobudo, Destreza); Header y Configuración muestran solo lo permitido.
+- [x] `resultados.js`, `personas.js`, `camposPersonas.js` apuntan al esquema nuevo (`resultados`, `organizacion_id`, `creado_por`, `creado_en`).
+- [x] Se quitaron `ConfigUsuarios`, `ConfigOrganizaciones`, `lib/equipo.js`, `lib/organizaciones.js`, `lib/roles.js` (se reemplazan en 3b y 3c).
+
+### 3b (hecha en el código, falta probar con una cuenta real)
+- [x] **Usuarios** (`/configuracion/usuarios`, permiso `gestionar_usuarios`): alta con contraseña inicial generada (se muestra una sola vez para entregarla), restablecer contraseña, activar/desactivar (Edge Functions), buscador y filtro por estado. Al dueño no se le restablece la clave ni se lo desactiva (lo exigen también las funciones y la base).
+- [x] **Asignaciones** (botón 🎭 en cada usuario): rol + torneo (o toda la organización) + área opcional. Editarlas pide `gestionar_roles`; con solo `gestionar_usuarios` se ven. El Admin permanente del dueño no se puede quitar.
+- [x] **Roles** (`/configuracion/roles`, permiso `gestionar_roles`): crear, renombrar y borrar roles propios; marcar permisos con casillas; el Admin conserva los permisos de gestión.
+- [x] **Torneos** (`/configuracion/torneos`, permiso `crear_torneos`): crear, editar, cambiar estado y borrar.
+- [x] Capa de datos: `lib/funciones.js` (llama a las Edge Functions con la sesión del usuario), `usuarios.js`, `roles.js`, `torneos.js`, `errores.js`. Las reglas de seguridad siguen siendo las de la base (RLS y candados); la pantalla solo muestra sus mensajes.
+
+### 3c (hecha en el código, falta probar con la cuenta de superadmin)
+- [x] **Organizaciones** (`/configuracion/organizaciones`, solo superadmin): lista con plan, estado, vencimiento, cantidad de usuarios y torneos (solo agregados, vía `superadmin_resumen`); alta de un cliente con la función `crear-organizacion` (dueño con contraseña inicial generada, o invitación por email si se deja vacía; requiere SMTP); edición de nombre, estado (prueba / activa / suspendida), vencimiento y notas con `superadmin_actualizar_organizacion`; botón para copiar la dirección de ingreso `/:slug/ingresar`.
+- [x] `supabase/config.toml` corregido a `verify_jwt = false`, igual que el panel de Supabase.
+
+### 3d (cierre)
+- [x] Limpieza: se quitó `urlRegistro` (ya no existe `/registro`); no quedan referencias al modelo viejo (`mi_org_id`, `members`, `platform_admins`, `organizations`) fuera de `supabase/legacy/` y las pruebas.
+- [x] Chequeos finales: lint sin errores, `npm run test:db` **107 correctas**, `npm run test:functions` **20 correctas**, build correcto.
+- [x] Sitio publicado generado en `docs/` (`npx vite build --outDir docs --emptyOutDir`). Falta el commit y el push a `main` para que GitHub Pages lo sirva.
+- [x] Probado a mano con cuentas reales (Etapas 3a, 3b y 3c): ingreso por organización y por email, cambio obligatorio de contraseña, usuarios, roles, asignaciones, torneos y panel del superadmin.
+
+### Pendientes después de la Etapa 3
+- Configurar SMTP propio en Supabase (invitaciones y recuperación de contraseña por email) antes de tener clientes reales.
+- Actualizar `desactivar-usuario` y `crear-organizacion` a las claves nuevas (`SUPABASE_PUBLISHABLE_KEYS` / `SUPABASE_SECRET_KEYS`); hoy funcionan con las heredadas.
+- Elegir torneo activo en la pantalla de trabajo y guardar `torneo_id` en cada resultado (hoy se guarda sin torneo; los permisos por torneo y área ya existen en la base).
+- Reincorporar "jueces conectados" (puntaje en tiempo real), hoy guardado en `stash@{0}`.
+- Dominio propio (`ipponia.com`) y marca en el INPI; con dominio propio cambia `base` a `/` y `pathSegmentsToKeep` a 0 en `public/404.html`.

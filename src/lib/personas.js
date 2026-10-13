@@ -5,7 +5,7 @@ import { CAMPOS_PERSONAS } from './camposPersonas'
 // tabla 'jueces' o 'competidores' (estructura en camposPersonas.js).
 
 async function organizacionActiva() {
-  const { data } = await supabase.rpc('mi_org_id')
+  const { data } = await supabase.rpc('mi_organizacion')
   return data ?? null
 }
 
@@ -34,7 +34,7 @@ export async function listarPersonas(tabla) {
 export async function agregarPersona(tabla, valores) {
   const org = await organizacionActiva()
   if (!org) return { ok: false, mensaje: 'No se encontró tu organización.' }
-  const { error } = await supabase.from(tabla).insert({ org_id: org, ...aFila(tabla, valores) })
+  const { error } = await supabase.from(tabla).insert({ organizacion_id: org, ...aFila(tabla, valores) })
   return error ? { ok: false, mensaje: mensajeDe(error) } : { ok: true }
 }
 
@@ -59,7 +59,7 @@ export async function borrarPersona(tabla, id) {
 export async function importarPersonas(tabla, personas) {
   const org = await organizacionActiva()
   if (!org) return { ok: false, mensaje: 'Iniciá sesión para importar.' }
-  const filas = personas.map((p) => ({ org_id: org, ...aFila(tabla, p) }))
+  const filas = personas.map((p) => ({ organizacion_id: org, ...aFila(tabla, p) }))
   const { error } = await supabase.from(tabla).upsert(filas, { onConflict: CAMPOS_PERSONAS[tabla].conflicto })
   if (error) return { ok: false, mensaje: 'No se pudo importar: ' + error.message }
   return { ok: true }

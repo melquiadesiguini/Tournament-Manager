@@ -20,5 +20,3 @@ export const URL_SOLICITUD = WHATSAPP_NUMERO
   ? `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(MENSAJE)}`
   : `mailto:${CONTACTO_EMAIL}?subject=${encodeURIComponent('Quiero contratar IPPONIA')}&body=${encodeURIComponent(MENSAJE)}`
 
-// Enlace para que una persona invitada cree su cuenta (no aparece en la pantalla de ingreso)
-export const urlRegistro = () => `${window.location.origin}${import.meta.env.BASE_URL}registro`

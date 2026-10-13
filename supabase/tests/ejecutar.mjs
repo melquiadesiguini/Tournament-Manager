@@ -341,5 +341,18 @@ prueba('el dueño ve la auditoría de su organización y no la de otras', (await
 prueba('nadie escribe auditoría desde la API', await como(U.duenoB, () => falla(() => db.exec(`insert into public.auditoria (organizacion_id, actor_id, accion) values ('${orgB.id}', '${U.duenoB}', 'falsa')`), 'permission denied')))
 prueba('el juez (sin gestionar_usuarios) no ve la auditoría', (await como(U.juezB, () => filas('select * from public.auditoria'))).length === 0)
 
+// ---------------------------------------------------------------- 6) mis_permisos_todos
+console.log('\n6) mis_permisos_todos')
+const todos = (uid) => como(uid, () => filas('select * from public.mis_permisos_todos()'))
+const juezTodos = await todos(U.juezB)
+prueba('el juez de FAKKO ve sus 3 permisos con torneo y área', juezTodos.length === 3 && juezTodos.every((r) => r.torneo_id === id(101) && r.area === '2'))
+const duenoTodos = await todos(U.duenoB)
+prueba('el dueño tiene todos los permisos del plan, a nivel organización', duenoTodos.length === 12 && duenoTodos.every((r) => r.torneo_id === null && r.area === null))
+prueba('un usuario sin roles no recibe nada', (await todos(U.kansaB)).every((r) => r.permiso === 'operar_kansa_kumite') && (await filas(`select 1 from public.perfiles limit 0`)).length === 0)
+await db.exec(`update public.organizaciones set estado = 'suspendida' where id = '${orgB.id}'`)
+prueba('con la organización suspendida no recibe nada', (await todos(U.duenoB)).length === 0)
+await db.exec(`update public.organizaciones set estado = 'activa' where id = '${orgB.id}'`)
+prueba('un anónimo no puede pedirlos', await comoAnonimo(() => falla(() => db.query('select * from public.mis_permisos_todos()'), 'permission denied')))
+
 console.log(`\nResultado: ${ok} pruebas correctas, ${fallos} fallidas.`)
 process.exit(fallos ? 1 : 0)
