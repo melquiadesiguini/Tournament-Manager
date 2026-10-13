@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
+import AutocompletarJuez from '../components/AutocompletarJuez/AutocompletarJuez'
 import { useJueces } from '../lib/jueces'
 import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import useCountUp from '../hooks/useCountUp'
@@ -374,11 +375,7 @@ function Destreza() {
 
             <h3 className="data-entry-title">Entrada de Datos</h3>
  
-            <datalist id="lista-jueces">
-              {juecesSugeridos.map((nombre) => (
-                <option key={nombre} value={nombre} />
-              ))}
-            </datalist>
+
 
             <table className="judges-table">
               <thead>
@@ -391,18 +388,13 @@ function Destreza() {
                       <span className="judge-th-label">
                         Juez {Number(judgeId.slice(5)) === judgeSystem ? 'Central' : `Nº${judgeId.slice(5)}`}
                       </span>
-                      <input
-                        type="text"
-                        className="judge-name-input"
-                        list="lista-jueces"
-                        autoComplete="off"
+                      <AutocompletarJuez
                         value={judgeNames[judgeId]}
-                        onChange={(e) => {
-                          setJudgeNames((prev) => ({ ...prev, [judgeId]: e.target.value }))
-                          buscarJueces(e.target.value)
-                        }}
+                        onChange={(nombre) => setJudgeNames((prev) => ({ ...prev, [judgeId]: nombre }))}
+                        onBuscar={buscarJueces}
+                        sugerencias={juecesSugeridos}
                         placeholder="Nombre del juez"
-                        aria-label={`Nombre del juez ${judgeId.slice(5)}`}
+                        ariaLabel={`Nombre del juez ${judgeId.slice(5)}`}
                       />
                     </th>
                   ))}

@@ -18,7 +18,7 @@ header {
     backdrop-filter: blur(14px) saturate(160%);
     -webkit-backdrop-filter: blur(14px) saturate(160%);
     color: var(--header-text);
-    padding: 5px 0;
+    padding: 2px 0;
     position: sticky; /* Menú pegajoso en la parte superior */
     top: 0;
     z-index: 1000;
@@ -36,7 +36,7 @@ a{
     justify-content: space-between;
     align-items: center;
     gap: 0.75rem;
-    margin: 10px;
+    margin: 4px 10px;
 }
 .headerContent2 {
     display: flex;
@@ -60,16 +60,17 @@ a{
 .brand{
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
 }
 .logo {
-    font-size: 1.5em;
+    font-size: 1.1em;
     font-weight: 700px;
     letter-spacing: 2px;
     text-align: center;
 }
 .logoImg{
-    width: 4rem;
+    width: 2.3rem;
+    display: block;
 }
 
 
@@ -100,7 +101,7 @@ nav a:hover::after {
     background: rgba(128, 128, 128, 0.15);
     border: 1px solid rgba(128, 128, 128, 0.3);
     color: var(--header-text);
-    padding: 4px 10px;
+    padding: 2px 8px;
     border-radius: 999px;
     font-size: 1rem;
     line-height: 1.4;
@@ -117,16 +118,16 @@ nav a:hover::after {
 @media (max-width: 640px) {
     .headerContent {
         justify-content: center;
-        margin: 8px;
+        margin: 4px 8px;
     }
     .brand {
-        gap: 0.6rem;
+        gap: 0.5rem;
     }
     .logoImg {
-        width: 2.75rem;
+        width: 2rem;
     }
     .logo {
-        font-size: 1.05em;
+        font-size: 0.95em;
     }
     .headerContent2 {
         justify-content: center;
