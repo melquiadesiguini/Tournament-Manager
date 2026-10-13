@@ -20,6 +20,6 @@ function versionFile() {
 
 export default defineConfig({
   plugins: [react(), versionFile()],
-  base: '/Tournament-Manager/',
+  base: '/ipponia/',
   define: { __BUILD_ID__: JSON.stringify(BUILD_ID) },
 })

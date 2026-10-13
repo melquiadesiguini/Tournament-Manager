@@ -27,7 +27,7 @@ function Kata() {
   })
   // Nombres de los jueces: se conservan entre competidores (el panel de jueces suele ser el mismo)
   const [judgeNames, setJudgeNames] = useState({ judge1: '', judge2: '', judge3: '', judge4: '', judge5: '' })
-  const { nombres: juecesGuardados, registrar: registrarJueces } = useJueces()
+  const { sugerencias: juecesSugeridos, buscar: buscarJueces, registrar: registrarJueces } = useJueces()
   const [errors, setErrors] = useState('')
   const [success, setSuccess] = useState('')
   const [showResults, setShowResults] = useState(false)
@@ -313,7 +313,7 @@ function Kata() {
             <h3 className="data-entry-title">Entrada de Datos</h3>
  
             <datalist id="lista-jueces">
-              {juecesGuardados.map((nombre) => (
+              {juecesSugeridos.map((nombre) => (
                 <option key={nombre} value={nombre} />
               ))}
             </datalist>
@@ -335,7 +335,10 @@ function Kata() {
                         list="lista-jueces"
                         autoComplete="off"
                         value={judgeNames[judgeId]}
-                        onChange={(e) => setJudgeNames((prev) => ({ ...prev, [judgeId]: e.target.value }))}
+                        onChange={(e) => {
+                          setJudgeNames((prev) => ({ ...prev, [judgeId]: e.target.value }))
+                          buscarJueces(e.target.value)
+                        }}
                         placeholder="Nombre del juez"
                         aria-label={`Nombre del juez ${judgeId.slice(5)}`}
                       />

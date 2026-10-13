@@ -11,20 +11,15 @@ export async function guardarResultado({ modulo, payload }) {
   } = await supabase.auth.getSession()
   if (!session) return { ok: false, motivo: 'sin-sesion' }
 
-  const { data: miembro, error: errorMiembro } = await supabase
-    .from('members')
-    .select('org_id')
-    .eq('user_id', session.user.id)
-    .limit(1)
-    .maybeSingle()
-  if (errorMiembro || !miembro) {
+  const { data: orgId, error: errorMiembro } = await supabase.rpc('mi_org_id')
+  if (errorMiembro || !orgId) {
     return { ok: false, motivo: 'sin-organizacion', error: errorMiembro }
   }
 
   const area = localStorage.getItem('tm-area') || null
   const { error } = await supabase
     .from('results')
-    .insert({ org_id: miembro.org_id, modulo, area, payload })
+    .insert({ org_id: orgId, modulo, area, payload })
   return error ? { ok: false, motivo: 'error', error } : { ok: true }
 }
 

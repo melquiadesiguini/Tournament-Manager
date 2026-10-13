@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import Header from '../components/Header/Header'
-import Footer from '../components/Footer/Footer'
 import useAuth from '../hooks/useAuth'
+import ConfigPagina from './ConfigPagina'
 import { listarResultados } from '../lib/resultados'
-import './Cuenta.css'
 
 const NOMBRES_MODULO = { kata: 'Kata', kobudo: 'Kobudo', destreza: 'Destreza', kumite: 'Kumite' }
 
@@ -20,12 +17,12 @@ function resumen(r) {
 }
 
 // Resultados guardados en la nube para la organización del usuario
-function Historial() {
-  const { configurado, cargando, user } = useAuth()
+function ConfigHistorial() {
+  const { user, puedeVerHistorial } = useAuth()
   const [estado, setEstado] = useState({ cargando: true, resultados: [], error: false })
 
   useEffect(() => {
-    if (!user) return undefined
+    if (!user || !puedeVerHistorial) return undefined
     let activo = true
     listarResultados().then((r) => {
       if (activo) setEstado({ cargando: false, resultados: r.resultados, error: !r.ok })
@@ -33,20 +30,10 @@ function Historial() {
     return () => {
       activo = false
     }
-  }, [user])
+  }, [user, puedeVerHistorial])
 
   let contenido
-  if (!configurado) {
-    contenido = <p className="cuenta-nota">La conexión con la base de datos no está configurada.</p>
-  } else if (cargando) {
-    contenido = <p className="cuenta-nota">Cargando…</p>
-  } else if (!user) {
-    contenido = (
-      <p className="cuenta-nota">
-        Para ver el historial en la nube tenés que <Link to="/cuenta">iniciar sesión</Link>.
-      </p>
-    )
-  } else if (estado.cargando) {
+  if (estado.cargando) {
     contenido = <p className="cuenta-nota">Cargando resultados…</p>
   } else if (estado.error) {
     contenido = <div className="cuenta-error">No se pudo cargar el historial.</div>
@@ -80,17 +67,10 @@ function Historial() {
   }
 
   return (
-    <div className="pagina-columna">
-      <Header />
-      <main className="cuenta-container">
-        <section className="cuenta-card cuenta-card-ancha">
-          <h1>Historial</h1>
-          {contenido}
-        </section>
-      </main>
-      <Footer />
-    </div>
+    <ConfigPagina titulo="Historial" permiso="historial">
+      {contenido}
+    </ConfigPagina>
   )
 }
 
-export default Historial
+export default ConfigHistorial

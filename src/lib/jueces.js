@@ -1,56 +1,41 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { supabase } from './supabase'
 import useAuth from '../hooks/useAuth'
 
-// Nombres de jueces de la organización del usuario (tabla "jueces"), para autocompletar
-async function listarJueces() {
-  if (!supabase) return []
-  const { data, error } = await supabase.from('jueces').select('nombre').order('nombre').limit(1000)
-  return error ? [] : data.map((j) => j.nombre)
-}
-
-// Agrega a la tabla los nombres que todavía no existen (los repetidos se ignoran)
+// Guarda los nombres escritos a mano que todavía no están en la lista de jueces
+// (la base ignora los que ya existen, también si están cargados como "Apellido Nombre")
 async function registrarJueces(nombres) {
   if (!supabase) return
   const limpios = [...new Set(nombres.map((n) => n.trim()).filter(Boolean))]
-  if (limpios.length === 0) return
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  if (!session) return
-  const { data: miembro } = await supabase
-    .from('members')
-    .select('org_id')
-    .eq('user_id', session.user.id)
-    .limit(1)
-    .maybeSingle()
-  if (!miembro) return
-  await supabase
-    .from('jueces')
-    .upsert(
-      limpios.map((nombre) => ({ org_id: miembro.org_id, nombre })),
-      { onConflict: 'org_id,nombre', ignoreDuplicates: true }
-    )
+  await Promise.all(limpios.map((texto) => supabase.rpc('registrar_juez', { texto })))
 }
 
+// Sugerencias de nombres mientras se escribe. La base solo devuelve hasta 8 coincidencias
+// (mínimo 2 letras): quien carga puntajes no puede ver la lista completa.
 export function useJueces() {
   const { user } = useAuth()
-  const [nombres, setNombres] = useState([])
+  const [sugerencias, setSugerencias] = useState([])
+  const pedido = useRef(0)
+  const espera = useRef(null)
 
-  useEffect(() => {
-    let activo = true
-    if (!user) return undefined
-    listarJueces().then((lista) => activo && setNombres(lista))
-    return () => {
-      activo = false
-    }
-  }, [user])
+  useEffect(() => () => clearTimeout(espera.current), [])
 
-  const registrar = useCallback(
-    (lista) =>
-      registrarJueces(lista).then(() => listarJueces()).then(setNombres),
-    []
+  const buscar = useCallback(
+    (texto) => {
+      clearTimeout(espera.current)
+      const actual = ++pedido.current
+      if (!user || !supabase || texto.trim().length < 2) {
+        setSugerencias([])
+        return
+      }
+      espera.current = setTimeout(async () => {
+        const { data, error } = await supabase.rpc('sugerir_jueces', { texto })
+        // se descartan respuestas viejas si el usuario siguió escribiendo
+        if (actual === pedido.current) setSugerencias(error || !data ? [] : data)
+      }, 200)
+    },
+    [user]
   )
 
-  return { nombres: user ? nombres : [], registrar }
+  return { sugerencias, buscar, registrar: registrarJueces }
 }

@@ -156,3 +156,71 @@ button{
     border-radius: 5px;
     transition: background-color 0.3s ease;
 }
+
+/* -------------------- MENÚ CONFIGURACIÓN (solo administrador) -------------------- */
+.menuConfig {
+    position: relative;
+}
+
+.menuConfigBoton {
+    background: transparent;
+    border: none;
+    color: var(--header-text);
+    padding: 0 0 2px;
+    border-radius: 0;
+    font: inherit;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.menuConfigBoton:hover {
+    background: transparent;
+}
+
+/* sin recuadro al tocar con el mouse; se conserva para navegar con teclado */
+.menuConfigBoton:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Contenedor sin hueco respecto del botón, para que el menú no se cierre al bajar el cursor */
+.menuConfigLista {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    padding-top: 10px;
+    z-index: 1100;
+}
+
+.menuConfigCaja {
+    min-width: 11rem;
+    padding: 0.35rem;
+    border-radius: 0.5rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 8px 24px var(--shadow-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.menuConfigLista a {
+    padding: 0.55rem 0.8rem;
+    border-radius: 0.35rem;
+    color: var(--text-primary);
+}
+
+.menuConfigLista a::after {
+    display: none;
+}
+
+.menuConfigLista a:hover {
+    background: rgba(128, 128, 128, 0.16);
+}
+
+.menuConfigTitulo {
+    padding: 0.4rem 0.8rem 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}

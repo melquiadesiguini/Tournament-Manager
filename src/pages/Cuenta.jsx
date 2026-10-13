@@ -3,12 +3,31 @@ import { Link } from 'react-router-dom'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import useAuth from '../hooks/useAuth'
+import LoginFondo from '../components/LoginFondo'
+import useTheme from '../hooks/useTheme'
+import { ETIQUETA_ROL } from '../lib/roles'
+import logoClaro from '../assets/images/ipponia-logo.png' // cinturón negro (tema claro)
+import logoOscuro from '../assets/images/ipponia-logo-oscuro.png' // cinturón blanco (tema oscuro)
 import './Cuenta.css'
+import './Login.css'
 
 // Ingresar, crear cuenta y ver los datos de la cuenta
 function Cuenta() {
-  const { configurado, cargando, user, iniciarSesion, registrarse, iniciarConGoogle, cerrarSesion } =
-    useAuth()
+  const {
+    configurado,
+    cargando,
+    user,
+    rol,
+    esSuperAdmin,
+    esAdmin,
+    puedeVerHistorial,
+    perfilCargado,
+    iniciarSesion,
+    registrarse,
+    iniciarConGoogle,
+    cerrarSesion,
+  } = useAuth()
+  const { theme, toggleTheme } = useTheme()
 
   const [modo, setModo] = useState('ingresar') // 'ingresar' | 'registrar'
   const [email, setEmail] = useState('')
@@ -63,11 +82,21 @@ function Cuenta() {
         <p className="cuenta-dato">
           Sesión iniciada como <strong>{user.email}</strong>
         </p>
+        <p className="cuenta-dato">
+          Rol: <strong>{esSuperAdmin ? 'Superadministrador' : (ETIQUETA_ROL[rol] ?? '—')}</strong>
+        </p>
+        {perfilCargado && !rol && !esSuperAdmin && (
+          <div className="cuenta-error">
+            Tu usuario no tiene acceso a ninguna organización: puede estar bloqueado. Consultá con el administrador.
+          </div>
+        )}
         <p className="cuenta-nota">Los resultados que guardes se almacenan en la nube, en tu organización.</p>
         <div className="cuenta-acciones">
-          <Link to="/historial" className="cuenta-boton cuenta-boton-primario">
-            Ver historial
-          </Link>
+          {(esAdmin || puedeVerHistorial) && (
+            <Link to="/configuracion" className="cuenta-boton cuenta-boton-primario">
+              Configuración
+            </Link>
+          )}
           <button type="button" className="cuenta-boton" onClick={cerrarSesion}>
             Cerrar sesión
           </button>
@@ -162,6 +191,34 @@ function Cuenta() {
           </button>
         </form>
       </>
+    )
+  }
+
+  // Sin sesión: pantalla de ingreso completa, con el fondo de la marca
+  if (configurado && !cargando && !user) {
+    return (
+      <div className="login-pantalla">
+        <LoginFondo />
+        <button
+          type="button"
+          className="login-tema"
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Activar modo claro' : 'Activar modo oscuro'}
+          title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+        >
+          {theme === 'dark' ? '☀️' : '🌙'}
+        </button>
+        <section className="login-card">
+          <div className="login-logo">
+            <img src={theme === 'dark' ? logoOscuro : logoClaro} alt="" />
+            <div className="login-logo-texto">
+              <span className="login-logo-nombre">IPPONIA</span>
+              <span className="login-logo-lema">TORNEOS EN VIVO</span>
+            </div>
+          </div>
+          {contenido}
+        </section>
+      </div>
     )
   }
 

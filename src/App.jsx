@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AuthProvider from './context/AuthProvider'
 import Home from './pages/Home'
 import Kata from './pages/Kata'
@@ -8,7 +8,10 @@ import Kobudo from './pages/Kobudo'
 import Destreza from './pages/Destreza'
 import Pantalla from './pages/Pantalla'
 import Cuenta from './pages/Cuenta'
-import Historial from './pages/Historial'
+import ConfigHistorial from './pages/ConfigHistorial'
+import ConfigInicio from './pages/ConfigInicio'
+import ConfigUsuarios from './pages/ConfigUsuarios'
+import ConfigPersonas from './pages/ConfigPersonas'
 
 function App() {
   return (
@@ -24,7 +27,18 @@ function App() {
           <Route path="/destreza" element={<Destreza />} />
           <Route path="/pantalla" element={<Pantalla />} />
           <Route path="/cuenta" element={<Cuenta />} />
-          <Route path="/historial" element={<Historial />} />
+          <Route path="/historial" element={<Navigate to="/configuracion/historial" replace />} />
+          <Route path="/configuracion" element={<ConfigInicio />} />
+          <Route path="/configuracion/historial" element={<ConfigHistorial />} />
+          <Route path="/configuracion/usuarios" element={<ConfigUsuarios />} />
+          <Route
+            path="/configuracion/jueces"
+            element={<ConfigPersonas tabla="jueces" titulo="Jueces" />}
+          />
+          <Route
+            path="/configuracion/competidores"
+            element={<ConfigPersonas tabla="competidores" titulo="Competidores" />}
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

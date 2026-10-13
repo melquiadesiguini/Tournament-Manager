@@ -1,0 +1,285 @@
+/* ===== Configuración: usuarios, jueces y competidores ===== */
+.config-container {
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  padding: 2rem 1.5rem 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.config-card {
+  width: 100%;
+  max-width: 64rem;
+  padding: 1.5rem;
+  border-radius: 0.8rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-top: 4px solid #d7282f;
+  box-shadow: 0 6px 16px var(--shadow-color);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.config-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.config-cabecera h1 {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.config-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.config-tabs a {
+  padding: 0.5rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.config-tabs a.activa {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+[data-theme='dark'] .config-tabs a.activa {
+  background-color: #ffffff;
+  color: #111111;
+}
+
+.config-titulo {
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.config-barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+
+.config-buscador {
+  flex: 1;
+  min-width: 12rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.config-buscador:focus,
+.config-barra select:focus {
+  outline: none;
+  border-color: #d7282f;
+}
+
+.config-barra select,
+.config-select-chico {
+  padding: 0.5rem 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: var(--bg-page);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.config-select-chico {
+  padding: 0.3rem 0.4rem;
+  font-size: 0.85rem;
+}
+
+.config-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background-color: transparent;
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.config-btn:hover {
+  border-color: #d7282f;
+}
+
+.config-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.config-btn-primario {
+  background-color: #d7282f;
+  border-color: #d7282f;
+  color: #ffffff;
+}
+
+.config-btn-primario:hover:not(:disabled) {
+  background-color: #b81f26;
+}
+
+.config-ayuda {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.config-previa {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-page);
+}
+
+.config-fila-acciones {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.config-tabla-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.config-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.config-tabla th,
+.config-tabla td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.config-tabla th {
+  color: var(--text-secondary);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.config-tabla tbody tr:nth-child(even) {
+  background-color: rgba(128, 128, 128, 0.06);
+}
+
+.config-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.config-inactivo td:not(:last-child) {
+  opacity: 0.55;
+}
+
+.config-estado {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.config-estado.ok {
+  background-color: rgba(34, 160, 90, 0.18);
+  color: #1f9d57;
+}
+
+.config-estado.off {
+  background-color: rgba(215, 40, 47, 0.16);
+  color: #d7282f;
+}
+
+.config-estado.pend {
+  background-color: rgba(217, 160, 30, 0.2);
+  color: #b7791f;
+}
+
+.config-iconos {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.config-iconos button {
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.4rem;
+  background-color: transparent;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.config-iconos button:hover {
+  background-color: rgba(128, 128, 128, 0.2);
+}
+
+.config-confirmar {
+  align-self: center;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.config-iconos button.config-confirmar-si {
+  background-color: #d7282f;
+  border-color: #d7282f;
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.config-iconos button {
+  color: var(--text-primary);
+}
+
+.config-formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 0.7rem;
+}
+
+.config-formulario label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.config-formulario .config-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
