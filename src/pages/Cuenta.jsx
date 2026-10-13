@@ -6,13 +6,14 @@ import useAuth from '../hooks/useAuth'
 import LoginFondo from '../components/LoginFondo'
 import useTheme from '../hooks/useTheme'
 import { ETIQUETA_ROL } from '../lib/roles'
+import { URL_SOLICITUD } from '../lib/contacto'
 import logoClaro from '../assets/images/ipponia-logo.png' // cinturón negro (tema claro)
 import logoOscuro from '../assets/images/ipponia-logo-oscuro.png' // cinturón blanco (tema oscuro)
 import './Cuenta.css'
 import './Login.css'
 
 // Ingresar, crear cuenta y ver los datos de la cuenta
-function Cuenta() {
+function Cuenta({ registro = false }) {
   const {
     configurado,
     cargando,
@@ -22,17 +23,17 @@ function Cuenta() {
     esAdmin,
     puedeVerHistorial,
     perfilCargado,
+    organizacion: org,
     iniciarSesion,
     registrarse,
-    iniciarConGoogle,
     cerrarSesion,
   } = useAuth()
   const { theme, toggleTheme } = useTheme()
 
-  const [modo, setModo] = useState('ingresar') // 'ingresar' | 'registrar'
+  // 'ingresar' en la pantalla de ingreso; 'registrar' solo en /registro (para quienes recibieron invitación)
+  const [modo, setModo] = useState(registro ? 'registrar' : 'ingresar')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [organizacion, setOrganizacion] = useState('')
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState('')
   const [aviso, setAviso] = useState('')
@@ -45,7 +46,7 @@ function Cuenta() {
     const r =
       modo === 'ingresar'
         ? await iniciarSesion(email.trim(), password)
-        : await registrarse(email.trim(), password, organizacion.trim())
+        : await registrarse(email.trim(), password)
     setEnviando(false)
 
     if (!r.ok) {
@@ -57,13 +58,6 @@ function Cuenta() {
       setModo('ingresar')
     }
     setPassword('')
-  }
-
-  const conGoogle = async () => {
-    setError('')
-    setAviso('')
-    const r = await iniciarConGoogle()
-    if (!r.ok) setError(r.mensaje) // si sale bien, el navegador se va a Google
   }
 
   let contenido
@@ -85,9 +79,16 @@ function Cuenta() {
         <p className="cuenta-dato">
           Rol: <strong>{esSuperAdmin ? 'Superadministrador' : (ETIQUETA_ROL[rol] ?? '—')}</strong>
         </p>
+        {org && (
+          <p className="cuenta-dato">
+            Organización: <strong>{org.nombre}</strong> · Plan: <strong>{org.plan}</strong>
+            {org.vence_el ? ` · vence el ${new Date(`${org.vence_el}T00:00:00`).toLocaleDateString('es-AR')}` : ''}
+          </p>
+        )}
         {perfilCargado && !rol && !esSuperAdmin && (
           <div className="cuenta-error">
-            Tu usuario no tiene acceso a ninguna organización: puede estar bloqueado. Consultá con el administrador.
+            Tu usuario no tiene acceso: puede estar bloqueado, o el plan de tu organización está vencido o
+            suspendido. Consultá con el administrador o con el proveedor del servicio.
           </div>
         )}
         <p className="cuenta-nota">Los resultados que guardes se almacenan en la nube, en tu organización.</p>
@@ -106,60 +107,13 @@ function Cuenta() {
   } else {
     contenido = (
       <>
-        <div className="cuenta-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={modo === 'ingresar'}
-            className={modo === 'ingresar' ? 'activa' : ''}
-            onClick={() => {
-              setModo('ingresar')
-              setError('')
-            }}
-          >
-            Ingresar
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={modo === 'registrar'}
-            className={modo === 'registrar' ? 'activa' : ''}
-            onClick={() => {
-              setModo('registrar')
-              setError('')
-              setAviso('')
-            }}
-          >
-            Crear cuenta
-          </button>
-        </div>
-
-        <button type="button" className="cuenta-boton cuenta-google" onClick={conGoogle}>
-          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
-            <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.4 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z" />
-            <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z" />
-            <path fill="#FBBC05" d="M10.5 28.7c-.5-1.5-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.1z" />
-            <path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.8l-7.9 6.1C6.5 42.6 14.6 48 24 48z" />
-          </svg>
-          Continuar con Google
-        </button>
-
-        <div className="cuenta-separador">
-          <span>o con tu email</span>
-        </div>
+        {modo === 'registrar' && <h2 className="login-subtitulo">Crear mi cuenta</h2>}
 
         <form className="cuenta-form" onSubmit={enviar}>
           {modo === 'registrar' && (
-            <label>
-              Nombre de tu organización (dojo, club o federación)
-              <input
-                type="text"
-                value={organizacion}
-                onChange={(e) => setOrganizacion(e.target.value)}
-                placeholder="Ej.: Ikigai Dojo"
-                autoComplete="organization"
-              />
-            </label>
+            <p className="cuenta-nota">
+              Registrate con el mismo email al que te invitaron. Si no recibiste una invitación, solicitá acceso.
+            </p>
           )}
           <label>
             Email
@@ -187,7 +141,7 @@ function Cuenta() {
           {aviso && <div className="cuenta-aviso">{aviso}</div>}
 
           <button type="submit" className="cuenta-boton cuenta-boton-primario" disabled={enviando}>
-            {enviando ? 'Un momento…' : modo === 'ingresar' ? 'Ingresar' : 'Crear cuenta'}
+            {enviando ? 'Un momento…' : modo === 'ingresar' ? 'Ingresar' : 'Crear mi cuenta'}
           </button>
         </form>
       </>
@@ -217,6 +171,16 @@ function Cuenta() {
             </div>
           </div>
           {contenido}
+          <div className="login-pie">
+            {registro ? (
+              <Link to="/cuenta">¿Ya tenés cuenta? Ingresar</Link>
+            ) : (
+              <>
+                <span>¿Todavía no sos cliente?</span>
+                <a href={URL_SOLICITUD}>Solicitar acceso</a>
+              </>
+            )}
+          </div>
         </section>
       </div>
     )

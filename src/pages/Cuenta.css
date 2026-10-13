@@ -130,21 +130,6 @@
   cursor: wait;
 }
 
-.cuenta-google {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
-  width: 100%;
-  background-color: #ffffff;
-  color: #1f1f1f;
-  border-color: #dadce0;
-}
-
-.cuenta-google:hover {
-  background-color: #f6f8fa;
-}
-
 .cuenta-separador {
   display: flex;
   align-items: center;

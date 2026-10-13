@@ -5,21 +5,23 @@ import useAuth from '../hooks/useAuth'
 import './Cuenta.css'
 import './Configuracion.css'
 
-// permiso: 'admin' (solo administradores) o 'historial' (quienes pueden ver resultados)
+// permiso: 'admin' (administradores), 'historial' (quienes pueden ver resultados) o 'superadmin'
 const SECCIONES = [
   { a: '/configuracion/usuarios', texto: 'Usuarios', permiso: 'admin' },
   { a: '/configuracion/jueces', texto: 'Jueces', permiso: 'admin' },
   { a: '/configuracion/competidores', texto: 'Competidores', permiso: 'admin' },
   { a: '/configuracion/historial', texto: 'Historial', permiso: 'historial' },
+  { a: '/configuracion/organizaciones', texto: 'Organizaciones', permiso: 'superadmin' },
 ]
 
 // Marco común de la sección Configuración (dentro de Mi cuenta). Cada pantalla pide un permiso;
 // las pestañas muestran solo lo que el rol del usuario puede ver.
 // Muestra el contenido (children) cuando corresponde, o el aviso que haga falta.
 function ConfigPagina({ titulo, permiso = 'admin', children }) {
-  const { configurado, cargando, user, esAdmin, perfilCargado, puedeVerHistorial } = useAuth()
-  const permitido = permiso === 'admin' ? esAdmin : puedeVerHistorial
-  const visibles = SECCIONES.filter((s) => (s.permiso === 'admin' ? esAdmin : puedeVerHistorial))
+  const { configurado, cargando, user, esAdmin, esSuperAdmin, perfilCargado, puedeVerHistorial } = useAuth()
+  const tiene = { admin: esAdmin, historial: puedeVerHistorial, superadmin: esSuperAdmin }
+  const permitido = tiene[permiso]
+  const visibles = SECCIONES.filter((s) => tiene[s.permiso])
 
   let contenido
   if (!configurado) {
@@ -35,9 +37,11 @@ function ConfigPagina({ titulo, permiso = 'admin', children }) {
   } else if (!permitido) {
     contenido = (
       <p className="cuenta-nota">
-        {permiso === 'admin'
-          ? 'Solo el administrador de la organización puede entrar a esta sección.'
-          : 'Tu rol no tiene acceso al historial de resultados.'}
+        {permiso === 'historial'
+          ? 'Tu rol no tiene acceso al historial de resultados.'
+          : permiso === 'superadmin'
+            ? 'Esta sección es solo para el superadministrador de la plataforma.'
+            : 'Solo el administrador de la organización puede entrar a esta sección.'}
       </p>
     )
   } else {

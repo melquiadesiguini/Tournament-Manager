@@ -159,3 +159,16 @@
 .login-pie a:hover {
   text-decoration: underline;
 }
+
+.login-cargando {
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.login-subtitulo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  text-align: center;
+}

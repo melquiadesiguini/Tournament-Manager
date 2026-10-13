@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import ConfigPagina from './ConfigPagina'
 import { ROLES, ETIQUETA_ROL, DESCRIPCION_ROL } from '../lib/roles'
+import { urlRegistro } from '../lib/contacto'
 import {
   cambiarClaveUsuario,
   cambiarEstado,
@@ -90,7 +91,7 @@ function ConfigUsuarios() {
     const destino = email.trim().toLowerCase()
     const ok = await aplicar(
       invitar(email, rol),
-      `Invitación creada. Cuando ${destino} se registre o ingrese con ese email, quedará en tu equipo como ${ETIQUETA_ROL[rol]}.`
+      `Invitación creada. Pasale a ${destino} este enlace para que cree su cuenta con ese email: ${urlRegistro()} (quedará en tu equipo como ${ETIQUETA_ROL[rol]}).`
     )
     setTrabajando(false)
     if (ok) {

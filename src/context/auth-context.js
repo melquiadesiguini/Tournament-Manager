@@ -6,12 +6,12 @@ export const AuthContext = createContext({
   cargando: false,
   user: null,
   rol: null, // administrador | supervisor | juez | mesa
+  organizacion: null, // { nombre, plan, estado, vence_el }
   esSuperAdmin: false,
   esAdmin: false, // administrador de su organización o superadministrador
   perfilCargado: false,
   puedeVerHistorial: false,
   iniciarSesion: async () => ({ ok: false }),
   registrarse: async () => ({ ok: false }),
-  iniciarConGoogle: async () => ({ ok: false }),
   cerrarSesion: async () => {},
 })

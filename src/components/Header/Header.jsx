@@ -8,7 +8,7 @@ import s from './Header.module.css'
 
 function Header() {
   const { theme, toggleTheme } = useTheme()
-  const { user, esAdmin, puedeVerHistorial } = useAuth()
+  const { user, esAdmin, esSuperAdmin, puedeVerHistorial } = useAuth()
   const hayConfiguracion = esAdmin || puedeVerHistorial
   const [menuAbierto, setMenuAbierto] = useState(false)
   const menuRef = useRef(null)
@@ -78,6 +78,11 @@ function Header() {
                         {puedeVerHistorial && (
                           <Link to="/configuracion/historial" role="menuitem">
                             Historial
+                          </Link>
+                        )}
+                        {esSuperAdmin && (
+                          <Link to="/configuracion/organizaciones" role="menuitem">
+                            Organizaciones
                           </Link>
                         )}
                       </div>
