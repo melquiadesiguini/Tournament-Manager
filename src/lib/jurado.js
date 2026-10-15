@@ -1,9 +1,9 @@
 // Datos que se guardan de un resultado de Kata, Kobudo o Destreza (módulos con jurado).
 //
-// payload (jsonb en la tabla `resultados`), con el tipo de cada dato:
+// payload que entregan las pantallas (lib/filasResultados.js lo reparte en las columnas de resultados_jurado), con el tipo de cada dato:
 //   competitor      texto    nombre del competidor (o equipo, en Destreza)
 //   kata            texto    nombre del kata / kobudo (no existe en Destreza)
-//   area            número   número de área, o null si no se puso (la columna `area` de la tabla es texto)
+//   area            número   número de área, o null si no se puso
 //   ronda           número   número de ronda, o null si no se puso
 //   responsableMesa texto    nombre del responsable de mesa
 //   judgeSystem     número   3 o 5 jueces
@@ -14,7 +14,7 @@
 //   finalScore      número   puntaje final
 //   guardadoEn      texto    fecha y hora exactas del guardado, ISO 8601 con segundos (JSON no tiene tipo fecha)
 //   timestamp       texto    lo mismo en formato local (solo para mostrar)
-// La base además guarda `creado_en` (timestamptz) y `creado_por` (uuid).
+// La base además guarda `creado_en` (timestamptz, hora del servidor) y `creado_por` (uuid).
 
 // Número, o null si está vacío o no es un número (un campo vacío no es 0)
 export function numeroONull(valor) {
@@ -39,23 +39,4 @@ export function armarJueces({ puntajes, nombres, sistema, incluido }) {
     puntaje: p.score,
     incluido: incluido(p.judgeId),
   }))
-}
-
-// Jueces de un resultado ya guardado. Los resultados anteriores a este formato no tienen `jueces`:
-// se reconstruyen con `scores` y `judgeNames`.
-export function juecesDe(payload) {
-  if (Array.isArray(payload?.jueces)) return payload.jueces
-  const { scores = {}, judgeNames = {}, judgeSystem } = payload ?? {}
-  return Object.keys(scores)
-    .filter((id) => numeroONull(scores[id]) !== null)
-    .map((id) => {
-      const numero = Number(id.replace('judge', ''))
-      return {
-        numero,
-        etiqueta: etiquetaJuez(numero, judgeSystem),
-        nombre: String(judgeNames[id] ?? '').trim(),
-        puntaje: numeroONull(scores[id]),
-        incluido: null,
-      }
-    })
 }

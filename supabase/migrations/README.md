@@ -7,6 +7,11 @@ Lo que había antes de esta carpeta está en `../legacy/` (solo como historial, 
 1. Supabase > SQL Editor > New query > pegar el archivo completo > Run.
 2. O, con el proyecto vinculado: `npx supabase db push`.
 
+**Ojo con las tildes y la ñ.** Si copiás el archivo con PowerShell, leelo como UTF-8; si no, los acentos llegan rotos a la base (`DueÃ±o`):
+```powershell
+Set-Clipboard -Value ([System.IO.File]::ReadAllText("rutarchivo.sql", [System.Text.Encoding]::UTF8))
+```
+
 ## Cómo probarlas antes (sin tocar Supabase)
 ```bash
 npm run test:db
@@ -15,3 +20,6 @@ Levanta un PostgreSQL en memoria, carga el esquema anterior con datos de ejemplo
 migraciones y comprueba que los datos se migraron, que una organización no ve ni modifica nada de otra
 (RLS) y que `tiene_permiso` respeta torneo, área, plan y estado de la organización.
 Cada migración nueva debe sumar sus pruebas en `../tests/ejecutar.mjs`.
+
+## Resultados
+Desde `20261015120000` los resultados están en `resultados_jurado` (Kata, Kobudo, Destreza) y `resultados_kumite`, con columnas reales. La tabla anterior quedó como `resultados_archivo`.

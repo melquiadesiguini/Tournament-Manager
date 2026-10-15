@@ -1,5 +1,5 @@
 import writeExcelFile from 'write-excel-file/browser'
-import { juecesDe, numeroONull } from './jurado'
+import { numeroONull } from './jurado'
 
 // Datos del historial listos para mostrar y exportar (Excel o CSV).
 // Cada resultado ocupa una fila y cada juez una columna fija, así los resultados de 3 y de 5 jueces
@@ -11,40 +11,49 @@ import { juecesDe, numeroONull } from './jurado'
 export const NOMBRES_MODULO = { kata: 'Kata', kobudo: 'Kobudo', destreza: 'Destreza', kumite: 'Kumite' }
 export const COLUMNAS_JUECES = ['Juez Nº1', 'Juez Nº2', 'Juez Nº3', 'Juez Nº4', 'Juez Central']
 
-// Columna que le toca a un juez: el último del sistema (3.º de 3, o 5.º de 5) es siempre el Central
-const columnaDeJuez = (numero, sistema) => (numero === sistema ? COLUMNAS_JUECES.length - 1 : numero - 1)
+// Prefijo de las columnas de cada juez en la tabla, en el orden de COLUMNAS_JUECES
+const PREFIJOS_JUECES = ['juez1', 'juez2', 'juez3', 'juez4', 'juez_central']
 
-// [{ nombre, puntaje, incluido } | null] en el orden de COLUMNAS_JUECES
-export function juecesPorColumna(payload) {
-  const columnas = Array(COLUMNAS_JUECES.length).fill(null)
-  const lista = juecesDe(payload)
-  const sistema = numeroONull(payload?.judgeSystem) || (lista.some((j) => j.numero > 3) ? 5 : 3)
-  for (const j of lista) {
-    const i = columnaDeJuez(j.numero, sistema)
-    if (i >= 0 && i < columnas.length) columnas[i] = { nombre: j.nombre, puntaje: j.puntaje, incluido: j.incluido }
-  }
-  return columnas
-}
-
-// Fila de un resultado guardado, con todo lo que se muestra o exporta
+// Fila del historial a partir de una fila de resultados_jurado o resultados_kumite (`tabla` dice cuál)
 export function filaDeResultado(r) {
-  const p = r.payload || {}
-  const esKumite = r.modulo === 'kumite'
-  const final = numeroONull(p.finalScore)
-  return {
+  const esKumite = r.tabla === 'kumite'
+  const base = {
     id: r.id,
+    fecha: new Date(r.creado_en),
+    area: r.area ?? null,
+    responsable: r.responsable_mesa ?? '',
+    sistema: r.sistema_jueces ?? null,
+  }
+
+  if (esKumite) {
+    return {
+      ...base,
+      modulo: 'kumite',
+      moduloTexto: NOMBRES_MODULO.kumite,
+      ronda: null,
+      competidor: `${r.nombre_shiro} vs ${r.nombre_aka}`,
+      detalle: r.categoria ?? '',
+      jueces: Array(COLUMNAS_JUECES.length).fill(null),
+      puntajeFinal: null,
+      resultadoKumite: `${r.puntaje_shiro} - ${r.puntaje_aka} · Ganador: ${r.ganador}`,
+    }
+  }
+
+  const descartados = r.jueces_descartados ?? []
+  return {
+    ...base,
     modulo: r.modulo,
-    fecha: new Date(p.guardadoEn || r.creado_en),
     moduloTexto: NOMBRES_MODULO[r.modulo] || r.modulo,
-    area: numeroONull(r.area),
-    ronda: numeroONull(p.ronda),
-    competidor: esKumite ? `${p.nombreShiro} vs ${p.nombreAka}` : p.competitor || '',
-    detalle: (esKumite ? p.categoria : p.kata) || '',
-    sistema: numeroONull(esKumite ? p.sistemaJueces : p.judgeSystem),
-    jueces: esKumite ? Array(COLUMNAS_JUECES.length).fill(null) : juecesPorColumna(p),
-    responsable: p.responsableMesa || '',
-    puntajeFinal: !esKumite ? final : null,
-    resultadoKumite: esKumite ? `${p.shiroTotal} - ${p.akaTotal} · Ganador: ${p.ganador}` : '',
+    ronda: r.ronda ?? null,
+    competidor: r.competidor ?? '',
+    detalle: r.kata ?? '',
+    // un juez que no actuó (con 3 jueces, el 3 y el 4) queda en null
+    jueces: PREFIJOS_JUECES.map((prefijo, i) => {
+      const puntaje = numeroONull(r[`${prefijo}_puntaje`])
+      return puntaje === null ? null : { nombre: r[`${prefijo}_nombre`] ?? '', puntaje, incluido: !descartados.includes(i + 1) }
+    }),
+    puntajeFinal: numeroONull(r.puntaje_final),
+    resultadoKumite: '',
   }
 }
 

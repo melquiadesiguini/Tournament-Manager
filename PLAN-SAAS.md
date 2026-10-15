@@ -272,3 +272,12 @@ Sub-etapas: **3a** sesión, permisos, ingreso por organización · **3b** Usuari
 - Elegir torneo activo en la pantalla de trabajo y guardar `torneo_id` en cada resultado (hoy se guarda sin torneo; los permisos por torneo y área ya existen en la base).
 - Reincorporar "jueces conectados" (puntaje en tiempo real), hoy guardado en `stash@{0}`.
 - Dominio propio (`ipponia.com`) y marca en el INPI; con dominio propio cambia `base` a `/` y `pathSegmentsToKeep` a 0 en `public/404.html`.
+
+## 15. Resultados separados por estructura (15/10/2026)
+
+- [x] Migración `20261015120000_resultados_por_estructura.sql`: dos tablas con columnas reales en lugar del JSON único.
+  - `resultados_jurado` (Kata, Kobudo, Destreza): competidor, kata, área y ronda (enteros), sistema de jueces (3 o 5), responsable de mesa, un juez por columna (nombre y puntaje; con 3 jueces el 3 y el 4 quedan en NULL), jueces descartados, puntaje final y `creado_en` (hora del servidor).
+  - `resultados_kumite`: marcador, ganador, faltas, salida, encho-sen, duración restante, sistema de jueces.
+  - Restricciones en la base (puntajes de 0 a 10, coherencia entre sistema y jueces, módulo válido) y RLS por permiso y organización; no se editan ni se borran desde la API.
+  - Los resultados anteriores se convirtieron automáticamente; la tabla vieja quedó como `resultados_archivo` (copia de seguridad sin acceso desde la API).
+- [x] Código: `lib/filasResultados.js` reparte lo que entregan las pantallas en columnas; `lib/resultados.js` guarda y lista las dos tablas; el Historial lee las filas reales. Pruebas de base de datos: **150 correctas**, incluida la ejecución del código de la app contra el esquema.

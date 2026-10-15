@@ -289,6 +289,7 @@ function Kumite({ modoKansa = false, sistemaJueces = null }) {
       shiroTotal,
       akaTotal,
       ganador: resultado,
+      ladoGanador: ganador ?? 'empate',
     }
 
     console.log('Combate guardado:', payload)

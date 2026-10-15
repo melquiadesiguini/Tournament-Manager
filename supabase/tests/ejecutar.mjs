@@ -10,6 +10,7 @@ import { PGlite } from '@electric-sql/pglite'
 import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { filaJurado, filaKumite } from '../../src/lib/filasResultados.js'
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..')
 const leer = (ruta) => readFileSync(join(raiz, ruta), 'utf8')
@@ -66,6 +67,13 @@ const U = {
   duenoC: id(20),
 }
 
+// Inserta un resultado de jurado válido (cambian el módulo y quién lo firma)
+const insJurado = (org, uid, modulo = 'kata') =>
+  `insert into public.resultados_jurado (organizacion_id, creado_por, modulo, competidor, sistema_jueces, juez1_puntaje, juez2_puntaje, juez_central_puntaje, puntaje_final)
+   values ('${org}', '${uid}', '${modulo}', 'X', 3, 5, 5, 5, 15)`
+const insKumite = (org, uid) =>
+  `insert into public.resultados_kumite (organizacion_id, creado_por, puntaje_shiro, puntaje_aka) values ('${org}', '${uid}', 3, 1)`
+
 // ---------------------------------------------------------------- 1) Esquema anterior
 console.log('\n1) Estado anterior (esquema viejo + datos de ejemplo)')
 await db.exec(leer('tests/bootstrap.sql'))
@@ -80,7 +88,13 @@ await db.exec(`
   insert into auth.users (id, email, email_confirmed_at) values ('${U.supervisorA}', 'sup@x.com', now());
   insert into public.jueces (org_id, nombre, apellido) select id, 'Juan', 'Pérez' from public.organizations;
   insert into public.results (org_id, modulo, area, payload, created_by)
-    select id, 'kata', '1', '{"competitor":"Ana"}'::jsonb, '${U.superadmin}' from public.organizations;
+    select id, v.modulo, v.area, v.payload::jsonb, '${U.superadmin}' from public.organizations,
+    (values
+      ('kata', '1', '{"competitor":"Ana"}'),
+      ('kata', '2', '{"judgeSystem":3,"competitor":"Lucía","kata":"Heian","ronda":2,"responsableMesa":"Marta","finalScore":15.5,"jueces":[{"numero":1,"nombre":"Ana","puntaje":5.5,"incluido":true},{"numero":2,"nombre":"Beto","puntaje":5,"incluido":true},{"numero":3,"nombre":"Carla","puntaje":5,"incluido":true}]}'),
+      ('kobudo', '3', '{"judgeSystem":5,"competitor":"Mateo","kata":"Sai","finalScore":"21.60","scores":{"judge1":"6","judge2":"7","judge3":"7.1","judge4":"7.5","judge5":"7.8"},"judgeNames":{"judge1":"Z"}}'),
+      ('kumite', '4', '{"categoria":"Cadete","nombreShiro":"Ana","nombreAka":"Beto","shiroTotal":3,"akaTotal":1,"ganador":"Ana","faltas":{"shiro":{},"aka":{}},"salida":null,"enchoSen":false,"duracionRestanteMs":30000,"sistemaJueces":5}')
+    ) as v(modulo, area, payload);
 `)
 prueba('el esquema viejo tiene members y 3 miembros', Number((await uno('select count(*) n from public.members')).n) === 3)
 
@@ -111,7 +125,22 @@ prueba('superadmin migrado', Number((await uno(`select count(*) n from public.su
 prueba('se retiraron members, invitaciones y platform_admins',
   (await uno(`select to_regclass('public.members') a, to_regclass('public.invitaciones') b, to_regclass('public.platform_admins') c`)).a === null &&
   (await uno(`select to_regclass('public.invitaciones') b`)).b === null)
-prueba('jueces y resultados se conservan', Number((await uno('select count(*) n from public.jueces')).n) === 1 && Number((await uno('select count(*) n from public.resultados')).n) === 1)
+prueba('los jueces se conservan', Number((await uno('select count(*) n from public.jueces')).n) === 1)
+prueba('los 4 resultados viejos quedan archivados', Number((await uno('select count(*) n from public.resultados_archivo')).n) === 4 && (await uno(`select to_regclass('public.resultados') t`)).t === null)
+prueba('se pasaron 2 resultados de jurado y 1 de kumite (el incompleto queda solo en el archivo)',
+  Number((await uno('select count(*) n from public.resultados_jurado')).n) === 2 && Number((await uno('select count(*) n from public.resultados_kumite')).n) === 1)
+const kataMig = await uno(`select * from public.resultados_jurado where modulo = 'kata'`)
+prueba('kata migrado: tipos y columnas (área, ronda, sistema, jueces y puntaje final)',
+  kataMig.competidor === 'Lucía' && kataMig.kata === 'Heian' && kataMig.area === 2 && kataMig.ronda === 2 && kataMig.sistema_jueces === 3 &&
+  kataMig.responsable_mesa === 'Marta' && Number(kataMig.puntaje_final) === 15.5 && kataMig.juez1_nombre === 'Ana' && Number(kataMig.juez1_puntaje) === 5.5)
+prueba('con 3 jueces el tercero es el central y los jueces 3 y 4 quedan vacíos (NULL, no 0)',
+  kataMig.juez3_puntaje === null && kataMig.juez4_puntaje === null && kataMig.juez_central_nombre === 'Carla' && Number(kataMig.juez_central_puntaje) === 5)
+const kobMig = await uno(`select * from public.resultados_jurado where modulo = 'kobudo'`)
+prueba('resultado viejo con textos: puntajes a número y nombres a su lugar', kobMig.sistema_jueces === 5 && Number(kobMig.juez3_puntaje) === 7.1 && kobMig.juez1_nombre === 'Z' && kobMig.juez2_nombre === null && kobMig.ronda === null)
+prueba('resultado viejo de 5 jueces: se descartan el mayor (central) y el menor (juez 1)', JSON.stringify([...kobMig.jueces_descartados].sort()) === '[1,5]')
+const kumMig = await uno(`select * from public.resultados_kumite`)
+prueba('kumite migrado: marcador, ganador, sistema y duración como número', kumMig.puntaje_shiro === 3 && kumMig.puntaje_aka === 1 && kumMig.lado_ganador === 'shiro' && kumMig.sistema_jueces === 5 && kumMig.duracion_restante_ms === 30000 && kumMig.area === 4 && kumMig.categoria === 'Cadete')
+prueba('la API no puede leer el archivo viejo', await como(U.superadmin, () => falla(() => db.query('select * from public.resultados_archivo'), 'permission denied')))
 prueba('el trigger de registro viejo ya no existe',
   Number((await uno(`select count(*) n from pg_trigger where tgname in ('on_auth_user_created','on_auth_user_confirmed')`)).n) === 0)
 
@@ -158,18 +187,18 @@ const verA = await como(U.superadmin, async () => ({
   torneos: await filas('select * from public.torneos'),
   roles: await filas('select * from public.roles'),
   jueces: await filas('select * from public.jueces'),
-  resultados: await filas('select * from public.resultados'),
+  resultados: await filas('select * from public.resultados_jurado'),
 }))
 prueba('la org A ve solo sus perfiles', verA.perfiles.length === 3 && verA.perfiles.every((p) => p.organizacion_id === orgA.id))
 prueba('la org A ve solo su organización', verA.orgs.length === 1 && verA.orgs[0].id === orgA.id)
 prueba('la org A ve solo sus torneos', verA.torneos.length === 1 && verA.torneos[0].organizacion_id === orgA.id)
 prueba('la org A ve solo sus roles', verA.roles.length > 0 && verA.roles.every((r) => r.organizacion_id === orgA.id))
-prueba('la org A ve solo sus jueces y resultados', verA.jueces.length === 1 && verA.resultados.length === 1)
+prueba('la org A ve solo sus jueces y resultados', verA.jueces.length === 1 && verA.resultados.length === 2)
 const verB = await como(U.duenoB, async () => ({
   perfiles: await filas('select * from public.perfiles'),
   torneos: await filas('select * from public.torneos'),
   jueces: await filas('select * from public.jueces'),
-  resultados: await filas('select * from public.resultados'),
+  resultados: await filas('select * from public.resultados_jurado'),
 }))
 prueba('la org B (FAKKO) ve solo lo suyo', verB.perfiles.length === 4 && verB.torneos.length === 2 && verB.jueces.length === 1 && verB.resultados.length === 0)
 
@@ -185,7 +214,7 @@ await como(U.superadmin, async () => {
   // A ni siquiera ve los roles de B, así que no puede referenciarlos; y si fuerza el insert, la política lo rechaza
   prueba('A no ve los roles de B', (await filas(`select id from public.roles where organizacion_id='${orgB.id}'`)).length === 0)
   prueba('A no puede asignar roles en B', await falla(() => db.exec(`insert into public.asignaciones (organizacion_id, usuario_id, rol_id) values ('${orgB.id}', '${U.juezB}', '${rolDeB}')`), 'row-level security'))
-  prueba('A no puede guardar resultados en B', await falla(() => db.exec(`insert into public.resultados (organizacion_id, modulo, payload, creado_por) values ('${orgB.id}', 'kata', '{}', '${U.superadmin}')`), 'row-level security'))
+  prueba('A no puede guardar resultados en B', await falla(() => db.exec(insJurado(orgB.id, U.superadmin)), 'row-level security'))
   prueba('A no puede cargar jueces en B', await falla(() => db.exec(`insert into public.jueces (organizacion_id, nombre) values ('${orgB.id}', 'Intruso')`), 'row-level security'))
 })
 prueba('el torneo de B quedó intacto', (await uno(`select nombre from public.torneos where id='${id(101)}'`)).nombre === 'Copa FAKKO 1')
@@ -299,13 +328,13 @@ prueba('...pero recibe sugerencias de nombres', (await como(U.juezB, () => filas
 prueba('las sugerencias son solo de su organización', (await como(U.duenoC, () => filas(`select * from public.sugerir_jueces('ped')`))).length === 0)
 prueba('quien no puntúa ni opera no recibe sugerencias', (await como(U.kansaB, () => filas(`select * from public.sugerir_jueces('ped')`))).length === 0)
 prueba('el juez puede guardar resultados de kata pero no de kobudo... (tiene los tres)', await como(U.juezB, async () => {
-  await db.exec(`insert into public.resultados (organizacion_id, modulo, payload, creado_por) values ('${orgB.id}', 'kata', '{}', '${U.juezB}')`)
+  await db.exec(insJurado(orgB.id, U.juezB))
   return true
 }))
-prueba('el kansa no puede guardar resultados de kata', await como(U.kansaB, () => falla(() => db.exec(`insert into public.resultados (organizacion_id, modulo, payload, creado_por) values ('${orgB.id}', 'kata', '{}', '${U.kansaB}')`), 'row-level security')))
-prueba('nadie puede firmar un resultado a nombre de otro', await como(U.juezB, () => falla(() => db.exec(`insert into public.resultados (organizacion_id, modulo, payload, creado_por) values ('${orgB.id}', 'kata', '{}', '${U.duenoB}')`), 'row-level security')))
-prueba('el juez no ve el historial', (await como(U.juezB, () => filas('select * from public.resultados'))).length === 0)
-prueba('el dueño sí ve el historial', (await como(U.duenoB, () => filas('select * from public.resultados'))).length === 1)
+prueba('el kansa no puede guardar resultados de kata', await como(U.kansaB, () => falla(() => db.exec(insJurado(orgB.id, U.kansaB)), 'row-level security')))
+prueba('nadie puede firmar un resultado a nombre de otro', await como(U.juezB, () => falla(() => db.exec(insJurado(orgB.id, U.duenoB)), 'row-level security')))
+prueba('el juez no ve el historial', (await como(U.juezB, () => filas('select * from public.resultados_jurado'))).length === 0)
+prueba('el dueño sí ve el historial', (await como(U.duenoB, () => filas('select * from public.resultados_jurado'))).length === 1)
 await como(U.juezB, () => db.exec(`select public.registrar_juez('Nuevo Juez')`))
 prueba('registrar_juez agrega un nombre nuevo...', Number((await uno(`select count(*) n from public.jueces where organizacion_id='${orgB.id}'`)).n) === 2)
 await como(U.juezB, () => db.exec(`select public.registrar_juez('gómez pedro')`))
@@ -370,6 +399,77 @@ prueba('el nuevo dueño tiene los 12 permisos a nivel organización', (await tod
 prueba('la organización conserva a sus demás usuarios', Number((await uno(`select count(*) n from public.perfiles where organizacion_id='${orgB.id}'`)).n) === 4)
 prueba('los candados del dueño siguen activos tras transferir', await falla(() => db.exec(`update public.perfiles set activo = false where usuario_id='${NUEVO}'`), 'no se puede desactivar'))
 prueba('el Admin permanente del nuevo dueño sigue protegido', await falla(() => db.exec(`delete from public.asignaciones where usuario_id='${NUEVO}'`), 'Admin permanente'))
+
+// (el dueño de FAKKO es ahora la cuenta nueva: se transfirió en la sección 7)
+// ---------------------------------------------------------------- 8) Resultados con columnas reales
+console.log('\n8) Resultados con columnas reales')
+const jurado = (campos) => `insert into public.resultados_jurado (organizacion_id, creado_por, modulo, competidor, sistema_jueces, juez1_puntaje, juez2_puntaje, juez_central_puntaje, puntaje_final${campos.cols ?? ''})
+  values ('${orgB.id}', '${U.juezB}', '${campos.modulo ?? 'kata'}', '${campos.competidor ?? 'X'}', ${campos.sistema ?? 3}, ${campos.j1 ?? 5}, 5, ${campos.central ?? 5}, ${campos.final ?? 15}${campos.vals ?? ''})`
+prueba('un resultado de jurado válido se guarda', await como(U.juezB, async () => { await db.exec(jurado({})); return true }))
+prueba('con 3 jueces no se acepta el puntaje del juez 3', await como(U.juezB, () => falla(() => db.exec(jurado({ cols: ', juez3_puntaje', vals: ', 6' })), 'jurado_puntajes_segun_sistema')))
+prueba('con 5 jueces hacen falta los puntajes de los jueces 3 y 4', await como(U.juezB, () => falla(() => db.exec(jurado({ sistema: 5 })), 'jurado_puntajes_segun_sistema')))
+prueba('un puntaje fuera de 0 a 10 se rechaza', await como(U.juezB, () => falla(() => db.exec(jurado({ j1: 11 })), 'check')))
+prueba('el sistema de jueces solo puede ser 3 o 5', await como(U.juezB, () => falla(() => db.exec(jurado({ sistema: 4 })), 'check')))
+prueba('el competidor no puede quedar vacío', await como(U.juezB, () => falla(() => db.exec(jurado({ competidor: '  ' })), 'check')))
+prueba('el área tiene que ser un número razonable', await como(U.juezB, () => falla(() => db.exec(jurado({ cols: ', area', vals: ', 1000' })), 'check')))
+prueba('un módulo de jurado no puede ser kumite', await como(U.juezB, () => falla(() => db.exec(jurado({ modulo: 'kumite' })), 'check|row-level security')))
+prueba('un torneo de otra organización se rechaza', await como(U.juezB, () => falla(() => db.exec(jurado({ cols: ', torneo_id', vals: `, '${id(201)}'` })), 'row-level security')))
+prueba('un torneo de la propia organización se acepta', await como(U.juezB, async () => { await db.exec(jurado({ cols: ', torneo_id', vals: `, '${id(101)}'` })); return true }))
+prueba('el juez no puede guardar un combate de kumite', await como(U.juezB, () => falla(() => db.exec(insKumite(orgB.id, U.juezB)), 'row-level security')))
+prueba('el kansa sí puede guardar un combate de kumite', await como(U.kansaB, async () => { await db.exec(insKumite(orgB.id, U.kansaB)); return true }))
+prueba('el kansa no ve el historial de kumite', (await como(U.kansaB, () => filas('select * from public.resultados_kumite'))).length === 0)
+prueba('el dueño ve el historial de kumite de su organización', (await como(NUEVO, () => filas('select * from public.resultados_kumite'))).length === 1)
+prueba('otra organización no ve esos combates', (await como(U.duenoC, () => filas('select * from public.resultados_kumite'))).length === 0)
+prueba('los resultados no se pueden editar ni borrar desde la API', await como(NUEVO, async () =>
+  (await falla(() => db.exec(`update public.resultados_jurado set competidor = 'otro'`), 'permission denied')) &&
+  (await falla(() => db.exec(`delete from public.resultados_kumite`), 'permission denied'))))
+prueba('un anónimo no puede leer ni guardar resultados', await comoAnonimo(async () =>
+  (await falla(() => db.query('select * from public.resultados_jurado'), 'permission denied')) &&
+  (await falla(() => db.exec(insKumite(orgB.id, U.kansaB)), 'permission denied'))))
+
+// ---------------------------------------------------------------- 9) El código de la app contra la base
+console.log('\n9) El código de la app guarda en las tablas reales')
+// Inserta una fila armada por src/lib/filasResultados.js, como lo hace la app (con las columnas y tipos que la base exige)
+async function guardarComoLaApp(uid, tabla, fila) {
+  const columnas = ['organizacion_id', 'creado_por', ...Object.keys(fila)]
+  const valores = [orgB.id, uid, ...Object.values(fila).map((v) => (Array.isArray(v) ? `{${v.join(',')}}` : v !== null && typeof v === 'object' ? JSON.stringify(v) : v))]
+  const marcas = columnas.map((c, i) => `$${i + 1}` + (['faltas', 'salida'].includes(c) ? '::jsonb' : c === 'jueces_descartados' ? '::smallint[]' : ''))
+  await db.query(`insert into public.${tabla} (${columnas.join(', ')}) values (${marcas.join(', ')})`, valores)
+}
+const j = (numero, nombre, puntaje, incluido = true) => ({ numero, etiqueta: '', nombre, puntaje, incluido })
+
+// Lo que entrega la pantalla de Kata con 3 jueces (puntajes ya como número)
+const payloadKata = {
+  judgeSystem: 3, kata: 'Heian Shodan', competitor: 'Lucía', area: 4, ronda: 2, responsableMesa: ' Marta ', finalScore: 21.6,
+  jueces: [j(1, 'Ana', 7.3), j(2, '', 7.1), j(3, 'Carla', 7.2)],
+}
+// Destreza con 5 jueces: se descartan el menor (juez 1) y el mayor (central)
+const payloadDestreza = {
+  judgeSystem: 5, competitor: 'Equipo Norte', area: null, ronda: null, responsableMesa: '', finalScore: 21.6,
+  jueces: [j(1, 'A', 6, false), j(2, 'B', 7), j(3, 'C', 7.1), j(4, 'D', 7.5), j(5, 'E', 7.8, false)],
+}
+const payloadKumite = {
+  categoria: 'Cadete', nombreShiro: 'Ana', nombreAka: 'Beto', shiroTotal: 3, akaTotal: 1, ganador: 'Ana', ladoGanador: 'shiro',
+  faltas: { shiro: { chukoku: ['adv'] }, aka: {} }, salida: null, enchoSen: true, duracionRestanteMs: 12345.6, responsableMesa: 'Marta', sistemaJueces: 3,
+}
+await db.exec(`delete from public.resultados_jurado where organizacion_id = '${orgB.id}'; delete from public.resultados_kumite where organizacion_id = '${orgB.id}'`)
+prueba('Kata (3 jueces) se guarda con las columnas de la base', await como(U.juezB, async () => { await guardarComoLaApp(U.juezB, 'resultados_jurado', filaJurado('kata', payloadKata)); return true }))
+prueba('Destreza (5 jueces, sin área ni ronda) se guarda', await como(U.juezB, async () => { await guardarComoLaApp(U.juezB, 'resultados_jurado', filaJurado('destreza', payloadDestreza, 9)); return true }))
+prueba('Kumite se guarda con faltas, duración redondeada y sistema', await como(U.kansaB, async () => { await guardarComoLaApp(U.kansaB, 'resultados_kumite', filaKumite(payloadKumite)); return true }))
+const kata = await uno(`select * from public.resultados_jurado where modulo = 'kata' and organizacion_id = '${orgB.id}'`)
+prueba('Kata: número, texto y NULL donde corresponde',
+  kata.area === 4 && kata.ronda === 2 && kata.competidor === 'Lucía' && kata.responsable_mesa === 'Marta' && Number(kata.puntaje_final) === 21.6 &&
+  kata.juez1_nombre === 'Ana' && Number(kata.juez1_puntaje) === 7.3 && kata.juez2_nombre === null && Number(kata.juez2_puntaje) === 7.1 &&
+  kata.juez3_puntaje === null && kata.juez4_puntaje === null && kata.juez_central_nombre === 'Carla' && Number(kata.juez_central_puntaje) === 7.2 &&
+  kata.jueces_descartados.length === 0)
+const dest = await uno(`select * from public.resultados_jurado where modulo = 'destreza' and organizacion_id = '${orgB.id}'`)
+prueba('Destreza: el área del puesto reemplaza al área vacía, sin ronda, y se descartan juez 1 y central',
+  dest.area === 9 && dest.ronda === null && dest.kata === null && dest.responsable_mesa === null && JSON.stringify([...dest.jueces_descartados].sort()) === '[1,5]' &&
+  Number(dest.juez4_puntaje) === 7.5 && Number(dest.juez_central_puntaje) === 7.8)
+const kum = await uno(`select * from public.resultados_kumite where organizacion_id = '${orgB.id}'`)
+prueba('Kumite: marcador, faltas, ganador y duración se guardan con su tipo',
+  kum.puntaje_shiro === 3 && kum.puntaje_aka === 1 && kum.lado_ganador === 'shiro' && kum.encho_sen === true && kum.duracion_restante_ms === 12346 &&
+  kum.faltas.shiro.chukoku[0] === 'adv' && kum.salida === null && kum.sistema_jueces === 3 && kum.categoria === 'Cadete')
 
 console.log(`\nResultado: ${ok} pruebas correctas, ${fallos} fallidas.`)
 process.exit(fallos ? 1 : 0)
