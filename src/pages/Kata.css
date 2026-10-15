@@ -215,6 +215,46 @@
   box-shadow: 0 0 8px rgba(255, 107, 91, 0.2);
 }
 
+/* Responsable de mesa: en "Entrada de Datos", sobre la tabla de jueces */
+.responsable-entrada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 90%;
+  max-width: 900px;
+  margin: 0 auto 20px;
+}
+
+.responsable-entrada label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.responsable-entrada > div {
+  width: 100%;
+  max-width: 340px;
+}
+
+.responsable-entrada .judge-name-input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 42px;
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  color: #111827;
+}
+
+.responsable-entrada .judge-name-input:focus {
+  outline: none;
+  border-color: #ff6b5b;
+  box-shadow: 0 0 8px rgba(255, 107, 91, 0.2);
+}
+
 /* Campo del número de área: angosto y centrado */
 .input-group-area {
   flex: 0 0 auto;
@@ -344,10 +384,11 @@
   max-width: 900px;
   max-height: 90vh;
   overflow-y: auto;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--bg-page);
+  border-top: 4px solid #d7282f;
   border-radius: 12px;
   padding: 40px 30px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 20px 50px var(--shadow-color);
   animation: popIn 0.4s ease-out;
 }
 
@@ -357,7 +398,7 @@
   right: 16px;
   background: transparent;
   border: none;
-  color: white;
+  color: var(--text-secondary);
   font-size: 2rem;
   line-height: 1;
   cursor: pointer;
@@ -367,7 +408,8 @@
 }
 
 .results-close:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: var(--bg-surface-2);
+  color: var(--text-primary);
 }
 
 @keyframes popIn {
@@ -384,8 +426,9 @@
 /* BADGE DEL SISTEMA */
 .system-badge {
   text-align: center;
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   padding: 10px 20px;
   border-radius: 20px;
   font-size: 3rem;
@@ -407,11 +450,12 @@
 }
 
 .result-card {
-  background: white;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 25px 20px;
   text-align: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px var(--shadow-color);
   transition: transform 0.3s, box-shadow 0.3s;
   animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -422,7 +466,7 @@
 
 .result-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 12px 28px var(--shadow-color);
 }
 
 .result-icon {
@@ -432,7 +476,7 @@
 
 .result-label {
   font-size: 14px;
-  color: #999;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 10px;
@@ -455,7 +499,7 @@
 }
 
 .result-card.final .result-value-final {
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .result-subtitle {
@@ -466,14 +510,15 @@
 
 /* DETALLES DE CALIFICACIONES */
 .results-detail {
-  background: white;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 25px;
   margin-bottom: 25px;
 }
 
 .results-detail h3 {
-  color: #333;
+  color: var(--text-primary);
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 20px;
@@ -492,9 +537,9 @@
   align-items: center;
   gap: 8px;
   padding: 15px 20px;
-  background-color: #f5f5f5;
+  background-color: var(--bg-surface-2);
   border-radius: 8px;
-  border: 2px solid #eee;
+  border: 2px solid var(--border-color);
   animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
@@ -507,18 +552,18 @@
 .score-position {
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .score-value {
   font-size: 28px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .judge-label {
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* BOTONES DE ACCIONES */
@@ -529,43 +574,67 @@
   flex-wrap: wrap;
 }
 
-.btn-save,
-.btn-new {
+.btn-categoria,
+.btn-ronda,
+.btn-siguiente {
   padding: 15px 30px;
   font-size: 16px;
   font-weight: bold;
-  border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s;
-  color: white;
 }
 
-.btn-save {
-  background-color: #4caf50;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+/* Principal: lo que se usa en cada competidor */
+.btn-siguiente {
+  background-color: #d7282f;
+  border: 2px solid #d7282f;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(215, 40, 47, 0.3);
 }
 
-.btn-save:hover {
-  background-color: #45a049;
+.btn-siguiente:hover {
+  background-color: #b81f26;
+  border-color: #b81f26;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
 }
 
-.btn-new {
-  background-color: #2196f3;
-  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+/* Secundario: pasa a la ronda siguiente con los mismos jueces */
+.btn-ronda {
+  background-color: transparent;
+  border: 2px solid #d7282f;
+  color: #d7282f;
 }
 
-.btn-new:hover {
-  background-color: #1976d2;
+.btn-ronda:hover {
+  background-color: rgba(215, 40, 47, 0.12);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
 }
 
-.btn-save:active,
-.btn-new:active {
+/* Terciario: cierra la categoría completa */
+.btn-categoria {
+  background-color: transparent;
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-categoria:hover {
+  border-color: #d7282f;
+  transform: translateY(-2px);
+}
+
+.btn-categoria:active,
+.btn-ronda:active,
+.btn-siguiente:active {
   transform: translateY(0);
+}
+
+/* Aviso de que el resultado ya quedó guardado */
+.results-guardado {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-secondary);
 }
 
 /* ================= RESPONSIVE ================= */
@@ -638,8 +707,9 @@
     flex-direction: column;
   }
 
-  .btn-save,
-  .btn-new {
+  .btn-categoria,
+  .btn-ronda,
+  .btn-siguiente {
     width: 100%;
   }
 
@@ -817,8 +887,14 @@
   gap: clamp(12px, 2vw, 28px);
 }
 
-.results-overlay .btn-save,
-.results-overlay .btn-new {
+.results-overlay .results-guardado {
+  margin: 0;
+  font-size: clamp(13px, 2vh, 20px);
+}
+
+.results-overlay .btn-categoria,
+.results-overlay .btn-ronda,
+.results-overlay .btn-siguiente {
   font-size: clamp(16px, 2.8vh, 30px);
   padding: clamp(12px, 2.2vh, 28px) clamp(24px, 3vw, 56px);
   border-radius: clamp(8px, 1.4vh, 16px);
@@ -845,12 +921,12 @@
 
 /* Puntaje descartado (mayor y menor en el sistema de 5 jueces) */
 .score-item.discarded {
-  border-color: #f44336;
-  background-color: #fdecea;
+  border-color: #d7282f;
+  background-color: rgba(215, 40, 47, 0.12);
 }
 
 .score-item.discarded .score-value {
-  color: #b71c1c;
+  color: #d7282f;
   text-decoration: line-through;
   text-decoration-thickness: 3px;
 }

@@ -2,8 +2,14 @@ import { useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
+import ResponsableField from '../components/ResponsableField/ResponsableField'
+import RondaField from '../components/RondaField/RondaField'
 import AutocompletarJuez from '../components/AutocompletarJuez/AutocompletarJuez'
 import { useJueces } from '../lib/jueces'
+import { armarJueces, numeroONull, puntajesNumericos } from '../lib/jurado'
+import { readArea } from '../hooks/useArea'
+import { leerResponsable } from '../hooks/useResponsableMesa'
+import { readRonda, avanzarRonda, limpiarRonda } from '../hooks/useRonda'
 import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import useCountUp from '../hooks/useCountUp'
 import useFullscreen from '../hooks/useFullscreen'
@@ -32,6 +38,8 @@ function Kata() {
   const [errors, setErrors] = useState('')
   const [success, setSuccess] = useState('')
   const [showResults, setShowResults] = useState(false)
+  const [estadoGuardado, setEstadoGuardado] = useState('')
+  const ultimoGuardado = useRef('') // firma del último resultado guardado
  
   const handleScoreChange = (judgeId, value) => {
     setScores(prev => ({
@@ -154,6 +162,7 @@ function Kata() {
     if (!validateForm()) return
     
     setShowResults(true)
+    guardarAutomatico()
     setSuccess('✅ ¡Cálculo realizado!')
     
     setTimeout(() => {
@@ -161,40 +170,74 @@ function Kata() {
     }, 3000)
   }
  
-  const handleSaveToHistory = () => {
+  // El resultado se guarda siempre, apenas se calcula: en el navegador y en la nube. No hace falta ningún botón.
+  const guardarAutomatico = () => {
     const data = {
       judgeSystem,
       kata,
       competitor,
-      scores,
+      scores: puntajesNumericos(scores),
       judgeNames,
       highest: getHighest(),
       lowest: getLowest(),
-      finalScore: getFinalScore(),
-      timestamp: new Date().toLocaleString('es-AR')
+      finalScore: numeroONull(getFinalScore()),
+      timestamp: new Date().toLocaleString('es-AR'),
+      guardadoEn: new Date().toISOString(),
+      area: numeroONull(readArea()),
+      ronda: numeroONull(readRonda()),
+      responsableMesa: leerResponsable().trim(),
+      jueces: armarJueces({
+        puntajes: getFilledScoresInOrder(),
+        nombres: judgeNames,
+        sistema: judgeSystem,
+        incluido: isScoreIncluded,
+      }),
     }
+
+    // si se vuelve a pulsar FINALIZAR sin cambiar nada, no se guarda dos veces
+    const firma = JSON.stringify([data.judgeSystem, data.ronda, data.competitor, data.kata, data.scores, data.judgeNames])
+    if (ultimoGuardado.current === firma) return
+    ultimoGuardado.current = firma
 
     registrarJueces(
       Object.entries(judgeNames)
         .filter(([id]) => Number(id.slice(5)) <= judgeSystem)
         .map(([, nombre]) => nombre)
     )
-    
+
     const savedCompetitions = JSON.parse(localStorage.getItem('competitions')) || []
     savedCompetitions.push(data)
     localStorage.setItem('competitions', JSON.stringify(savedCompetitions))
-    
-    setSuccess('💾 ¡Competencia guardada en historial!')
+
+    setEstadoGuardado('Guardando…')
     guardarResultado({ modulo: 'kata', payload: data }).then((r) => {
-      setSuccess(`💾 ¡Competencia guardada en historial! ${mensajeGuardado(r)}`)
-      setTimeout(() => {
-        resetForm()
-        setShowResults(false)
-      }, 1500)
+      setEstadoGuardado(r.ok ? 'Resultado guardado en la nube.' : mensajeGuardado(r))
     })
   }
- 
+
+  // Cierra el cartel y deja el formulario listo para el próximo competidor (los jueces siguen cargados)
+  const siguienteCompetidor = () => {
+    resetForm()
+    setShowResults(false)
+  }
+
+  // Pasa a la ronda siguiente con los mismos jueces: sube el número de ronda y queda listo el próximo competidor
+  const siguienteRonda = () => {
+    avanzarRonda()
+    resetForm()
+    setShowResults(false)
+  }
+
+  // Termina la categoría: se borran la ronda y los jueces, y se vuelve a elegir el sistema de jueces
+  const finalizarCategoria = () => {
+    limpiarRonda()
+    setJudgeNames({ judge1: '', judge2: '', judge3: '', judge4: '', judge5: '' })
+    changeJudgeSystem(null)
+  }
+
   const resetForm = () => {
+    ultimoGuardado.current = ''
+    setEstadoGuardado('')
     setKata('')
     setCompetitor('')
     setScores({
@@ -299,9 +342,12 @@ function Kata() {
                 />
               </div>
               <AreaField />
+              <RondaField />
             </div>
  
             <h3 className="data-entry-title">Entrada de Datos</h3>
+
+            <ResponsableField />
  
 
 
@@ -364,7 +410,7 @@ function Kata() {
             </table>
  
             <button className="btn-finalize" onClick={handleFinalize}>
-              FINALIZAR Y GUARDAR
+              OBTENER PUNTAJE
             </button>
           </>
         )}
@@ -415,16 +461,21 @@ function Kata() {
                 </div>
  
                 <div className="results-actions">
-                  <button className="btn-save" onClick={handleSaveToHistory}>
-                    💾 Guardar en Historial
+                  <button className="btn-categoria" onClick={finalizarCategoria}>
+                    Finalizar categoría
                   </button>
-                  <button className="btn-new" onClick={() => {
-                    resetForm()
-                    setShowResults(false)
-                  }}>
-                    ➕ Nueva Competencia
+                  <button className="btn-ronda" onClick={siguienteRonda}>
+                    Siguiente ronda
+                  </button>
+                  <button className="btn-siguiente" onClick={siguienteCompetidor}>
+                    Siguiente competidor
                   </button>
                 </div>
+                {estadoGuardado && (
+                  <p className="results-guardado" role="status">
+                    {estadoGuardado}
+                  </p>
+                )}
                 </div>
               </div>
             )}

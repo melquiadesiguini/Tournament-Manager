@@ -295,6 +295,11 @@
   font-weight: 700;
 }
 
+.responsable-field input {
+  width: 14rem;
+  max-width: 100%;
+}
+
 .categoria-field {
   flex: 1 1 auto;
 }

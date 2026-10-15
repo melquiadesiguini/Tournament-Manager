@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
+import ResponsableField from '../components/ResponsableField/ResponsableField'
+import { leerResponsable } from '../hooks/useResponsableMesa'
 import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
@@ -292,7 +294,15 @@ function Kumite({ modoKansa = false }) {
     console.log('Combate guardado:', payload)
     guardarResultado({
       modulo: 'kumite',
-      payload: { ...payload, faltas, salida, enchoSen, duracionRestanteMs: duration },
+      payload: {
+        ...payload,
+        faltas,
+        salida,
+        enchoSen,
+        duracionRestanteMs: duration,
+        responsableMesa: leerResponsable().trim(),
+        guardadoEn: new Date().toISOString(),
+      },
     }).then((r) => {
       alert(
         `¡Combate Guardado!\n\nGanador: ${resultado}\nResultado: ${nombreDe('shiro')} ${shiroTotal} - ${nombreDe('aka')} ${akaTotal}\nCategoría: ${categoria}\n\n${mensajeGuardado(r)}`
@@ -362,6 +372,7 @@ function Kumite({ modoKansa = false }) {
           {!modoKansa && (
           <div className="kumite-controls">
             <AreaField variante="campo" />
+            <ResponsableField variante="campo" />
             <div className="categoria-field">
               <label>CATEGORÍA</label>
               <input

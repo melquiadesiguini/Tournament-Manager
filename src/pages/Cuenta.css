@@ -227,3 +227,23 @@
   font-weight: 400;
   color: var(--text-secondary);
 }
+
+/* Historial: puntaje de un juez que no cuenta para el total */
+.historial-descartado {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.historial-vacio {
+  color: var(--text-secondary);
+}
+
+.historial-nombre-juez {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  max-width: 9rem;
+}
+
+.historial-tabla td {
+  vertical-align: top;
+}

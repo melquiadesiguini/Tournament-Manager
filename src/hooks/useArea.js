@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'tm-area'
 
-function readArea() {
+export function readArea() {
   try {
     return localStorage.getItem(STORAGE_KEY) || ''
   } catch {
