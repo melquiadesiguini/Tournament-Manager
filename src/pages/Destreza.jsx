@@ -310,7 +310,7 @@ function Destreza() {
   return (
     <>
       <Header />
-      <main className="kata-container" ref={containerRef} style={isFullscreen ? { overflow: 'hidden' } : undefined}>
+      <main className="kata-container destreza-compacto" ref={containerRef} style={isFullscreen ? { overflow: 'hidden' } : undefined}>
         <button
           type="button"
           className="btn-display"

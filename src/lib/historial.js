@@ -40,7 +40,7 @@ export function filaDeResultado(r) {
     ronda: numeroONull(p.ronda),
     competidor: esKumite ? `${p.nombreShiro} vs ${p.nombreAka}` : p.competitor || '',
     detalle: (esKumite ? p.categoria : p.kata) || '',
-    sistema: esKumite ? null : numeroONull(p.judgeSystem),
+    sistema: numeroONull(esKumite ? p.sistemaJueces : p.judgeSystem),
     jueces: esKumite ? Array(COLUMNAS_JUECES.length).fill(null) : juecesPorColumna(p),
     responsable: p.responsableMesa || '',
     puntajeFinal: !esKumite ? final : null,

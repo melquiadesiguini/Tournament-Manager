@@ -24,7 +24,7 @@ const DURACION_ENCHO_SEN = 60 * 1000
 
 // `modoKansa`: es el mismo tablero que la Mesa, pero independiente: no publica nada
 // para la pantalla pública ni toca el tablero de la Mesa (cada ventana lleva su combate).
-function Kumite({ modoKansa = false }) {
+function Kumite({ modoKansa = false, sistemaJueces = null }) {
   // El tablero ocupa el 100 % del alto de la pantalla (debajo del encabezado), sin scroll:
   // se achica si no entra y se agranda si sobra espacio.
   const alturaHeader = useAlturaHeader()
@@ -301,6 +301,7 @@ function Kumite({ modoKansa = false }) {
         enchoSen,
         duracionRestanteMs: duration,
         responsableMesa: leerResponsable().trim(),
+        sistemaJueces,
         guardadoEn: new Date().toISOString(),
       },
     }).then((r) => {

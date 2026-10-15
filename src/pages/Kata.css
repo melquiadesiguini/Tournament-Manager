@@ -993,3 +993,114 @@
   user-select: none;
   -webkit-user-select: none;
 }
+
+/* ================= DESTREZA COMPACTA =================
+   Menos espacio entre los elementos para que toda la pantalla (encabezado, cronómetro, jueces y botón)
+   entre sin desplazarse. Solo afecta a Destreza (la clase está en su <main>). */
+.destreza-compacto {
+  gap: 8px;
+  padding: 8px 20px;
+  /* encabezado (~50px) + pie (~92px): así la página no desplaza de más */
+  min-height: calc(100dvh - 145px);
+}
+
+.destreza-compacto .kata-content,
+.destreza-compacto .kata-content-inner {
+  gap: 8px;
+}
+
+.destreza-compacto .btn-change-system {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
+.destreza-compacto .header-section {
+  padding: 8px 20px;
+  gap: 24px;
+}
+
+.destreza-compacto .input-group {
+  gap: 6px;
+}
+
+.destreza-compacto .input-group h2 {
+  font-size: 20px;
+}
+
+.destreza-compacto .input-group input {
+  height: 34px;
+  padding: 6px 10px;
+}
+
+.destreza-compacto .input-group-area input {
+  font-size: 18px;
+}
+
+/* Cronómetro más chico */
+.destreza-compacto .destreza-cronometro {
+  margin: 0 auto;
+  padding: 0.4rem 1rem;
+}
+
+.destreza-compacto .timer-clock {
+  margin-bottom: 0;
+}
+
+.destreza-compacto .timer-clock-input {
+  width: 3.8rem;
+  font-size: 2.5rem;
+}
+
+.destreza-compacto .timer-clock-sep {
+  font-size: 2.5rem;
+}
+
+.destreza-compacto .destreza-cronometro-botones {
+  margin-bottom: 0;
+}
+
+.destreza-compacto .data-entry-title {
+  font-size: 18px;
+  margin: 4px 0 0;
+}
+
+.destreza-compacto .responsable-entrada {
+  flex-direction: row;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.destreza-compacto .responsable-entrada label {
+  font-size: 14px;
+}
+
+.destreza-compacto .responsable-entrada > div {
+  max-width: 300px;
+}
+
+.destreza-compacto .responsable-entrada .judge-name-input {
+  height: 34px;
+  padding: 4px 10px;
+  font-size: 14px;
+}
+
+.destreza-compacto .judges-table th,
+.destreza-compacto .judges-table td {
+  padding: 6px 10px;
+}
+
+.destreza-compacto .judges-table th .judge-name-input {
+  margin-top: 4px;
+  padding: 4px 6px;
+}
+
+.destreza-compacto .judges-table td input {
+  height: 36px;
+}
+
+.destreza-compacto .btn-finalize {
+  margin: 6px auto;
+  padding: 10px 36px;
+  font-size: 16px;
+}

@@ -87,6 +87,32 @@
   font-size: 0.95rem;
 }
 
+/* Las tarjetas de sistema de jueces son botones: se igualan a los enlaces de Mesa y Kansa */
+button.modo-card {
+  font: inherit;
+  cursor: pointer;
+}
+
+.modo-jueces:hover,
+.modo-jueces:focus-visible {
+  border-color: #d7282f;
+}
+
+.modo-volver {
+  margin-top: 1.5rem;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modo-volver:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
 @media (max-width: 640px) {
   .modo-opciones {
     grid-template-columns: 1fr;

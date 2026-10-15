@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate, useParams } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useParams, useSearchParams } from 'react-router-dom'
 import AuthProvider from './context/AuthProvider'
 import RutaProtegida from './components/RutaProtegida'
 import RequierePermiso from './components/RequierePermiso'
@@ -28,6 +28,14 @@ function IrAIngresoDeOrganizacion() {
   return <Navigate to={`/${slugOrg}/ingresar`} replace />
 }
 
+// Mesa y Kansa se abren con el sistema de jueces ya elegido (?jueces=3 o ?jueces=5); si falta, se vuelve a preguntar
+function KumiteConSistema({ modoKansa = false }) {
+  const [params] = useSearchParams()
+  const sistema = Number(params.get('jueces'))
+  if (sistema !== 3 && sistema !== 5) return <Navigate to="/kumite" replace />
+  return <Kumite modoKansa={modoKansa} sistemaJueces={sistema} />
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -52,10 +60,10 @@ function App() {
               <Route path="/kumite" element={<KumiteModo />} />
             </Route>
             <Route element={<RequierePermiso permisos={PERMISOS_MODULO.kumiteMesa} />}>
-              <Route path="/kumite/mesa" element={<Kumite />} />
+              <Route path="/kumite/mesa" element={<KumiteConSistema />} />
             </Route>
             <Route element={<RequierePermiso permisos={PERMISOS_MODULO.kumiteKansa} />}>
-              <Route path="/kumite/kansa" element={<Kumite modoKansa />} />
+              <Route path="/kumite/kansa" element={<KumiteConSistema modoKansa />} />
             </Route>
             <Route element={<RequierePermiso permisos={PERMISOS_MODULO.kobudo} />}>
               <Route path="/kobudo" element={<Kobudo />} />
