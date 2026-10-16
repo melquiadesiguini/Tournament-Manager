@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 import PantallaIngreso from '../components/PantallaIngreso'
+import CampoClave from '../components/CampoClave/CampoClave'
 import { supabase } from '../lib/supabase'
 import { URL_SOLICITUD } from '../lib/contacto'
 
@@ -99,16 +100,13 @@ function Ingresar() {
               autoFocus
             />
           </label>
-          <label>
-            Contraseña
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-          </label>
+          <CampoClave
+            etiqueta="Contraseña"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="current-password"
+          />
 
           {error && <div className="cuenta-error">{error}</div>}
 

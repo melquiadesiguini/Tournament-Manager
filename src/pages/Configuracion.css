@@ -352,3 +352,26 @@
   border: 1px dashed #d97706;
   user-select: all;
 }
+
+/* Corregir un resultado: tarjeta de cada juez */
+.editor-juez {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+}
+
+.editor-juez legend {
+  padding: 0 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.config-btn-chico {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+}

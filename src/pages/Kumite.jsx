@@ -4,6 +4,7 @@ import Footer from '../components/Footer/Footer'
 import AreaField from '../components/AreaField/AreaField'
 import ResponsableField from '../components/ResponsableField/ResponsableField'
 import { leerResponsable } from '../hooks/useResponsableMesa'
+import useTorneoAbierto, { MENSAJE_SIN_TORNEO } from '../hooks/useTorneoAbierto'
 import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import Timer from '../components/Timer/Timer'
 import Marcador from '../components/Marcador/Marcador'
@@ -31,6 +32,7 @@ function Kumite({ modoKansa = false, sistemaJueces = null }) {
   const { contentRef, scale } = useFitToScreen(true, alturaHeader + PADDING_VERTICAL_TABLERO, false, ESCALA_MAXIMA_TABLERO)
 
   const [categoria, setCategoria] = useState('')
+  const { sinTorneo } = useTorneoAbierto()
   const [duration, setDuration] = useState(DURACION_COMBATE)
   const [timerActive, setTimerActive] = useState(false)
 
@@ -278,6 +280,11 @@ function Kumite({ modoKansa = false, sistemaJueces = null }) {
 
   // Guardar el resultado del combate en el historial (sin reiniciar)
   const guardarEnHistorial = () => {
+    // sin torneo abierto no se guarda nada (la base también lo rechaza)
+    if (sinTorneo) {
+      alert(MENSAJE_SIN_TORNEO)
+      return
+    }
     const shiroTotal = calcularTotal('shiro')
     const akaTotal = calcularTotal('aka')
     const resultado = nombreResultado(ganador)

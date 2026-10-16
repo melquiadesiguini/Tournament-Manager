@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import useAuth from '../hooks/useAuth'
 import ConfigPagina from './ConfigPagina'
-import { borrarTorneo, crearTorneo, editarTorneo, ESTADOS_TORNEO, listarTorneos } from '../lib/torneos'
+import { borrarTorneo, cambiarEstadoTorneo, crearTorneo, editarTorneo, ESTADOS_TORNEO, listarTorneos } from '../lib/torneos'
 
 const PERMISO = 'crear_torneos'
 const VACIO = { nombre: '', fecha: '', estado: 'borrador' }
@@ -17,6 +17,7 @@ function ConfigTorneos() {
   const [edicion, setEdicion] = useState(null) // { id|null, valores }
   const [trabajando, setTrabajando] = useState(false)
   const [porBorrar, setPorBorrar] = useState(null)
+  const [porCerrar, setPorCerrar] = useState(null)
   const [error, setError] = useState('')
 
   const recargar = () => listarTorneos().then((r) => setFilas(r.filas))
@@ -63,8 +64,9 @@ function ConfigTorneos() {
         </button>
       </div>
       <p className="config-ayuda">
-        Un torneo agrupa a las personas y los roles de una competencia. Después podés asignar a cada usuario un rol solo
-        para ese torneo (y, si querés, para un área).
+        Los resultados se guardan siempre en el torneo <strong>abierto</strong>: hay uno solo por vez. Cuando termina, lo cerrás
+        y abrís el siguiente. Sin un torneo abierto no se pueden cargar resultados. También podés asignar a cada usuario un rol
+        solo para un torneo (y, si querés, para un área).
       </p>
 
       {edicion && (
@@ -147,6 +149,38 @@ function ConfigTorneos() {
                     </span>
                   </td>
                   <td>
+                    {t.estado === 'activo' ? (
+                      porCerrar === t.id ? (
+                        <span className="config-iconos">
+                          <span className="config-confirmar">¿Cerrar? Ya no se podrá cargar en él.</span>
+                          <button
+                            type="button"
+                            className="config-confirmar-si"
+                            onClick={() => {
+                              setPorCerrar(null)
+                              ejecutar(cambiarEstadoTorneo(t.id, 'finalizado'))
+                            }}
+                          >
+                            Sí
+                          </button>
+                          <button type="button" onClick={() => setPorCerrar(null)}>
+                            No
+                          </button>
+                        </span>
+                      ) : (
+                        <button type="button" className="config-btn config-btn-chico" onClick={() => setPorCerrar(t.id)}>
+                          Cerrar torneo
+                        </button>
+                      )
+                    ) : (
+                      <button
+                        type="button"
+                        className="config-btn config-btn-chico config-btn-primario"
+                        onClick={() => ejecutar(cambiarEstadoTorneo(t.id, 'activo'))}
+                      >
+                        {t.estado === 'finalizado' ? 'Reabrir' : 'Abrir'}
+                      </button>
+                    )}{' '}
                     <span className="config-iconos">
                       <button
                         type="button"

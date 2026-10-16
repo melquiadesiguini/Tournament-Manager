@@ -9,6 +9,7 @@ import { useJueces } from '../lib/jueces'
 import { armarJueces, numeroONull, puntajesNumericos } from '../lib/jurado'
 import { readArea } from '../hooks/useArea'
 import { leerResponsable } from '../hooks/useResponsableMesa'
+import useTorneoAbierto, { MENSAJE_SIN_TORNEO } from '../hooks/useTorneoAbierto'
 import { readRonda, avanzarRonda, limpiarRonda } from '../hooks/useRonda'
 import { guardarResultado, mensajeGuardado } from '../lib/resultados'
 import useCountUp from '../hooks/useCountUp'
@@ -45,6 +46,7 @@ function Destreza() {
   // Nombres de los jueces: se conservan entre competidores (el panel de jueces suele ser el mismo)
   const [judgeNames, setJudgeNames] = useState({ judge1: '', judge2: '', judge3: '', judge4: '', judge5: '' })
   const { sugerencias: juecesSugeridos, buscar: buscarJueces, registrar: registrarJueces } = useJueces()
+  const { sinTorneo } = useTorneoAbierto()
   const [errors, setErrors] = useState('')
   const [success, setSuccess] = useState('')
   const [showResults, setShowResults] = useState(false)
@@ -169,6 +171,11 @@ function Destreza() {
   }
  
   const handleFinalize = () => {
+    // sin torneo abierto no se carga nada (la base también lo rechaza)
+    if (sinTorneo) {
+      setErrors('❌ ' + MENSAJE_SIN_TORNEO)
+      return
+    }
     if (!validateForm()) return
     
     setShowResults(true)

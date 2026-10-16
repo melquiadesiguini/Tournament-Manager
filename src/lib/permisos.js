@@ -11,6 +11,7 @@ export const PERMISOS = {
   cargar_competidores: 'Administrar competidores',
   gestionar_jueces: 'Administrar jueces',
   ver_historial: 'Ver el historial de resultados',
+  editar_historial: 'Corregir o borrar resultados del historial',
   crear_torneos: 'Crear y editar torneos',
   gestionar_usuarios: 'Administrar usuarios',
   gestionar_roles: 'Administrar roles y asignaciones',

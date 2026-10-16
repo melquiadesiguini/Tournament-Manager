@@ -15,11 +15,16 @@ export const COLUMNAS_JUECES = ['Juez Nº1', 'Juez Nº2', 'Juez Nº3', 'Juez Nº
 const PREFIJOS_JUECES = ['juez1', 'juez2', 'juez3', 'juez4', 'juez_central']
 
 // Fila del historial a partir de una fila de resultados_jurado o resultados_kumite (`tabla` dice cuál)
-export function filaDeResultado(r) {
+export function filaDeResultado(r, nombresTorneos = {}) {
   const esKumite = r.tabla === 'kumite'
   const base = {
     id: r.id,
+    tabla: r.tabla,
+    bruto: r,
+    editadoEn: r.editado_en ? new Date(r.editado_en) : null,
     fecha: new Date(r.creado_en),
+    torneoId: r.torneo_id ?? null,
+    torneo: r.torneo_id ? (nombresTorneos[r.torneo_id] ?? 'Torneo eliminado') : '',
     area: r.area ?? null,
     responsable: r.responsable_mesa ?? '',
     sistema: r.sistema_jueces ?? null,
@@ -60,7 +65,7 @@ export function filaDeResultado(r) {
 // ---------------------------------------------------------------- exportación
 
 const ENCABEZADOS = [
-  'Fecha y hora', 'Módulo', 'Área', 'Ronda', 'Competidor', 'Kata / categoría', 'Sistema de jueces',
+  'Fecha y hora', 'Torneo', 'Módulo', 'Área', 'Ronda', 'Competidor', 'Kata / categoría', 'Sistema de jueces',
   ...COLUMNAS_JUECES.flatMap((c) => [`${c} - nombre`, `${c} - puntaje`]),
   'Responsable de mesa', 'Puntaje final / resultado',
 ]
@@ -71,6 +76,7 @@ const vacioANull = (v) => (v === '' || v === undefined ? null : v)
 function valoresDeFila(f) {
   return [
     f.fecha,
+    vacioANull(f.torneo),
     f.moduloTexto,
     f.area,
     f.ronda,

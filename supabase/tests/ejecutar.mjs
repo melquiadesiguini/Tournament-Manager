@@ -11,6 +11,8 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { filaJurado, filaKumite } from '../../src/lib/filasResultados.js'
+import { calcularPuntaje } from '../../src/lib/jurado.js'
+import { valoresIniciales, validar, cambiosDesdeValores, calcularDeValores } from '../../src/lib/editarResultado.js'
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), '..')
 const leer = (ruta) => readFileSync(join(raiz, ruta), 'utf8')
@@ -171,6 +173,7 @@ await db.exec(`
     ('${id(102)}', '${orgB.id}', 'Copa FAKKO 2'),
     ('${id(201)}', '${orgC.id}', 'Torneo de otra federación'),
     ('${id(301)}', '${orgA.id}', 'Torneo Ikigai');
+  update public.torneos set estado = 'activo' where id = '${id(101)}';
   -- juez de FAKKO: solo en el torneo 1 y en el área 2
   insert into public.asignaciones (organizacion_id, usuario_id, torneo_id, area, rol_id)
     select '${orgB.id}', '${U.juezB}', '${id(101)}', '2', id from public.roles where organizacion_id='${orgB.id}' and nombre='Juez';
@@ -376,7 +379,7 @@ const todos = (uid) => como(uid, () => filas('select * from public.mis_permisos_
 const juezTodos = await todos(U.juezB)
 prueba('el juez de FAKKO ve sus 3 permisos con torneo y área', juezTodos.length === 3 && juezTodos.every((r) => r.torneo_id === id(101) && r.area === '2'))
 const duenoTodos = await todos(U.duenoB)
-prueba('el dueño tiene todos los permisos del plan, a nivel organización', duenoTodos.length === 12 && duenoTodos.every((r) => r.torneo_id === null && r.area === null))
+prueba('el dueño tiene todos los permisos del plan, a nivel organización', duenoTodos.length === 13 && duenoTodos.every((r) => r.torneo_id === null && r.area === null))
 prueba('un usuario sin roles no recibe nada', (await todos(U.kansaB)).every((r) => r.permiso === 'operar_kansa_kumite') && (await filas(`select 1 from public.perfiles limit 0`)).length === 0)
 await db.exec(`update public.organizaciones set estado = 'suspendida' where id = '${orgB.id}'`)
 prueba('con la organización suspendida no recibe nada', (await todos(U.duenoB)).length === 0)
@@ -395,7 +398,7 @@ await db.exec(`select public.transferir_dueno('fakko', 'nuevo.dueno@fakko.org')`
 const nuevoPerfil = await uno(`select es_dueno, activo, debe_cambiar_clave from public.perfiles where usuario_id='${NUEVO}'`)
 prueba('el nuevo dueño queda como dueño y debe cambiar la clave', nuevoPerfil?.es_dueno === true && nuevoPerfil.debe_cambiar_clave === true)
 prueba('el dueño anterior ya no tiene perfil ni roles', Number((await uno(`select count(*) n from public.perfiles where usuario_id='${U.duenoB}'`)).n) === 0 && Number((await uno(`select count(*) n from public.asignaciones where usuario_id='${U.duenoB}'`)).n) === 0)
-prueba('el nuevo dueño tiene los 12 permisos a nivel organización', (await todos(NUEVO)).length === 12)
+prueba('el nuevo dueño tiene los 13 permisos a nivel organización', (await todos(NUEVO)).length === 13)
 prueba('la organización conserva a sus demás usuarios', Number((await uno(`select count(*) n from public.perfiles where organizacion_id='${orgB.id}'`)).n) === 4)
 prueba('los candados del dueño siguen activos tras transferir', await falla(() => db.exec(`update public.perfiles set activo = false where usuario_id='${NUEVO}'`), 'no se puede desactivar'))
 prueba('el Admin permanente del nuevo dueño sigue protegido', await falla(() => db.exec(`delete from public.asignaciones where usuario_id='${NUEVO}'`), 'Admin permanente'))
@@ -413,19 +416,35 @@ prueba('el sistema de jueces solo puede ser 3 o 5', await como(U.juezB, () => fa
 prueba('el competidor no puede quedar vacío', await como(U.juezB, () => falla(() => db.exec(jurado({ competidor: '  ' })), 'check')))
 prueba('el área tiene que ser un número razonable', await como(U.juezB, () => falla(() => db.exec(jurado({ cols: ', area', vals: ', 1000' })), 'check')))
 prueba('un módulo de jurado no puede ser kumite', await como(U.juezB, () => falla(() => db.exec(jurado({ modulo: 'kumite' })), 'check|row-level security')))
-prueba('un torneo de otra organización se rechaza', await como(U.juezB, () => falla(() => db.exec(jurado({ cols: ', torneo_id', vals: `, '${id(201)}'` })), 'row-level security')))
-prueba('un torneo de la propia organización se acepta', await como(U.juezB, async () => { await db.exec(jurado({ cols: ', torneo_id', vals: `, '${id(101)}'` })); return true }))
+await como(U.juezB, () => db.exec(jurado({ competidor: 'ConTorneoAjeno', cols: ', torneo_id', vals: `, '${id(102)}'` })))
+prueba('el torneo que mande la app se ignora: el resultado queda en el torneo abierto', (await uno(`select torneo_id from public.resultados_jurado where competidor = 'ConTorneoAjeno'`)).torneo_id === id(101))
 prueba('el juez no puede guardar un combate de kumite', await como(U.juezB, () => falla(() => db.exec(insKumite(orgB.id, U.juezB)), 'row-level security')))
 prueba('el kansa sí puede guardar un combate de kumite', await como(U.kansaB, async () => { await db.exec(insKumite(orgB.id, U.kansaB)); return true }))
 prueba('el kansa no ve el historial de kumite', (await como(U.kansaB, () => filas('select * from public.resultados_kumite'))).length === 0)
 prueba('el dueño ve el historial de kumite de su organización', (await como(NUEVO, () => filas('select * from public.resultados_kumite'))).length === 1)
 prueba('otra organización no ve esos combates', (await como(U.duenoC, () => filas('select * from public.resultados_kumite'))).length === 0)
-prueba('los resultados no se pueden editar ni borrar desde la API', await como(NUEVO, async () =>
-  (await falla(() => db.exec(`update public.resultados_jurado set competidor = 'otro'`), 'permission denied')) &&
-  (await falla(() => db.exec(`delete from public.resultados_kumite`), 'permission denied'))))
+prueba('un juez no puede editar ni borrar resultados (la API no le muestra ninguna fila)', await como(U.juezB, async () =>
+  (await (await db.query(`update public.resultados_jurado set competidor = 'otro' returning id`)).rows.length) === 0 &&
+  (await (await db.query(`delete from public.resultados_kumite returning id`)).rows.length) === 0))
 prueba('un anónimo no puede leer ni guardar resultados', await comoAnonimo(async () =>
   (await falla(() => db.query('select * from public.resultados_jurado'), 'permission denied')) &&
   (await falla(() => db.exec(insKumite(orgB.id, U.kansaB)), 'permission denied'))))
+
+// ---------------------------------------------------------------- 8b) Un torneo abierto por vez
+console.log('\n8b) Un solo torneo abierto, y los resultados van a él')
+const abiertoBorrador = async (idTorneo, estado) => db.exec(`update public.torneos set estado = '${estado}' where id = '${idTorneo}'`)
+prueba('no se pueden abrir dos torneos a la vez en la misma organización', await falla(() => abiertoBorrador(id(102), 'activo'), 'torneos_uno_abierto'))
+prueba('otra organización puede tener su propio torneo abierto', await (async () => { await abiertoBorrador(id(201), 'activo'); return true })())
+await abiertoBorrador(id(101), 'finalizado')
+prueba('con el torneo cerrado no se puede cargar un resultado de jurado', await como(U.juezB, () => falla(() => db.exec(jurado({})), 'No hay un torneo abierto')))
+prueba('con el torneo cerrado no se puede cargar un combate de kumite', await como(U.kansaB, () => falla(() => db.exec(insKumite(orgB.id, U.kansaB)), 'No hay un torneo abierto')))
+await abiertoBorrador(id(102), 'activo')
+await como(U.juezB, () => db.exec(jurado({ competidor: 'EnElSegundo' })))
+prueba('al abrir otro torneo, los resultados nuevos van a ese', (await uno(`select torneo_id from public.resultados_jurado where competidor = 'EnElSegundo'`)).torneo_id === id(102))
+await abiertoBorrador(id(102), 'finalizado')
+await abiertoBorrador(id(101), 'activo')
+prueba('se puede volver a abrir un torneo cerrado', (await uno(`select estado from public.torneos where id = '${id(101)}'`)).estado === 'activo')
+await db.exec(`delete from public.resultados_jurado where organizacion_id = '${orgB.id}'; delete from public.resultados_kumite where organizacion_id = '${orgB.id}'`)
 
 // ---------------------------------------------------------------- 9) El código de la app contra la base
 console.log('\n9) El código de la app guarda en las tablas reales')
@@ -458,11 +477,13 @@ prueba('Destreza (5 jueces, sin área ni ronda) se guarda', await como(U.juezB, 
 prueba('Kumite se guarda con faltas, duración redondeada y sistema', await como(U.kansaB, async () => { await guardarComoLaApp(U.kansaB, 'resultados_kumite', filaKumite(payloadKumite)); return true }))
 const kata = await uno(`select * from public.resultados_jurado where modulo = 'kata' and organizacion_id = '${orgB.id}'`)
 prueba('Kata: número, texto y NULL donde corresponde',
-  kata.area === 4 && kata.ronda === 2 && kata.competidor === 'Lucía' && kata.responsable_mesa === 'Marta' && Number(kata.puntaje_final) === 21.6 &&
+  kata.torneo_id === id(101) && kata.area === 4 && kata.ronda === 2 && kata.competidor === 'Lucía' && kata.responsable_mesa === 'Marta' && Number(kata.puntaje_final) === 21.6 &&
   kata.juez1_nombre === 'Ana' && Number(kata.juez1_puntaje) === 7.3 && kata.juez2_nombre === null && Number(kata.juez2_puntaje) === 7.1 &&
   kata.juez3_puntaje === null && kata.juez4_puntaje === null && kata.juez_central_nombre === 'Carla' && Number(kata.juez_central_puntaje) === 7.2 &&
   kata.jueces_descartados.length === 0)
 const dest = await uno(`select * from public.resultados_jurado where modulo = 'destreza' and organizacion_id = '${orgB.id}'`)
+const dest0 = dest
+prueba('Destreza, sin que la app elija torneo, queda en el torneo abierto', dest0.torneo_id === id(101))
 prueba('Destreza: el área del puesto reemplaza al área vacía, sin ronda, y se descartan juez 1 y central',
   dest.area === 9 && dest.ronda === null && dest.kata === null && dest.responsable_mesa === null && JSON.stringify([...dest.jueces_descartados].sort()) === '[1,5]' &&
   Number(dest.juez4_puntaje) === 7.5 && Number(dest.juez_central_puntaje) === 7.8)
@@ -470,6 +491,85 @@ const kum = await uno(`select * from public.resultados_kumite where organizacion
 prueba('Kumite: marcador, faltas, ganador y duración se guardan con su tipo',
   kum.puntaje_shiro === 3 && kum.puntaje_aka === 1 && kum.lado_ganador === 'shiro' && kum.encho_sen === true && kum.duracion_restante_ms === 12346 &&
   kum.faltas.shiro.chukoku[0] === 'adv' && kum.salida === null && kum.sistema_jueces === 3 && kum.categoria === 'Cadete')
+
+// ---------------------------------------------------------------- 10) Corregir y borrar resultados
+console.log('\n10) Corregir y borrar resultados')
+// (el dueño de FAKKO es NUEVO; el juez no tiene el permiso; hay resultados de la sección 9)
+const filaK = await uno(`select id from public.resultados_jurado where organizacion_id = '${orgB.id}' and modulo = 'kata'`)
+const filaD = await uno(`select id from public.resultados_jurado where organizacion_id = '${orgB.id}' and modulo = 'destreza'`)
+const filaKum = await uno(`select id from public.resultados_kumite where organizacion_id = '${orgB.id}'`)
+const afecta = async (sql) => (await db.query(sql)).rows.length
+prueba('el rol Admin trae el permiso editar_historial y el juez no', (await todos(NUEVO)).some((r) => r.permiso === 'editar_historial') && !(await todos(U.juezB)).some((r) => r.permiso === 'editar_historial'))
+prueba('el juez no puede corregir un resultado (ni siquiera lo ve)', await como(U.juezB, async () => (await afecta(`update public.resultados_jurado set competidor = 'Otro' where id = '${filaK.id}' returning id`)) === 0))
+prueba('el juez no puede borrar un resultado', await como(U.juezB, async () => (await afecta(`delete from public.resultados_jurado where id = '${filaK.id}' returning id`)) === 0))
+prueba('el dueño de otra organización no puede corregir resultados ajenos', await como(U.duenoC, async () => (await afecta(`update public.resultados_jurado set competidor = 'Otro' where id = '${filaK.id}' returning id`)) === 0))
+prueba('el Admin corrige un resultado de jurado', await como(NUEVO, async () => (await afecta(`update public.resultados_jurado set competidor = 'Lucía Fernández', juez1_puntaje = 7.4, puntaje_final = 21.7 where id = '${filaK.id}' returning id`)) === 1))
+const corr = await uno(`select * from public.resultados_jurado where id = '${filaK.id}'`)
+prueba('queda anotado quién y cuándo lo corrigió, y lo cargado originalmente no cambia', corr.editado_por === NUEVO && corr.editado_en !== null && corr.creado_por === U.juezB && corr.competidor === 'Lucía Fernández' && Number(corr.juez1_puntaje) === 7.4)
+prueba('un resultado sin corregir no tiene marca de edición', (await uno(`select editado_por, editado_en from public.resultados_jurado where id = '${filaD.id}'`)).editado_en === null)
+for (const [cambio, texto] of [
+  [`organizacion_id = '${orgC.id}'`, 'cambiar de organización'],
+  [`modulo = 'kobudo'`, 'cambiar el módulo'],
+  [`sistema_jueces = 5`, 'cambiar el sistema de jueces'],
+  [`creado_por = '${NUEVO}'`, 'cambiar quién lo cargó'],
+  [`creado_en = now() - interval '1 day'`, 'cambiar cuándo se cargó'],
+]) {
+  prueba(`no se puede ${texto}`, await como(NUEVO, () => falla(() => db.exec(`update public.resultados_jurado set ${cambio} where id = '${filaK.id}'`), 'No se puede cambiar|row-level security|check')))
+}
+prueba('la corrección sigue validando las reglas (puntaje fuera de rango)', await como(NUEVO, () => falla(() => db.exec(`update public.resultados_jurado set juez1_puntaje = 12 where id = '${filaK.id}'`), 'check')))
+prueba('el Admin corrige un combate de kumite', await como(NUEVO, async () => (await afecta(`update public.resultados_kumite set nombre_shiro = 'Ana María', puntaje_shiro = 4, lado_ganador = 'shiro' where id = '${filaKum.id}' returning id`)) === 1))
+const aud = await filas(`select accion, detalle from public.auditoria where organizacion_id = '${orgB.id}' and accion = 'editar_resultado' order by id`)
+prueba('cada corrección queda en la auditoría, con el antes y el después', aud.length === 2 && aud[0].detalle.antes.competidor === 'Lucía' && aud[0].detalle.despues.competidor === 'Lucía Fernández' && aud[0].detalle.tabla === 'resultados_jurado')
+prueba('el Admin borra un resultado', await como(NUEVO, async () => (await afecta(`delete from public.resultados_jurado where id = '${filaD.id}' returning id`)) === 1))
+const borr = await uno(`select detalle from public.auditoria where accion = 'borrar_resultado' and detalle ->> 'resultado_id' = '${filaD.id}'`)
+prueba('el borrado queda en la auditoría con una copia del resultado', borr?.detalle.antes.competidor === 'Equipo Norte' && borr.detalle.resultado_id === filaD.id)
+prueba('el dueño ve en la auditoría los cambios del historial', (await como(NUEVO, () => filas(`select * from public.auditoria where accion in ('editar_resultado','borrar_resultado') and actor_id = '${NUEVO}'`))).length === 3)
+prueba('un anónimo no puede corregir ni borrar', await comoAnonimo(async () => (await falla(() => db.exec(`update public.resultados_kumite set categoria = 'x'`), 'permission denied')) && (await falla(() => db.exec(`delete from public.resultados_kumite`), 'permission denied'))))
+// El formulario de corrección arma sus cambios con src/lib/editarResultado.js: se ejecutan contra la base real
+async function actualizarComoLaApp(uid, tabla, id, cambios) {
+  const columnas = Object.keys(cambios)
+  const valores = Object.values(cambios).map((v) => (Array.isArray(v) ? `{${v.join(',')}}` : v))
+  const sets = columnas.map((c, i) => `${c} = $${i + 1}` + (c === 'jueces_descartados' ? '::smallint[]' : ''))
+  return db.query(`update public.${tabla} set ${sets.join(', ')} where id = '${id}' returning *`, valores)
+}
+// Kata de la sección 9 (3 jueces): se corrigen el nombre del juez 2 y el puntaje del central
+const rowKata = { ...(await uno(`select * from public.resultados_jurado where id = '${filaK.id}'`)), tabla: 'jurado' }
+const vK = valoresIniciales(rowKata)
+prueba('el formulario de un resultado de 3 jueces muestra solo los jueces que actuaron', vK.jueces.length === 3 && vK.jueces.map((j) => j.etiqueta).join() === 'Juez Nº1,Juez Nº2,Juez Central')
+vK.jueces[1].nombre = '  Beto Díaz '
+vK.jueces[2].puntaje = '7.5'
+prueba('el formulario recalcula el puntaje final (7.4 + 7.1 + 7.5)', calcularDeValores(vK).final === 22)
+prueba('el formulario valida antes de guardar', validar(vK) === '' && validar({ ...vK, competidor: '  ' }) !== '' && validar({ ...vK, area: '1000' }) !== '' && validar({ ...vK, jueces: vK.jueces.map((j, i) => (i === 0 ? { ...j, puntaje: '11' } : j)) }) !== '')
+const resK = await como(NUEVO, () => actualizarComoLaApp(NUEVO, 'resultados_jurado', filaK.id, cambiosDesdeValores(vK)))
+const kataCorr = resK.rows[0]
+prueba('los cambios del formulario encajan con la tabla: nombre limpio, puntaje y total recalculados, 3 jueces intactos',
+  resK.rows.length === 1 && kataCorr.juez2_nombre === 'Beto Díaz' && Number(kataCorr.juez_central_puntaje) === 7.5 && Number(kataCorr.puntaje_final) === 22 &&
+  kataCorr.juez3_puntaje === null && kataCorr.sistema_jueces === 3 && kataCorr.modulo === 'kata')
+// Kumite de la sección 9: se cambia el ganador a empate
+const vKu = valoresIniciales({ ...(await uno(`select * from public.resultados_kumite where id = '${filaKum.id}'`)), tabla: 'kumite' })
+vKu.lado = 'empate'
+vKu.puntajeAka = '4'
+const resKu = await como(NUEVO, () => actualizarComoLaApp(NUEVO, 'resultados_kumite', filaKum.id, cambiosDesdeValores(vKu)))
+prueba('los cambios del formulario de kumite encajan con la tabla (ganador, puntajes y texto)', resKu.rows.length === 1 && resKu.rows[0].ganador === 'EMPATE' && resKu.rows[0].lado_ganador === 'empate' && resKu.rows[0].puntaje_aka === 4 && validar(vKu) === '')
+prueba('al corregir, el torneo del resultado se conserva', kataCorr.torneo_id === id(101))
+const vTorneo = { ...vK, torneoId: '' }
+const resSin = await como(NUEVO, () => actualizarComoLaApp(NUEVO, 'resultados_jurado', filaK.id, cambiosDesdeValores(vTorneo)))
+prueba('se puede dejar un resultado sin torneo', resSin.rows[0].torneo_id === null)
+const resCon = await como(NUEVO, () => actualizarComoLaApp(NUEVO, 'resultados_jurado', filaK.id, cambiosDesdeValores({ ...vK, torneoId: id(102) })))
+prueba('se puede pasar un resultado a otro torneo de la misma organización', resCon.rows[0].torneo_id === id(102))
+prueba('no se puede pasar un resultado a un torneo de otra organización', await como(NUEVO, () => falla(() => actualizarComoLaApp(NUEVO, 'resultados_jurado', filaK.id, cambiosDesdeValores({ ...vK, torneoId: id(201) })), 'row-level security')))
+prueba('un resultado de destreza no muestra el campo kata y su cambio lo deja en NULL', cambiosDesdeValores({ ...vK, modulo: 'destreza', kata: 'algo' }).kata === null)
+
+await db.exec(`delete from public.organizaciones where id = '${orgB.id}'`)
+prueba('borrar una organización con resultados no choca con la auditoría', Number((await uno(`select count(*) n from public.organizaciones where id = '${orgB.id}'`)).n) === 0)
+
+// Cálculo del puntaje final (las mismas reglas que las pantallas)
+const pts = (...v) => v.map((puntaje, i) => ({ posicion: i === v.length - 1 ? 5 : i + 1, puntaje }))
+prueba('3 jueces: suma de los tres', JSON.stringify(calcularPuntaje(pts(7.3, 7.1, 7.2), 3)) === JSON.stringify({ final: 21.6, descartados: [] }))
+prueba('5 jueces: se descartan el mayor y el menor', JSON.stringify(calcularPuntaje(pts(6, 7, 7.1, 7.5, 7.8), 5)) === JSON.stringify({ final: 21.6, descartados: [5, 1] }))
+prueba('5 jueces con todos iguales: mayor = el primero cargado, menor = el último', JSON.stringify(calcularPuntaje(pts(7, 7, 7, 7, 7), 5)) === JSON.stringify({ final: 21, descartados: [1, 5] }))
+prueba('con 5 jueces, un empate en el mayor descarta al primero', JSON.stringify(calcularPuntaje(pts(8, 6, 7, 8, 7), 5)) === JSON.stringify({ final: 22, descartados: [1, 2] }))
+prueba('si falta un puntaje no hay resultado', calcularPuntaje(pts(7, '', 7), 3).final === null && calcularPuntaje(pts(7, 7), 3).final === null)
 
 console.log(`\nResultado: ${ok} pruebas correctas, ${fallos} fallidas.`)
 process.exit(fallos ? 1 : 0)

@@ -281,3 +281,22 @@ Sub-etapas: **3a** sesión, permisos, ingreso por organización · **3b** Usuari
   - Restricciones en la base (puntajes de 0 a 10, coherencia entre sistema y jueces, módulo válido) y RLS por permiso y organización; no se editan ni se borran desde la API.
   - Los resultados anteriores se convirtieron automáticamente; la tabla vieja quedó como `resultados_archivo` (copia de seguridad sin acceso desde la API).
 - [x] Código: `lib/filasResultados.js` reparte lo que entregan las pantallas en columnas; `lib/resultados.js` guarda y lista las dos tablas; el Historial lee las filas reales. Pruebas de base de datos: **150 correctas**, incluida la ejecución del código de la app contra el esquema.
+
+## 16. Corregir y borrar resultados del historial (15/10/2026)
+
+- [x] Migración `20261015140000_editar_historial.sql`: permiso nuevo `editar_historial` (lo trae el rol Admin de cada organización, también las nuevas; se le puede dar a otros roles desde Configuración → Roles).
+  - Se puede corregir y borrar con ese permiso; no se puede cambiar de qué organización, módulo o sistema de jueces es un resultado, ni quién ni cuándo lo cargó.
+  - Cada corrección deja `editado_por` y `editado_en`; cada corrección y cada borrado quedan en la auditoría con una copia de cómo era el resultado antes (y cómo quedó).
+- [x] Historial: columna Acciones (corregir y borrar) para quien tiene el permiso; el formulario recalcula el puntaje final con las mismas reglas que al cargarlo (`calcularPuntaje`); las filas corregidas llevan la marca "corregido".
+- [x] Migración `20261015130000_corregir_acentos_transferir_dueno.sql`: arregla "Dueño" (codificación al pegar el SQL).
+- [x] Pruebas de base de datos: **183 correctas** (incluye el código del formulario de corrección contra el esquema real).
+
+## 17. Un torneo abierto por vez; los resultados van a ese torneo (15/10/2026)
+
+- [x] Regla (migración `20261015150000_torneo_abierto.sql`): cada organización tiene como máximo **un torneo abierto** (estado `activo`); los demás están en borrador o cerrados (`finalizado`). Para abrir otro hay que cerrar el que está abierto.
+- [x] Todo resultado nuevo (jurado o kumite) se guarda **automáticamente en el torneo abierto** (lo asigna la base, lo que mande la aplicación se ignora). **Sin torneo abierto no se puede guardar ningún resultado.**
+- [x] Pantallas de trabajo (Kata, Kobudo, Destreza, Kumite): muestran en qué torneo se guarda, o un aviso en rojo si no hay uno abierto (y no dejan obtener el puntaje ni guardar). Sin sesión o en modo local no se aplica.
+- [x] Configuración → Torneos: estados "Abierto" y "Cerrado", con botones **Abrir / Cerrar torneo / Reabrir**.
+- [x] Historial: columna y filtro por torneo ("Sin torneo" incluido), exportación con la columna Torneo; al corregir un resultado se lo puede asignar o pasar a otro torneo (sirve para ordenar los resultados anteriores).
+- [x] Pruebas de base de datos: **194 correctas**.
+- [ ] Pendiente a decidir: hoy cualquier usuario con permiso para cargar puede cargar en el torneo abierto de su organización. Si se quiere que alguien asignado solo a un torneo no pueda cargar en otro, hay que ajustar la regla de seguridad (RLS) para que use `tiene_permiso(torneo, área, permiso)`.

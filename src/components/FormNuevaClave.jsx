@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import useAuth from '../hooks/useAuth'
+import CampoClave from './CampoClave/CampoClave'
 
 // Mismas reglas que las Edge Functions (supabase/functions/_shared/validar.ts)
 const MIN = 8
@@ -32,31 +33,25 @@ function FormNuevaClave({ alTerminar, textoBoton = 'Guardar contraseña' }) {
 
   return (
     <form className="cuenta-form" onSubmit={enviar}>
-      <label>
-        Contraseña nueva
-        <input
-          type="password"
-          required
-          minLength={MIN}
-          maxLength={MAX}
-          value={clave}
-          onChange={(e) => setClave(e.target.value)}
-          autoComplete="new-password"
-          autoFocus
-        />
-      </label>
-      <label>
-        Repetí la contraseña
-        <input
-          type="password"
-          required
-          minLength={MIN}
-          maxLength={MAX}
-          value={repetida}
-          onChange={(e) => setRepetida(e.target.value)}
-          autoComplete="new-password"
-        />
-      </label>
+      <CampoClave
+        etiqueta="Contraseña nueva"
+        required
+        minLength={MIN}
+        maxLength={MAX}
+        value={clave}
+        onChange={(e) => setClave(e.target.value)}
+        autoComplete="new-password"
+        autoFocus
+      />
+      <CampoClave
+        etiqueta="Repetí la contraseña"
+        required
+        minLength={MIN}
+        maxLength={MAX}
+        value={repetida}
+        onChange={(e) => setRepetida(e.target.value)}
+        autoComplete="new-password"
+      />
       {error && <div className="cuenta-error">{error}</div>}
       <button type="submit" className="cuenta-boton cuenta-boton-primario" disabled={enviando}>
         {enviando ? 'Un momento…' : textoBoton}

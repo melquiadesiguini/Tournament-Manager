@@ -40,3 +40,19 @@ export function armarJueces({ puntajes, nombres, sistema, incluido }) {
     incluido: incluido(p.judgeId),
   }))
 }
+
+// Puntaje final de un resultado de jurado, con las mismas reglas que las pantallas de Kata, Kobudo y Destreza:
+//   3 jueces: suma de los tres puntajes.
+//   5 jueces: se descartan el mayor (si se repite, el primero que se cargó) y el menor (si se repite, el último)
+//             y se suman los tres del medio.
+// `puntajes`: [{ posicion, puntaje }] en el orden de carga (posición 1 a 4, y 5 = central).
+// Devuelve { final, descartados } (posiciones que no cuentan); final es null si falta algún puntaje.
+export function calcularPuntaje(puntajes, sistema) {
+  const validos = puntajes.map((p) => ({ posicion: p.posicion, puntaje: numeroONull(p.puntaje) }))
+  if (validos.length !== sistema || validos.some((p) => p.puntaje === null)) return { final: null, descartados: [] }
+  if (sistema === 3) return { final: Number(validos.reduce((s, p) => s + p.puntaje, 0).toFixed(2)), descartados: [] }
+  const ordenados = validos.slice().sort((a, b) => b.puntaje - a.puntaje) // el orden es estable: los empates mantienen el de carga
+  const descartados = [ordenados[0].posicion, ordenados[ordenados.length - 1].posicion]
+  const medio = ordenados.slice(1, -1)
+  return { final: Number(medio.reduce((s, p) => s + p.puntaje, 0).toFixed(2)), descartados }
+}

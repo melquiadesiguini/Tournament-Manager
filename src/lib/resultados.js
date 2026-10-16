@@ -1,6 +1,7 @@
 import { supabase } from './supabase'
 import { readArea } from '../hooks/useArea'
 import { numeroONull } from './jurado'
+import { mensajeDe } from './errores'
 import { filaJurado, filaKumite } from './filasResultados'
 
 // Los resultados se guardan en dos tablas según su estructura (ver la migración 20261015120000):
@@ -47,6 +48,25 @@ export async function listarResultados(limite = 200) {
     .sort((a, b) => new Date(b.creado_en) - new Date(a.creado_en))
     .slice(0, limite)
   return { ok: true, resultados }
+}
+
+const TABLAS = { jurado: 'resultados_jurado', kumite: 'resultados_kumite' }
+
+// Corrige un resultado ya guardado (solo con el permiso editar_historial; la base lo exige y deja anotado quién y cuándo).
+// `tabla`: 'jurado' | 'kumite'. Devuelve { ok: true } o { ok: false, mensaje }.
+export async function actualizarResultado(tabla, id, cambios) {
+  if (!supabase) return { ok: false, mensaje: 'La base de datos no está configurada.' }
+  const { data, error } = await supabase.from(TABLAS[tabla]).update(cambios).eq('id', id).select('id')
+  if (error) return { ok: false, mensaje: mensajeDe(error) }
+  // sin permiso la base no da error: simplemente no encuentra filas para cambiar
+  return data.length ? { ok: true } : { ok: false, mensaje: 'No se pudo guardar el cambio: no tenés permiso para corregir el historial.' }
+}
+
+export async function borrarResultado(tabla, id) {
+  if (!supabase) return { ok: false, mensaje: 'La base de datos no está configurada.' }
+  const { data, error } = await supabase.from(TABLAS[tabla]).delete().eq('id', id).select('id')
+  if (error) return { ok: false, mensaje: mensajeDe(error) }
+  return data.length ? { ok: true } : { ok: false, mensaje: 'No se pudo borrar: no tenés permiso para corregir el historial.' }
 }
 
 // Texto corto para avisar al usuario cómo terminó el guardado en la nube

@@ -1,0 +1,36 @@
+.campo-clave {
+  position: relative;
+  display: block;
+}
+
+.campo-clave input {
+  width: 100%;
+  box-sizing: border-box;
+  /* lugar para el ojo */
+  padding-right: 2.75rem;
+}
+
+.campo-clave-ojo {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.4rem;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.campo-clave-ojo:hover,
+.campo-clave-ojo:focus-visible {
+  color: var(--text-primary);
+  background-color: var(--bg-surface);
+  outline: none;
+}
